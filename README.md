@@ -6,4 +6,6 @@ pero la mayoria (casi todas creo) de las expresiones son iguales en bash.<br><hr
 Tambien dejo el <a href="http://www.gnu.org/software/bash/manual/bash.html">Bash Reference Manual</a> y la 
 <a href="http://perldoc.perl.org/">Pagina oficial de Perl</a> para referencias.<br><hr>
 
-Pagina de catedra de <a href="http://materias.fi.uba.ar/7508/">Sistemas Operativos</a>.
+Pagina de catedra de <a href="http://materias.fi.uba.ar/7508/">Sistemas Operativos</a>.<br><hr>
+
+<a href="http://ccm.net/faq/2540-linux-create-your-own-command">Hacer tu propio comando de bash</a>.
