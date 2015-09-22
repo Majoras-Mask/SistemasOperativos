@@ -52,7 +52,7 @@ ChequearInstalacionPerl(){
 }
 
 VerificarInstalacion(){
-    if ! [ -f "$CONFDIR/$CONFFILE" ]; then
+    if ! [ -f "$CONFDIR/$CONFFILE" -o true ]; then
         # No existe instalacion
         ChequearInstalacionPerl
         Loguear "$TERMINOS_Y_CONDICIONES"
@@ -69,12 +69,16 @@ VerificarInstalacion(){
     return 0
 }
 
+LeerInput(){
+	read input
+	echo "$input" >> "$CONFDIR/$LOGFILE"
+}
+
 LeerSiONo(){
     local mensaje=$1
     while true; do
-        Loguear "$mensaje" 
-        read input
-        Loguear "$input"
+        Loguear "$mensaje"
+        LeerInput
         
         if [ $input = "Si" -o $input == "SI" -o $input == "si" -o $input == "Y"\
             -o $input == "y" -o $input == "Yes" ]; 
@@ -90,64 +94,11 @@ LeerSiONo(){
     done
 }
 
-LeerArchivoConf(){
-    var=$1
-    valor=$(sed -n "s-^$var=\(.*\)=.*=.*-\1-p" "$CONFDIR/$CONFFILE")
-    echo $valor
-}
-
-InicializacionConfVariables(){
-	BINDIR=$(LeerArchivoConf BINDIR)
-	MAEDIR=$(LeerArchivoConf MAEDIR)
-	NOVEDIR=$(LeerArchivoConf NOVEDIR)
-	DATASIZE=$(LeerArchivoConf DATASIZE)
-	ACEPTDIR=$(LeerArchivoConf ACEPTDIR)
-	PROCDIR=$(LeerArchivoConf PROCDIR)
-	REPODIR=$(LeerArchivoConf REPODIR)
-	LOGDIR=$(LeerArchivoConf LOGDIR)
-	LOGEXT=$(LeerArchivoConf LOGEXT)
-	LOGSIZE=$(LeerArchivoConf LOGSIZE)
-	RECHDIR=$(LeerArchivoConf RECHDIR)
-}
-
-InicializacionVariables(){
-    BINDIR=${BINDIR:="bin"}
-    MAEDIR=${MAEDIR:="mae"}
-    NOVEDIR=${NOVEDIR:="novedades"}
-    DATASIZE=${DATASIZE:="100"}
-    ACEPDIR=${ACEPDIR:"aceptadas"}
-    PROCDIR=${PROCDIR:"sospechosas"}
-    REPODIR=${REPODIR:"reportes"}
-    LOGDIR=${LOGDIR:"log"}
-    LOGEXT=${LOGEXT:"log"}
-    LOGSIZE=${LOGSIZE:"400"}
-    RECHDIR=${RECHDIR:"rechazados"}
-}
-
-# Inicializa las variables de configuracion a su default
-InicializacionDefaultVariables(){
-    BINDIR="bin"
-    MAEDIR="mae"
-    NOVEDIR="novedades"
-    DATASIZE="100"
-    ACEPDIR="aceptadas"
-    PROCDIR="sospechosas"
-    REPODIR="reportes"
-    LOGDIR="log"
-    LOGEXT="log"
-    LOGSIZE="400"
-    RECHDIR="rechazados"
-}
-
-VerificarInstalacionCompleta(){
-    echo    
-}
-
 LeerDirectorio(){
 	local mensaje=$1
 	while true; do
-		Loguear "$mensaje"; read input
-		Loguear "$input"
+		Loguear "$mensaje"; LeerInput
+
 		if [ -z $input ]; then
 			Loguear "Introducir un directorio valido."
 			continue
@@ -181,7 +132,7 @@ LeerDirectorio(){
 
 LeerNumero(){
 	local mensaje=$1
-	Loguear "$mensaje";read input; Loguear "$input"
+	Loguear "$mensaje";LeerInput
 	local numero=$(echo $input | grep "[0-9]\+")
 	while [ -z $numero ]; do
 		Loguear "Debe ingresarse un numero"
@@ -195,7 +146,7 @@ LeerNumero(){
 LeerExtension(){
 	local mensaje=$1
 	Loguear "$mensaje"
-	read input; Loguear "$input"
+	LeerInput
 	while [ ${#input} -gt 6 ]; do
 		Loguear "La extensión debe tener como máximo 5 caracteres"
 		Loguear "$mensaje"
@@ -203,6 +154,56 @@ LeerExtension(){
 	done
 	RETORNO=$input
 	return 0
+}
+
+LeerArchivoConf(){
+    var=$1
+    valor=$(sed -n "s-^$var=\(.*\)=.*=.*-\1-p" "$CONFDIR/$CONFFILE")
+    echo $valor
+}
+
+InicializacionConfVariables(){
+
+	BINDIR=$(LeerArchivoConf BINDIR)
+	MAEDIR=$(LeerArchivoConf MAEDIR)
+	NOVEDIR=$(LeerArchivoConf NOVEDIR)
+	DATASIZE=$(LeerArchivoConf DATASIZE)
+	ACEPTDIR=$(LeerArchivoConf ACEPTDIR)
+	PROCDIR=$(LeerArchivoConf PROCDIR)
+	REPODIR=$(LeerArchivoConf REPODIR)
+	LOGDIR=$(LeerArchivoConf LOGDIR)
+	LOGEXT=$(LeerArchivoConf LOGEXT)
+	LOGSIZE=$(LeerArchivoConf LOGSIZE)
+	RECHDIR=$(LeerArchivoConf RECHDIR)
+}
+
+VerificarVariables(){
+    BINDIR=${BINDIR:="bin"}
+    MAEDIR=${MAEDIR:="mae"}
+    NOVEDIR=${NOVEDIR:="novedades"}
+    DATASIZE=${DATASIZE:="100"}
+    ACEPDIR=${ACEPDIR:="aceptadas"}
+    PROCDIR=${PROCDIR:="sospechosas"}
+    REPODIR=${REPODIR:="reportes"}
+    LOGDIR=${LOGDIR:="log"}
+    LOGEXT=${LOGEXT:="log"}
+    LOGSIZE=${LOGSIZE:="400"}
+    RECHDIR=${RECHDIR:="rechazados"}
+}
+
+# Inicializa las variables de configuracion a su default
+InicializacionDefaultVariables(){
+    BINDIR="bin"
+    MAEDIR="mae"
+    NOVEDIR="novedades"
+    DATASIZE="100"
+    ACEPDIR="aceptadas"
+    PROCDIR="sospechosas"
+    REPODIR="reportes"
+    LOGDIR="log"
+    LOGEXT="log"
+    LOGSIZE="400"
+    RECHDIR="rechazados"
 }
 
 DefinirBINDIR(){
@@ -301,18 +302,28 @@ MostrarValoresVariables(){
 	Loguear "Estado de la instalación: LISTA"
 }
 
+CrearDirectorio(){
+	local salida
+	salida=$(mkdir "$1")
+	if [ $? -eq 0 ]; then
+		Loguear "$salida"
+	else
+		Loguear "$salida" "ERR"
+	fi
+}
+
 CrearDirectorios(){
 	Loguear "Creando Estructuras de directorio. . . ."
-	mkdir "$GRUPO/$BINDIR"
-	mkdir "$GRUPO/$MAEDIR"
-	mkdir "$GRUPO/$NOVEDIR"
-	mkdir "$GRUPO/$ACEPDIR"
-	mkdir "$GRUPO/$PROCDIR"
-	mkdir "$GRUPO/$PROCDIR/proc"
-	mkdir "$GRUPO/$REPODIR"
-	mkdir "$GRUPO/$LOGDIR"
-	mkdir "$GRUPO/$RECHDIR"
-	mkdir "$GRUPO/$RECHDIR/llamadas"
+	CrearDirectorio "$GRUPO/$BINDIR"
+	CrearDirectorio "$GRUPO/$MAEDIR"
+	CrearDirectorio "$GRUPO/$NOVEDIR"
+	CrearDirectorio "$GRUPO/$ACEPDIR"
+	CrearDirectorio "$GRUPO/$PROCDIR"
+	CrearDirectorio "$GRUPO/$PROCDIR/proc"
+	CrearDirectorio "$GRUPO/$REPODIR"
+	CrearDirectorio "$GRUPO/$LOGDIR"
+	CrearDirectorio "$GRUPO/$RECHDIR"
+	CrearDirectorio "$GRUPO/$RECHDIR/llamadas"
 }
 
 MoverEjecutables(){
@@ -365,6 +376,63 @@ InstalarPaquete(){
 	else
 		FinAFRAINST
 	fi
+}
+
+MostrarEstadoDirectorios(){
+	local files
+	
+	Loguear "Directorio de Configuración: $CONFDIR"
+	files=$(ls "$CONFDIR")
+	if [ $? -eq 0 ]; then
+		Loguear "$files"
+	else
+		Loguear "$files" "ERR"
+	fi
+	
+	Loguear "Directorio de Ejecutables: $GRUPO/$BINDIR"
+	files=$(ls "$GRUPO/$BINDIR")
+	if [ $? -eq 0 ]; then
+		Loguear "$files"
+	else
+		Loguear "$files" "ERR"
+	fi
+	
+	Loguear "Directorio de Maestros y Tablas: $GRUPO/$MAEDIR"
+	files=$(ls "$GRUPO/$MAEDIR")
+	if [ $? -eq 0 ]; then
+		Loguear "$files"
+	else
+		Loguear "$files" "ERR"
+	fi
+	
+	Loguear "Directorio de recepción de archivos de llamadas: $GRUPO/$NOVEDIR"
+		
+	Loguear "Directorio de Archivos de llamadas Aceptados: $GRUPO/$ACEPDIR"
+	
+	Loguear "Directorio de Archivos de llamadas Sospechosas: $GRUPO/$PROCDIR"
+	
+	Loguear "Directorio de Archivos de Reportes de llamadas: $GRUPO/$REPODIR"
+	
+	Loguear "Directorio de Archivos de Log: $GRUPO/$LOGDIR"
+	files=$(ls "$GRUPO/$LOGDIR")
+	if [ $? -eq 0 ]; then
+		Loguear "$files"
+	else
+		Loguear "$files" "ERR"
+	fi
+	
+	Loguear "Directorio de Archivos Rechazados: $GRUPO/$RECHDIR"
+}
+
+VerificarEstadoInstalacion(){
+	
+}
+
+VerificarInstalacionCompleta(){
+	InicializacionConfVariables
+	VerificarVariables
+    MostrarEstadoDirectorios
+    VerificarEstadoInstalacion
 }
 
 
