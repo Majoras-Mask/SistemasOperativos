@@ -19,11 +19,11 @@ while read linea
 	     es_DDI=$(echo "$linea"| sed 's/;[A-Z]*[a-z]*//')
 	     if [ "$es_DDI" == "$codigoPaisB" ]
 	     	then 
-	     	eval $resultado=$LLAMADA_VALIDA
+	     	eval "$resultado='$LLAMADA_VALIDA'"
 	     	return 1
 	     fi
 	done < "$DIRCDP"
-	eval $resultado=$CODIGO_PAIS_INEXISTENETE
+	eval "$resultado='$CODIGO_PAIS_INEXISTENETE'"
 return 0
 }
 
@@ -46,10 +46,10 @@ function es_ddn_o_local
 	resultado="$3"
 	if [ "$codigoAreaA"=="$codigoAreaB" ]
 	then
-		eval $resultado=$ES_DDN
+		eval "$resultado='$ES_DDN'"
 		return 1
 	fi
-	eval $resultado=$ES_LOCAL
+	eval "$resultado='$ES_LOCAL'"
 	return 1
 }
 
@@ -63,11 +63,11 @@ function clasificar_llamada
 	es_DDI="$?"
 	if [ "$es_DDI" -eq 1 ]
 	then	
-		eval $resultado=$ES_DDI
+		eval "$resultado='$ES_DDI'"
 		return 1
 	fi
 	es_ddn_o_local "$codigoAreaA" "$codigoAreaB" esDDN_LOCAL
-	eval $resultado=$esDDN_LOCAL
+	eval "$resultado='$esDDN_LOCAL'"
 	return 1	
 }
 

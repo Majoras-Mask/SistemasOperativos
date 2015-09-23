@@ -77,16 +77,16 @@ areaEsNumerica=$( echo "$codigoAreaA" | grep "^-\?[0-9]*$")
 lineaEsNumerica=$(echo "$numeroLineaA" | grep "^-\?[0-9]*$")
 if [ "$areaEsNumerica" == "" ] && [ "$lineaEsNumerica" == "" ]
 then
-	eval $resultado=$NUMERO_LINEA_ORIGEN_NO_NUMERICO
+	eval "$resultado='$NUMERO_LINEA_ORIGEN_NO_NUMERICO'"
 	return 0
 fi
 numeroACompleto="$codigoAreaA$numeroLineaA"
 if [ ${#numeroACompleto} -ne 10 ]
 then
-	eval $resultado=$NUMERO_LINEA_ORIGEN_INCORRECTO 
+	eval "$resultado='$NUMERO_LINEA_ORIGEN_INCORRECTO'" 
 	return 0
 fi
-eval $resultado=$LLAMADA_VALIDA
+eval "$resultado='$LLAMADA_VALIDA'"
 return 1
 }
 
@@ -102,14 +102,14 @@ function validarNumeroLineaB
 	if [ "$esNumerico" != "" ]
 	then
 		echo " esto no deberia suceder"
-		eval $resultado=$NUMERO_LINEA_DESTINO_NO_NUMERICO
+		eval "$resultado='$NUMERO_LINEA_DESTINO_NO_NUMERICO'"
 		return 0
 	fi
 	es_ddi "$numeroPaisB"
 	res="$?"
 	if [ "$res" -eq 0 ]
 	then
-		eval $resultado=$LLAMADA_VALIDA
+		eval "$resultado='$LLAMADA_VALIDA'"
 		return 0
 	fi
 
@@ -117,7 +117,7 @@ function validarNumeroLineaB
 	areaAEsValida="$?"
 	if [ "$areaAEsValida" -eq 0 ] 
 	then
-		eval $resultado=$CODIGO_AREA_DESTINO_INEXISTENTE
+		eval "$resultado='$CODIGO_AREA_DESTINO_INEXISTENTE'"
 		return 0
 	fi
 
@@ -126,10 +126,10 @@ function validarNumeroLineaB
 	echo "size = ${#codigoAreaBNumeroLinea}"
 	if [ ${#codigoAreaBNumeroLinea} -ne 10 ]
 		then
-		eval $resultado=$NUMERO_LINEA_DESTINO_INCORRECTO
+		eval "$resultado='$NUMERO_LINEA_DESTINO_INCORRECTO'"
 		return 0
 	fi
-	eval $resultado=$LLAMADA_VALIDA
+	eval "$resultado='$LLAMADA_VALIDA'"
 	return 1
 }
 
@@ -153,7 +153,7 @@ validarIdAgente "$idAgente"
 	idAgenteEsValido=$?
 	if [ $idAgenteEsValido -eq 0 ]
 	then
-		eval $resultado=$ID_AGENTE_INEXISTENTE
+		eval "$resultado='$ID_AGENTE_INEXISTENTE'"
 		return 0
 	fi
 
@@ -162,24 +162,25 @@ validarCodigoArea "$numeroAreaA"
 areaAEsValida="$?"
 if [ "$areaAEsValida" -eq 0 ] 
 then
-	 eval $resultado=$CODIGO_AREA_ORIGEN_INEXISTENTE
+	 eval "$resultado='$CODIGO_AREA_ORIGEN_INEXISTENTE'"
 	 return 0
 fi
 
 validarNumeroLineaA "$numeroLineaA" "$area" numeroLineaAValido
 if [ "$numeroLineaAValido" != "$LLAMADA_VALIDA"  ]
 then
-	eval $resultado=$numeroLineaAValido
+	eval "$resultado='$NUMERO_LINEA_ORIGEN_INCORRECTO'"
 	return 0
 fi
 
 echo "ajajajajajaja"
-validarNumeroLineaB "$numeroLineaB" "numeroPaisB" "$numeroAreaB" numeroLineaBValido
+validarNumeroLineaB "$numeroLineaB" "numeroPaisB" "$numeroAreaB" resultado
 
 echo "numero linea b  es valido = $numeroLineaBValido"
-if [ "$numeroLineaBValido" != "$LLAMADA_VALIDA" ]
+if [ "$resultado" != "$LLAMADA_VALIDA" ]
 then
-	eval $resultado=$numeroLineaBValido
+	eval "$resultado"
+	return 0
 fi
 echo "aja"
 tiempoConversacion=`expr $tiempoConversacion`
@@ -187,11 +188,11 @@ validarTiempoConversacion "$tiempoConversacion"
 tiempoConversacionEsValido=$?
 if [ "$tiempoConversacionEsValido" -eq 0 ]
 then
-	eval $resultado=$ERROR_TIEMPO_DE_CONVERSACION
+	eval "$resultado='$ERROR_TIEMPO_DE_CONVERSACION'"
 	return 0
 fi
 
-eval $resultado=$LLAMADA_VALIDA
+eval "$resultado='$LLAMADA_VALIDA'"
 return 1
 }
 

@@ -28,11 +28,11 @@ function validarCampos
 	cantidadCampos=$(echo "$linea" | awk -F ';' '{print NF}')
 	if [ "$cantidadCampos" -ne 7 ] 
 	then
-		eval $resultado=$CANTIDAD_CAMPOS_INCORRECCTOS
+		eval "$resultado='$CANTIDAD_CAMPOS_INCORRECCTOS'"
 		return 0
 	fi	
-	validarLLamada "$linea" resultado_llamada
-	eval $resultado=$resultado_llamada
+	validarLLamada "$linea" resultado
+	eval "echo $resultado"
 	return 1
 }
 
