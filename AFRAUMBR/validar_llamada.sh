@@ -171,15 +171,15 @@ then
 	 return 0
 fi
 
-validarNumeroLineaA "$numeroLineaA" "$area" numeroLineaAValido
-if [ "$numeroLineaAValido" != "$LLAMADA_VALIDA"  ]
+validarNumeroLineaA "$numeroLineaA" "$area" "$resultado"
+if [ "$resultado" != "$LLAMADA_VALIDA"  ]
 then
 	eval "$resultado='$NUMERO_LINEA_ORIGEN_INCORRECTO'"
 	return 0
 fi
 
 #echo "ajajajajajaja"
-validarNumeroLineaB "$numeroLineaB" "numeroPaisB" "$numeroAreaB" resultado
+validarNumeroLineaB "$numeroLineaB" "numeroPaisB" "$numeroAreaB" "$resultado"
 
 #echo "numero linea b  es valido = $numeroLineaBValido"
 if [ "$resultado" != "$LLAMADA_VALIDA" ]
