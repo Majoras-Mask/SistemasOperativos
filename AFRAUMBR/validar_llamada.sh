@@ -29,8 +29,10 @@ function validarIdAgente
 idAgente="$1"
 while read linea
 do
-	id=$(echo "$linea" | sed -e 's/^$idAgente;/:/' -e 's/;$idAgente;/:/' -e 's/;$idAgente$/:/'| grep :)
-	if [ id != "" ]
+	#echo "linea = $linea"
+	idEsValido=$(echo "$linea" | sed -e "s/^"$idAgente";/:/" -e "s/;"$idAgente";/:/" -e "s/;"$idAgente"$/:/" | grep :)
+	#echo "idEsValido = $idEsValido"
+	if [ "$idEsValido" != "" ]
 	then
 	return 1
 	fi
