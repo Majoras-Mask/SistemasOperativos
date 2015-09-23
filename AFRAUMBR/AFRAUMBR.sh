@@ -25,7 +25,10 @@ do
 	while read linea
 	do
 	validarCampos "$linea" resultado
-	
 	echo "resultado = $resultado"
+	if [ "$resultado" != "valido" ]
+		then
+		continue
+	fi	
 	done < "$RUTA"
 done < archivosllamadas.txt

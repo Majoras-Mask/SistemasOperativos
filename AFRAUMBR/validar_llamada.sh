@@ -27,13 +27,16 @@ LLAMADA_VALIDA="valido"
 function validarIdAgente
 {
 idAgente="$1"
-res=$(cat "$AGENTES" | grep "$idAgente" )
-if [ "$res" == "" ]
-then
-	return 0
-fi
+while read linea
+do
+	id=$(echo "$linea" | sed -e 's/^$idAgente;/:/' -e 's/;$idAgente;/:/' -e 's/;$idAgente$/:/'| grep :)
+	if [ id != "" ]
+	then
+	return 1
+	fi
 
-return 1
+done < "$AGENTES"
+return 0
 }
 
 
@@ -98,10 +101,10 @@ function validarNumeroLineaB
 	resultado="$4"
 	
 	esNumerico=$( echo "$numeroLineaB" | sed 's/[0-9]*//')
-	echo "es numerico $esNumerico"
+	#echo "es numerico $esNumerico"
 	if [ "$esNumerico" != "" ]
 	then
-		echo " esto no deberia suceder"
+	#	echo " esto no deberia suceder"
 		eval "$resultado='$NUMERO_LINEA_DESTINO_NO_NUMERICO'"
 		return 0
 	fi
@@ -122,8 +125,8 @@ function validarNumeroLineaB
 	fi
 
 	codigoAreaBNumeroLinea="$numeroLineaB$numeroAreaB"
-	echo "numero b completo = $codigoAreaBNumeroLinea"
-	echo "size = ${#codigoAreaBNumeroLinea}"
+	#echo "numero b completo = $codigoAreaBNumeroLinea"
+	#echo "size = ${#codigoAreaBNumeroLinea}"
 	if [ ${#codigoAreaBNumeroLinea} -ne 10 ]
 		then
 		eval "$resultado='$NUMERO_LINEA_DESTINO_INCORRECTO'"
@@ -142,12 +145,12 @@ resultado="$2"
 
 parsearLLamada "$lineaLLamada" idAgente numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
 
-echo "numeroAreaA = $numeroAreaA"
-echo "numeroLineaA = $numeroLineaA"
-echo "numeroPaisB = $numeroPaisB"
-echo "numeroAreaB = $numeroAreaB"
-echo "numeroLineaB = $numeroLineaB"
-echo "tiempo de conversacion = $tiempoConversacion" 
+#echo "numeroAreaA = $numeroAreaA"
+#echo "numeroLineaA = $numeroLineaA"
+#echo "numeroPaisB = $numeroPaisB"
+#echo "numeroAreaB = $numeroAreaB"
+#echo "numeroLineaB = $numeroLineaB"
+#echo "tiempo de conversacion = $tiempoConversacion" 
 
 validarIdAgente "$idAgente"
 	idAgenteEsValido=$?
@@ -173,10 +176,10 @@ then
 	return 0
 fi
 
-echo "ajajajajajaja"
+#echo "ajajajajajaja"
 validarNumeroLineaB "$numeroLineaB" "numeroPaisB" "$numeroAreaB" resultado
 
-echo "numero linea b  es valido = $numeroLineaBValido"
+#echo "numero linea b  es valido = $numeroLineaBValido"
 if [ "$resultado" != "$LLAMADA_VALIDA" ]
 then
 	eval "$resultado"
