@@ -178,7 +178,7 @@ registroLLamada="$1"
 resultado="$2"
 
 parsearLLamada "$registroLLamada" idAgente numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
-llamadaValida="LLAMADA_VALIDA"
+llamadaValida="$LLAMADA_VALIDA"
 idAgenteValido="$VALIDO"
 numeroAreaAValido="$VALIDO"
 numeroLineaAValido="$VALIDO"
