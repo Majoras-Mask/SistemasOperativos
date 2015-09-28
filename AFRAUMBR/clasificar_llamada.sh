@@ -11,24 +11,22 @@ DIRLLAMADAS="ACEPDIR/"
 LLAMADA_VALIDA="valido"
 CODIGO_PAIS_INEXISTENETE=" El codigo de pais no existe"
 
-function llamada_ddi_valida
+llamada_ddi_valida()
 {
-
+codigoPaisB="$1"
 while read linea
 	do
 	     es_DDI=$(echo "$linea"| sed 's/;[A-Z]*[a-z]*//')
 	     if [ "$es_DDI" == "$codigoPaisB" ]
 	     	then 
-	     	eval "$resultado='$LLAMADA_VALIDA'"
 	     	return 1
 	     fi
 	done < "$DIRCDP"
-	eval "$resultado='$CODIGO_PAIS_INEXISTENETE'"
 return 0
 }
 
 
-function es_ddi
+es_ddi()
 {
 	codigoPaisB="$1"
 	if [ "$codigoPaisB" == "" ]
@@ -39,7 +37,7 @@ function es_ddi
 return 1
 }
 
-function es_ddn_o_local 
+es_ddn_o_local() 
 {
 	codigoAreaA="$1"
 	codigoAreaB="$2"
@@ -53,7 +51,7 @@ function es_ddn_o_local
 	return 1
 }
 
-function clasificar_llamada
+clasificar_llamada()
 {
 	codigoAreaA="$1"
 	codigoPaisB="$2"

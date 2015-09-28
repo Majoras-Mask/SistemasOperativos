@@ -24,11 +24,8 @@ do
 	RUTA=$DIRLLAMADAS$nombreArchivo
 	while read linea
 	do
-	validarCampos "$linea" resultado
-	echo "resultado = $resultado"
-	if [ "$resultado" != "valido" ]
-		then
-		continue
-	fi	
+	validarCampos "$linea" registroErrores
+	echo "$registroLLamada" | awk -F ':' '{ print $1 }'
+	
 	done < "$RUTA"
 done < archivosllamadas.txt

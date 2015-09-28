@@ -1,11 +1,11 @@
 #!/bin/bash
 #mover esto a un
 # archivo de configuracion
-CANTIDAD_CAMPOS_INCORRECCTOS="La cantidad de campos correspondiente a la \
+CANTIDAD_CAMPOS_INCORRECTOS="La cantidad de campos correspondiente a la \
 llamada no es correcta"
 source validar_llamada.sh
 
-function validarArchivoLlamada
+validarArchivoLlamada()
 {	
 
 	nombre="$1"
@@ -19,20 +19,18 @@ function validarArchivoLlamada
 	
 }
 
-function validarCampos 
+validarCampos() 
 {	
 
 	linea="$1"
-	resultado="$2"
+	registroLLamada="$2"
 
 	cantidadCampos=$(echo "$linea" | awk -F ';' '{print NF}')
 	if [ "$cantidadCampos" -ne 7 ] 
 	then
-		eval "$resultado='$CANTIDAD_CAMPOS_INCORRECCTOS'"
 		return 0
 	fi	
-	validarLLamada "$linea" resultado
-	eval "echo $resultado"
+	validarLLamada "$linea" "$registroLLamada"
 	return 1
 }
 
