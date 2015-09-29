@@ -9,6 +9,8 @@ DIRCDP="MAEDIR/CdP.mae"
 AGENTES="MAEDIR/agentes.mae"
 DIRLLAMADAS="ACEPDIR/"
 
+main () {
+
 ls  "$DIRLLAMADAS" | grep .csv > archivosllamadas.txt
 
 while read nombreArchivo 
@@ -17,15 +19,20 @@ do
 	esArchivoValido=$?
 	if [ $esArchivoValido  -eq 0 ] 
 	then
-		echo “Se rechaza el archivo por estar DUPLICADO“.
+		echo "Se rechaza el archivo por estar DUPLICADO."
 		continue
 	fi 
 
-	RUTA=$DIRLLAMADAS$nombreArchivo
+	local RUTA=$DIRLLAMADAS$nombreArchivo
+	local linea
 	while read linea
 	do
+		echo "$linea"
 	validarCampos "$linea" registroErrores
-	echo "$registroLLamada" | awk -F ':' '{ print $1 }'
-	
+	echo "$registroErrores" | awk -F ';' '{ print $1 }'
+	echo "$linea" | awk -F ';' '{ print $7 }'
 	done < "$RUTA"
 done < archivosllamadas.txt
+}
+
+main

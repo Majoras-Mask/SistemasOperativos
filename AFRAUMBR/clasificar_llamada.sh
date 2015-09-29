@@ -13,7 +13,8 @@ CODIGO_PAIS_INEXISTENETE=" El codigo de pais no existe"
 
 llamada_ddi_valida()
 {
-codigoPaisB="$1"
+local codigoPaisB="$1"
+local linea
 while read linea
 	do
 	     es_DDI=$(echo "$linea"| sed 's/;[A-Z]*[a-z]*//')
@@ -28,7 +29,7 @@ return 0
 
 es_ddi()
 {
-	codigoPaisB="$1"
+	local codigoPaisB="$1"
 	if [ "$codigoPaisB" == "" ]
 	then
 		return 0
@@ -39,8 +40,8 @@ return 1
 
 es_ddn_o_local() 
 {
-	codigoAreaA="$1"
-	codigoAreaB="$2"
+	local codigoAreaA="$1"
+	local codigoAreaB="$2"
 	resultado="$3"
 	if [ "$codigoAreaA"=="$codigoAreaB" ]
 	then
@@ -53,9 +54,9 @@ es_ddn_o_local()
 
 clasificar_llamada()
 {
-	codigoAreaA="$1"
-	codigoPaisB="$2"
-	codigoAreaB="$3"
+	local codigoAreaA="$1"
+	local codigoPaisB="$2"
+	local codigoAreaB="$3"
 	resultado="$4"
 	es_ddi "$codigoPaisB"
 	es_DDI="$?"

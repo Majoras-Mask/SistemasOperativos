@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function parsearLLamada 
+parsearLLamada() 
 {
 
 	lineaLLamada="$1"

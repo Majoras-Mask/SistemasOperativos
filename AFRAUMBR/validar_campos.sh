@@ -22,15 +22,15 @@ validarArchivoLlamada()
 validarCampos() 
 {	
 
-	linea="$1"
-	registroLLamada="$2"
+	lineaAParsear="$1"
+	registroErrores="$2"
 
-	cantidadCampos=$(echo "$linea" | awk -F ';' '{print NF}')
+	cantidadCampos=$(echo "$lineaAParsear" | awk -F ';' '{print NF}')
 	if [ "$cantidadCampos" -ne 7 ] 
 	then
 		return 0
 	fi	
-	validarLLamada "$linea" "$registroLLamada"
+	validarLLamada "$linea" "$registroErrores"
 	return 1
 }
 
