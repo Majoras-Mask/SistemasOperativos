@@ -17,12 +17,6 @@ RUTA_MAESTROS_Y_TABLAS="$GRUPO/.files/archivos"
 # Ruta de los scripts
 RUTA_SCRIPTS="$GRUPO/.files/scripts"
 
-# Archivos Maestros y Tablas
-FILES_MAEDIR="CdP.mae CdA.mae agentes.mae tllama.tab umbral.tab"
-# Archivos de scripts
-FILES_SCRIPTS=""
-# Comandos a utilizar
-GRALOG="Loguear" # Comando para logear.
 # Version solicitada para perl
 PERL_VERSION=5
 PERL_MENSAJE_ERROR_VERSION="Para ejecutar el sistema AFRA-I es necesario contar con Perl 5 o superior.
@@ -36,18 +30,42 @@ TERMINOS_Y_CONDICIONES="
 
 A T E N C I O N: Al instalar UD. expresa aceptar los términos y condiciones del \"ACUERDO DE LICENCIA DE SOFTWARE\" incluido en este paquete.
 "
+# Funcion para loguear al logfile
+# Parametros
+# $1 : Mensaje a loguear
+# $2 : Tipo de mensaje
+LoguearAlArchivo(){
+    local where="AFRAINST"
+    local what="INFO"
+    local why="$1" # mensaje
+    if [ ! -z "$2" ]; then
+        tipo="$2"
+    fi
+    
+    local who="$USERNAME"
+    local when=$(date +"%d/%m/%y %R")
+    
+    echo "$when-$who-$where-$what-$why" >> "$CONFDIR/$LOGFILE" 
+}
 
 # Funcion para loguear a stdout y al logfile
 # Parametros
 # $1 : Mensaje a loguear
+# $2 : Tipo de mensaje
 Loguear(){
     echo "$1"
-    echo "$1" >> "$CONFDIR/$LOGFILE"
+    LoguearAlArchivo "$1" "$2"
 }
 
 # Funcion para finalizar el programa
 FinAFRAINST(){
-    exit
+    if [ $1 -eq 0 ]; then
+        LoguearAlArchivo "Finalización de AFRAINST con exito."
+        exit 0
+    else
+        LoguearAlArchivo "Finalización de AFRAINST con error."
+        exit 1
+    fi
 }
 
 # Chequea version de Perl. Si es menor a $PERL_VERSION finaliza el programa.
@@ -55,7 +73,7 @@ ChequearInstalacionPerl(){
     version=$(perl -v | sed -n 's/.*(v\([0-9]*\)\..*).*/\1/p')
     if [ $version -lt $PERL_VERSION ]; then
         Loguear "$PERL_MENSAJE_ERROR_VERSION"
-        FinAFRAINST
+        FinAFRAINST 1
     fi
     Loguear "Perl Version: $(perl -v)"
     return 0
@@ -70,22 +88,23 @@ VerificarInstalacion(){
         Loguear "$TERMINOS_Y_CONDICIONES"
         LeerSiONo "Acepta? Si - No: "
         if [ $RETORNO == "No" ]; then
-            FinAFRAINST
+            FinAFRAINST 0
         fi
         InstalarPaquete
     else
         # Instalacion encontrada
         VerificarInstalacionCompleta
     fi
-
-    return 0
+    
+    FinAFRAINST 0
 }
 
 # Lee de stdin y lo almacena en la variable $input. Procede a loguear la
 # entrada en el logfile.
 LeerInput(){
     read input
-    echo "$input" >> "$CONFDIR/$LOGFILE"
+    LoguearAlArchivo "Input: $input"
+    return 0
 }
 
 # Bucle para leer si o no
@@ -136,7 +155,7 @@ LeerDirectorio(){
         
         local mensaje3
         if [ ${mensaje2:(-1)} == '/' ]; then
-            len=${#mensaje2}
+            local len=${#mensaje2}
             let len--
             mensaje3=${mensaje2:0:len}
         else
@@ -145,6 +164,8 @@ LeerDirectorio(){
         
         if [ -z $mensaje3 ]; then
             Loguear "Introducir un directorio valido."
+        elif [ "$mensaje3" == "conf" ]; then
+            Loguear "No esta permitido utilizar el directorio reservado conf."
         else
             RETORNO=$mensaje3
             return 0
@@ -163,7 +184,7 @@ LeerNumero(){
     local numero=$(echo $input | grep "[0-9]\+")
     while [ -z $numero ]; do
         Loguear "Debe ingresarse un numero"
-        Loguear "$mensaje"; read input; Loguear "$input"
+        Loguear "$mensaje"; LeerInput
         numero=$(echo $input | grep "[0-9]\+")
     done
     RETORNO=$numero
@@ -177,10 +198,10 @@ LeerExtension(){
     local mensaje=$1
     Loguear "$mensaje"
     LeerInput
-    while [ ${#input} -gt 6 ]; do
-        Loguear "La extensión debe tener como máximo 5 caracteres"
+    while [ ${#input} -gt 5 ] || [ ${#input} -eq 0 ]; do
+        Loguear "La extensión debe no ser vacia y tener como máximo 5 caracteres"
         Loguear "$mensaje"
-        read input; Loguear "$input"
+        LeerInput
     done
     RETORNO=$input
     return 0
@@ -213,6 +234,8 @@ InicializacionConfVariables(){
     LOGEXT=$(LeerArchivoConf LOGEXT)
     LOGSIZE=$(LeerArchivoConf LOGSIZE)
     RECHDIR=$(LeerArchivoConf RECHDIR)
+    
+    return 0
 }
 
 
@@ -230,6 +253,8 @@ VerificarVariables(){
     LOGEXT=${LOGEXT:="log"}
     LOGSIZE=${LOGSIZE:="400"}
     RECHDIR=${RECHDIR:="rechazados"}
+    
+    return 0
 }
 
 # Inicializa las variables de configuracion a su default
@@ -245,75 +270,117 @@ InicializacionDefaultVariables(){
     LOGEXT="log"
     LOGSIZE="400"
     RECHDIR="rechazados"
+    
+    return 0
 }
 
 
 # Funciones Definir. Se lee de stdin para setear la variable de configuracion
 # Si se lee algo incorrecto, se setea default.
 DefinirBINDIR(){
-    mensaje="Defina el directorio de instalación de los ejecutables ($GRUPO/$BINDIR): "
+    local mensaje="Defina el directorio de instalación de los ejecutables ($GRUPO/$BINDIR): "
     LeerDirectorio "$mensaje"
     BINDIR=${RETORNO:="bin"}
+    return 0
 }
 
 DefinirMAEDIR(){
-    mensaje="Defina directorio para maestros y tablas ($GRUPO/$MAEDIR): "
+    local mensaje="Defina directorio para maestros y tablas ($GRUPO/$MAEDIR): "
     LeerDirectorio "$mensaje"
     MAEDIR=${RETORNO:="mae"}
+    return 0
 }
 
 DefinirNOVEDIR(){
-    mensaje="Defina el Directorio de recepción de archivos de llamadas ($GRUPO/$NOVEDIR): "
+    local mensaje="Defina el Directorio de recepción de archivos de llamadas ($GRUPO/$NOVEDIR): "
     LeerDirectorio "$mensaje"
     NOVEDIR=${RETORNO:="novedades"}
+    return 0
 }
 
 DefinirDATASIZE(){
-    mensaje="Defina espacio mínimo libre para la recepción de archivos de llamadas en Mbytes ( $DATASIZE ): "
-    LeerNumero "$mensaje"
-    DATASIZE=${RETORNO:="100"}
+    local mensaje
+    while true; do
+        mensaje="Defina espacio mínimo libre para la recepción de archivos de llamadas en Mbytes ( $DATASIZE ): "
+        LeerNumero "$mensaje"
+        if [ $RETORNO -gt 0 ]; then
+            DATASIZE=${RETORNO:="100"}
+            return 0
+        else
+            Loguear "Debe ingresar un numero mayor a cero!" "WAR"
+            LeerNumero "$mensaje"
+        fi
+    done
 }
 
 DefinirACEPDIR(){
-    mensaje="Defina el directorio de grabación de los archivos de llamadas aceptadas ($GRUPO/$ACEPDIR): "
+    local mensaje="Defina el directorio de grabación de los archivos de llamadas aceptadas ($GRUPO/$ACEPDIR): "
     LeerDirectorio "$mensaje"
     ACEPDIR=${RETORNO:="aceptadas"}
+    return 0
 }
 
 DefinirPROCDIR(){
-    mensaje="Defina el directorio de grabación del os registros de llamadas sospechosas ($GRUPO/$PROCDIR): "
+    local mensaje="Defina el directorio de grabación de los registros de llamadas sospechosas ($GRUPO/$PROCDIR): "
     LeerDirectorio "$mensaje"
     PROCDIR=${RETORNO:="sospechosas"}
+    return 0
 }
 
 DefinirREPODIR(){
-    mensaje="Defina el directorio de grabación de los reportes ($GRUPO/$REPODIR): "
+    local mensaje="Defina el directorio de grabación de los reportes ($GRUPO/$REPODIR): "
     LeerDirectorio "$mensaje"
     REPODIR=${RETORNO:="reportes"}
+    return 0
 }
 
 DefinirLOGDIR(){
-    mensaje="Defina el directorio para los archivos de log ($GRUPO/$LOGDIR): "
+    local mensaje="Defina el directorio para los archivos de log ($GRUPO/$LOGDIR): "
     LeerDirectorio "$mensaje"
     LOGDIR=${RETORNO:="log"}
+    return 0
 }
 
 DefinirLOGEXT(){
-    mensaje="Defina el nombre para la extensión de lso archivos de log ( $LOGEXT ): "
+    local mensaje="Defina el nombre para la extensión de lso archivos de log ( $LOGEXT ): "
     LeerExtension "$mensaje"
     LOGEXT=${RETORNO:="log"}
+    return 0
 }
 
 DefinirLOGSIZE(){
-    mensaje="Defina el tamaño maximo para cada archivo de log en Kbytes ( $LOGSIZE ): "
-    LeerNumero "$mensaje"
-    LOGSIZE=${RETORNO:="400"}
+    local mensaje
+    while true; do
+        mensaje="Defina el tamaño maximo para cada archivo de log en Kbytes ( $LOGSIZE ): "
+        LeerNumero "$mensaje"
+        if [ $RETORNO -gt 0 ]; then
+            LOGSIZE=${RETORNO:="400"}
+            return 0
+        else
+            Loguear "Debe ingresar un numero mayor a cero!" "WAR"
+            LeerNumero "$mensaje"
+        fi
+    done
 }
 
 DefinirRECHDIR(){
-    mensaje="Defina el directorio de grabación de Archivos rechazados ($GRUPO/$RECHDIR): "
+    local mensaje="Defina el directorio de grabación de Archivos rechazados ($GRUPO/$RECHDIR): "
     LeerDirectorio "$mensaje"
     RECHDIR=${RETORNO:="rechazadas"}
+    return 0
+}
+
+VerificarEspacioEnDisco(){
+    local espacio
+    while true; do
+        espacio=$(df -BM --output="avail" "$GRUPO" | sed -n 's/\([0-9]\+\)M$/\1/p')
+        Loguear "Insuficiente espacio en disco."
+        Loguear "Espacio disponible: $espacio Mb."
+        Loguear "Espacio requerido $DATASIZE Mb."
+        Loguear "Intentelo nuevamente."
+        sleep '10s'
+    done
+    return 0
 }
 
 DefinirVariables(){
@@ -321,6 +388,7 @@ DefinirVariables(){
     DefinirMAEDIR
     DefinirNOVEDIR
     DefinirDATASIZE
+    VerificarEspacioEnDisco
     DefinirACEPDIR
     DefinirPROCDIR
     DefinirREPODIR
@@ -328,6 +396,8 @@ DefinirVariables(){
     DefinirLOGEXT
     DefinirLOGSIZE
     DefinirRECHDIR
+    
+    return 0
 }
 
 # Funcion para mostrar los valores de la variable
@@ -346,6 +416,7 @@ MostrarValoresVariables(){
     Loguear "Tamaño máximo para los archivos de log: $LOGSIZE Kb"
     Loguear "Directorio de Archivos Rechazados: $GRUPO/$RECHDIR"
     Loguear "Estado de la instalación: LISTA"
+    return 0
 }
 
 # Funcion para crear directorio
@@ -377,6 +448,7 @@ CrearDirectorios(){
     CrearDirectorio "$GRUPO/$LOGDIR"
     CrearDirectorio "$GRUPO/$RECHDIR"
     CrearDirectorio "$GRUPO/$RECHDIR/llamadas"
+    return 0
 }
 
 # Copia los archivos de la carpeta origen a la carpeta destino.
@@ -393,31 +465,36 @@ CopiarArchivos(){
     files=$(ls "$origen" 2>&1)
     if ! [ $? -eq 0 ]; then
         Loguear "No se encuentra la carpeta origen $origen" "ERR"
-        return 1
+        FinAFRAINST 1
     fi
     
     files2=$(ls "$destino" 2>&1)
     if ! [ $? -eq 0 ]; then
         Loguear "No se encuentra la carpeta destino $destino" "ERR"
-        return 1
+        FinAFRAINST 1
     fi
     
     while read -r file; do
-        cp "$origen/$file" "$destino"
+        if [ ! -f "$destino/$file" ]; then
+            cp "$origen/$file" "$destino"
+        fi
     done <<< "$files"
-
+    
+    return 0
 }
 
 # Funcion que lee del paquete para ubicar los archivos a las carpetas.
 MoverEjecutables(){
     Loguear "Instalando Programas y Funciones"
     CopiarArchivos "$RUTA_SCRIPTS" "$GRUPO/$BINDIR"
+    return 0
 }
 
 # Funcion que lee del paquete para ubicar los archivos a las carpetas.
 MoverArchivosMaestrosYTablas(){
     Loguear "Instalando Archivos Maestros y Tablas"
     CopiarArchivos "$RUTA_MAESTROS_Y_TABLAS" "$GRUPO/$MAEDIR"
+    return 0
 }
 
 # Grabacion del archivo de configuracion
@@ -437,6 +514,7 @@ GrabarArchivoDeConfiguracion(){
     echo LOGSIZE=$LOGSIZE=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
     echo RECHDIR=$RECHDIR=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
     
+    return 0
 }
 
 CargarPaquete(){
@@ -452,6 +530,7 @@ InstalarPaquete(){
     MostrarValoresVariables
     LeerSiONo "Desea continuar con la instalacion? ( Si - No ): "
     while [ $RETORNO == "No" ]; do
+        clear
         DefinirVariables
         MostrarValoresVariables
         LeerSiONo "Desea continuar con la instalacion? ( Si - No ): "
@@ -460,9 +539,12 @@ InstalarPaquete(){
     LeerSiONo "Iniciando Instalación. Esta Ud. seguro? ( Si - No): "
     if [ $RETORNO == "Si" ]; then
         CargarPaquete
+        Loguear "Instalación CONCLUIDA."
     else
-        FinAFRAINST
+        FinAFRAINST 0
     fi
+    
+    return 0
 }
 
 # Muestra el estado de los directorios, junto con sus archivos.
@@ -471,7 +553,7 @@ MostrarEstadoDirectorios(){
     local files
     
     Loguear "Directorio de Configuración: $CONFDIR"
-    files=$(ls "$CONFDIR")
+    files=$(ls "$CONFDIR" 2>&1)
     if [ $? -eq 0 ]; then
         Loguear "$files"
     else
@@ -480,7 +562,7 @@ MostrarEstadoDirectorios(){
     fi
     
     Loguear "Directorio de Ejecutables: $GRUPO/$BINDIR"
-    files=$(ls "$GRUPO/$BINDIR")
+    files=$(ls "$GRUPO/$BINDIR" 2>&1)
     if [ $? -eq 0 ]; then
         Loguear "$files"
     else
@@ -489,7 +571,7 @@ MostrarEstadoDirectorios(){
     fi
     
     Loguear "Directorio de Maestros y Tablas: $GRUPO/$MAEDIR"
-    files=$(ls "$GRUPO/$MAEDIR")
+    files=$(ls "$GRUPO/$MAEDIR" 2>&1)
     if [ $? -eq 0 ]; then
         Loguear "$files"
     else
@@ -498,7 +580,7 @@ MostrarEstadoDirectorios(){
     fi
     
     Loguear "Directorio de recepción de archivos de llamadas: $GRUPO/$NOVEDIR"
-    files=$(ls "$GRUPO/$NOVEDIR")
+    files=$(ls "$GRUPO/$NOVEDIR" 2>&1)
     if ! [ $? -eq 0 ]; then
         Loguear "No se encuentra el directorio $GRUPO/$NOVEDIR" "ERR"
         CrearDirectorio "$GRUPO/$NOVEDIR"
@@ -506,28 +588,28 @@ MostrarEstadoDirectorios(){
     
         
     Loguear "Directorio de Archivos de llamadas Aceptados: $GRUPO/$ACEPDIR"
-    files=$(ls "$GRUPO/$ACEPDIR")
+    files=$(ls "$GRUPO/$ACEPDIR" 2>&1)
     if ! [ $? -eq 0 ]; then
         Loguear "No se encuentra el directorio $GRUPO/$ACEPDIR" "ERR"
         CrearDirectorio "$GRUPO/$ACEPDIR"
     fi
     
     Loguear "Directorio de Archivos de llamadas Sospechosas: $GRUPO/$PROCDIR"
-    files=$(ls "$GRUPO/$PROCDIR")
+    files=$(ls "$GRUPO/$PROCDIR" 2>&1)
     if ! [ $? -eq 0 ]; then
         Loguear "No se encuentra el directorio $GRUPO/$PROCDIR" "ERR"
         CrearDirectorio "$GRUPO/$PROCDIR"
     fi
     
     Loguear "Directorio de Archivos de Reportes de llamadas: $GRUPO/$REPODIR"
-    files=$(ls "$GRUPO/$REPODIR")
+    files=$(ls "$GRUPO/$REPODIR" 2>&1)
     if ! [ $? -eq 0 ]; then
         Loguear "No se encuentra el directorio $GRUPO/$REPODIR" "ERR"
         CrearDirectorio "$GRUPO/$REPODIR"
     fi
     
     Loguear "Directorio de Archivos de Log: $GRUPO/$LOGDIR"
-    files=$(ls "$GRUPO/$LOGDIR")
+    files=$(ls "$GRUPO/$LOGDIR" 2>&1)
     if [ $? -eq 0 ]; then
         Loguear "$files"
     else
@@ -536,11 +618,13 @@ MostrarEstadoDirectorios(){
     fi
     
     Loguear "Directorio de Archivos Rechazados: $GRUPO/$RECHDIR"
-    files=$(ls "$GRUPO/$RECHDIR")
+    files=$(ls "$GRUPO/$RECHDIR" 2>&1)
     if ! [ $? -eq 0 ]; then
         Loguear "No se encuentra el directorio $GRUPO/$RECHDIR" "ERR"
         CrearDirectorio "$GRUPO/$RECHDIR"
     fi
+    
+    return 0
 }
 
 # Obtener el estado de la instalacion
@@ -551,7 +635,12 @@ VerificarEstadoInstalacion(){
     local faltantes=""
     
     archivos=$(ls "$RUTA_MAESTROS_Y_TABLAS" 2>&1)
-        
+    
+    if [ ! $? -eq 0]; then
+        Loguear "No se puede acceder a los maestros y tablas de respaldo. Reinstale la carpeta .files del paquete original" "ERR"
+        FinAFRAINST 1
+    fi
+    
     for file in $(<<<"$archivos");do
         if ! [ -f "$GRUPO/$MAEDIR/$file" ]; then
             faltantes="$faltantes$GRUPO/$MAEDIR/$file
@@ -561,6 +650,11 @@ VerificarEstadoInstalacion(){
     
     scripts=$(ls "$RUTA_SCRIPTS" 2>&1)
     
+    if [ ! $? -eq 0]; then
+        Loguear "No se puede acceder a los scripts de respaldo. Reinstale la carpeta .files del paquete original" "ERR"
+        FinAFRAINST 1
+    fi
+    
     for file in $(<<<"$scripts");do
         if [ ! -f "$GRUPO/$BINDIR/$file" ]; then
             faltantes="$faltantes$GRUPO/$BINDIR/$file
@@ -569,25 +663,31 @@ VerificarEstadoInstalacion(){
     done
         
     RETORNO="$faltantes"
+    return 0
 }
 
 VerificarInstalacionCompleta(){
-    InicializacionConfVariables
-    VerificarVariables
-    # Hacer verificacion que existe la carpeta RUTA_SCRIPTS Y RUTA_MAESTROS
+    InicializacionConfVariables # Se lee el AFRAINST.conf
+    VerificarVariables # Se establece un default en caso de variables no inicializadas
     MostrarEstadoDirectorios
     VerificarEstadoInstalacion
     if ! [ "$RETORNO" == "" ]; then
         Loguear "Estado de la instalación: Incompleta"
         Loguear "Componentes faltantes: $RETORNO"
         LeerSiONo "Desea completar la instalación? ( Si - No ): "
-        if [ "$RETORNO" = "Si" ]; then
+        if [ "$RETORNO" == "Si" ]; then
             CopiarArchivos "$RUTA_SCRIPTS" "$GRUPO/$BINDIR"
             CopiarArchivos "$RUTA_MAESTROS_Y_TABLAS" "$GRUPO/$MAEDIR"
+            MostrarEstadoDirectorios
+            Loguear "Estado de la instalación: Completa"
+            Loguear "Proceso de Instalación Finalizado"
         fi
     else
         Loguear "Estado de la instalación: Completa"
+        Loguear "Proceso de Instalación Finalizado"
     fi
+    
+    return 0
 }
 
 VerificarInstalacion
