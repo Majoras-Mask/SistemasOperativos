@@ -22,7 +22,10 @@ verificarUmbral()
 	while read linea
 	do
 		cont=`expr $cont + 1`
-		match=$( echo $linea | sed "s/$cont;//;s/$numeroAreaA;//;s/$numeroLineaA;//;s/$tipoLLamada;//;s/*;*;*//")
+		local umb1=$(echo $linea | awk -F';' '{print $5}')
+		local umb2=$(echo $linea | awk -F';' '{print $6}')
+		local act=$(echo $linea | awk -F';' '{print $ 7}')
+		match=$( echo $linea | sed "s/$cont;//;s/$numeroAreaA;//;s/$numeroLineaA;//;s/$tipoLLamada;//;s/$umb1;$umb2;$act//")
 		echo "match = $match"
 		if [ "$match" == "" ] 
 		then
