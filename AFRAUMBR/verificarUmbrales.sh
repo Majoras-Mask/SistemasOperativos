@@ -21,7 +21,7 @@ verificarUmbral()
 	while read linea
 	do
 		match=$( echo $linea | sed "s/$idAgente//;s/$numeroAreaA//;s/$numeroLineaA//;s/$tipoLLamada//;s/;*;*;*$//")
-		echo "match = $match"
+		#echo "match = $match"
 		if [ "$match" == "" ] 
 		then
 			local umbralActivo=$( echo linea | awk F';' '{print $7}')
