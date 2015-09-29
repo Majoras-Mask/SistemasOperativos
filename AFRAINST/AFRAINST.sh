@@ -551,21 +551,23 @@ VerificarEstadoInstalacion(){
     local faltantes=""
     
     archivos=$(ls "$RUTA_MAESTROS_Y_TABLAS" 2>&1)
-    while read -r file; do
+        
+    for file in $(<<<"$archivos");do
         if ! [ -f "$GRUPO/$MAEDIR/$file" ]; then
             faltantes="$faltantes$GRUPO/$MAEDIR/$file
             "
         fi
-    done <<< "$archivos"
+    done
     
     scripts=$(ls "$RUTA_SCRIPTS" 2>&1)
-    while read -r file; do
-        if ! [ -f "$GRUPO/$BINDIR/$file" ]; then
+    
+    for file in $(<<<"$scripts");do
+        if [ ! -f "$GRUPO/$BINDIR/$file" ]; then
             faltantes="$faltantes$GRUPO/$BINDIR/$file
             "
         fi
-    done <<< "$scripts"
-    
+    done
+        
     RETORNO="$faltantes"
 }
 
