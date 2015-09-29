@@ -1,5 +1,5 @@
 #!/bin/bash
-source validar_campos.sh
+source validarCampos.sh
 # mover estas variables a un archivo
 # de configuracion
 
