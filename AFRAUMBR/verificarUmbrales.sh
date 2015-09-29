@@ -18,10 +18,12 @@ verificarUmbral()
 	parsearLLamada "$registroLLamada" idAgente numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
 
 	local linea
+	local cont=0
 	while read linea
 	do
-		match=$( echo $linea | sed "s/$idAgente//;s/$numeroAreaA//;s/$numeroLineaA//;s/$tipoLLamada//;s/;*;*;*$//")
-		#echo "match = $match"
+		cont=`expr $cont + 1`
+		match=$( echo $linea | sed "s/$cont;//;s/$numeroAreaA;//;s/$numeroLineaA;//;s/$tipoLLamada;//;s/*;*;*//")
+		echo "match = $match"
 		if [ "$match" == "" ] 
 		then
 			local umbralActivo=$( echo linea | awk F';' '{print $7}')
