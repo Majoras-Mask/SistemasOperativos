@@ -10,7 +10,7 @@ AGENTES="MAEDIR/agentes.mae"
 DIRLLAMADAS="ACEPDIR/"
 LLAMADA_VALIDA="valido"
 CODIGO_PAIS_INEXISTENETE=" El codigo de pais no existe"
-
+source parserLLamada.sh
 llamadaDDIvalida()
 {
 local codigoPaisB="$1"
@@ -54,20 +54,32 @@ esDDNOLocal()
 
 clasificarLLamada()
 {
-	local codigoAreaA="$1"
-	local codigoPaisB="$2"
-	local codigoAreaB="$3"
-	resultado="$4"
-	local esDDI "$codigoPaisB"
-	e_DDi="$?"
+	
+	local lineaLLamada="$1"
+	tipoLLamada="$2"
+
+	local codigoAreaA
+	local codigoPaisB
+	local codigoAreaB
+	parsearCodigosDeArea "$lineaLLamada" codigoAreaA codigoPaisB codigoAreaB
+	#echo "$lineaLLamada"	
+	echo "$codigoAreaA"
+	echo "$codigoPaisB"
+	echo "$codigoAreaB"
+	esDDI "$codigoPaisB"
+	local es_DDi="$?"
 	if [ "$es_DDi" -eq 1 ]
 	then	
-		eval "$resultado='$ES_DDI'"
+		eval "tipoLLamada='$ES_DDI'"
+		echo "resultado = $tipoLLamada"
 		return 1
 	fi
+	local esDDNOLocal
 	esDDNOLocal "$codigoAreaA" "$codigoAreaB" esDDNLOCAL
-	eval "$resultado='$esDDNLOCAL'"
+	eval "tipoLLamada='$esDDNLOCAL'"
+	echo "tipoLLamada = $tipoLLamada"
 	return 1	
 }
 
 export -f esDDI
+export -f clasificarLLamada

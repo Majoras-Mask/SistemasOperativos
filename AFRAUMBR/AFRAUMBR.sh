@@ -1,5 +1,7 @@
 #!/bin/bash
 source validarCampos.sh
+source validarLLamada.sh
+source verificarUmbrales.sh
 # mover estas variables a un archivo
 # de configuracion
 
@@ -27,12 +29,23 @@ do
 	local linea
 	while read linea
 	do
-		echo "$linea"
+	echo "$linea"
 	validarCampos "$linea" registroErrores
-	echo "$registroErrores" | awk -F ';' '{ print $1 }'
-	echo "$linea" | awk -F ';' '{ print $7 }'
+	llamadaEsValida=$(echo "$registroErrores" | awk -F ';' '{ print $1 }')
+	case "$llamadaEsValida" in
+		"$LLAMADA_VALIDA")
+		 clasificarLLamada "$linea" tipoLLamada
+		 echo "AF tipoLLamada = $tipoLLamada"
+		verificarUmbral "$linea" "$tipoLLamada"
+		;;
+		"$LLAMADA_INVALIDA")
+		echo "llamada invalida"
+		;;
+		"$CANTIDAD_CAMPOS_INCORRECTOS")
+		echo "cantidad campos incorrectos"
+		;;
+	esac
 	done < "$RUTA"
 done < archivosllamadas.txt
 }
-
 main

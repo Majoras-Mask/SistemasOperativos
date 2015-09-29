@@ -120,14 +120,12 @@ validarNumeroLineaB()
 	esNumerico=$( echo "$numeroLineaB" | sed 's/[0-9]*//')
 	if [ "$esNumerico" != "" ]
 	then
-		echo " esto no deberia suceder"
 		eval "numeroLineaBValido='$NUMERO_LINEA_DESTINO_NO_NUMERICO'"
 		status=0
 	fi
 	esNumerico=$( echo "$numeroAreaB" | sed 's/[0-9]*//')
 	if [ "$esNumerico" != "" ]
 	then
-	echo "area destino no numerico"
 	eval "$numeroAreaBValido='$CODIGO_AREA_DESTINO_NO_NUMERICO'"
 	status=0
 	else
@@ -137,8 +135,6 @@ validarNumeroLineaB()
 		then
 			llamadaDDIvalida "$numeroPaisB"
 			res1="$?"
-			echo "numeroPaisB = $numeroPaisB"
-			echo "res1 = $res1" 
 			if [ "$res1" -eq  0 ]
 			then
 				eval "numeroPaisBValido='$CODIGO_PAIS_INEXISTENETE'"
@@ -172,7 +168,13 @@ validarNumeroLineaB()
 
 local registroLLamada="$1"
 registroErrores="$2"
-
+local idAgente
+local numeroAreaA
+local numeroLineaA
+local numeroPaisB
+local numeroAreaB
+local numeroLineaB
+local tiempoConversacion
 parsearLLamada "$registroLLamada" idAgente numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
 llamadaValida="$LLAMADA_VALIDA"
 local idAgenteValido="$VALIDO"
@@ -182,19 +184,13 @@ local numeroAreaBValido="$VALIDO"
 local numeroPaisBValido="$VALIDO"
 local numeroLineaBValido="$VALIDO"
 local tiempoConversacionValido="$VALIDO"
-#echo "numeroAreaA = $numeroAreaA"
-#echo "numeroLineaA = $numeroLineaA"
-#echo "numeroPaisB = $numeroPaisB"
-#echo "numeroAreaB = $numeroAreaB"
-#echo "numeroLineaB = $numeroLineaB"
-#echo "tiempo de conversacion = $tiempoConversacion"
+
 validarIdAgente "$idAgente"
 	local idAgenteEsValido=$?
 	if [ $idAgenteEsValido -eq 0 ]
 	then
 	idAgenteValido="$ID_AGENTE_INEXISTENTE"
 	llamadaValida="$LLAMADA_INVALIDA"
-	echo " id de agente incorrecto"
 	fi
 
 
@@ -202,7 +198,6 @@ validarCodigoArea "$numeroAreaA"
 local areaAEsValida="$?"
 if [ "$areaAEsValida" -eq 0 ] 
 then
-	echo "area origen no es valida"
 	numeroAreaAValido="$CODIGO_AREA_ORIGEN_INEXISTENTE"
 	llamadaValida="$LLAMADA_INVALIDA"
 fi
@@ -211,21 +206,15 @@ validarNumeroLineaA "$numeroLineaA" "$numeroAreaA" "$numeroAreaAValido" "$numero
 local numeroLineaAEsValido="$?"
 if [ "$numeroLineaAEsValido" -eq 0 ]
 then
-	echo "numero llamada origen no es valida"
 	llamadaValida="$LLAMADA_INVALIDA"
 fi
 
 
-#echo "ajajajajajaja"
 validarNumeroLineaB "$numeroLineaB" "$numeroPaisB" "$numeroAreaB" "$numeroAreaBValido" "$numeroPaisBValido" "$numeroLineaBValido"
 local numeroLineaBEsValido="$?"
-#echo "numero linea b  es valido = $numeroLineaBValido"
+
 if [ "$numeroLineaBEsValido" -eq 0 ]
 then
-	#echo "numero llamada destino es invalido"
-	echo "numeroAreaBValido = $numeroAreaBValido"
-	echo "numeroLineaBValido = $numeroLineaBValido"
-	echo "numeroPaisBValido = $numeroPaisBValido" 
 	llamadaValida="$LLAMADA_INVALIDA"
 fi
 
@@ -234,20 +223,11 @@ validarTiempoConversacion "$tiempoConversacion"
 local tiempoConversacionEsValido=$?
 if [ "$tiempoConversacionEsValido" -eq 0 ]
 then
-	echo "tiempo conversacion incorrecto"
 	tiempoConversacionValido="$ERROR_TIEMPO_DE_CONVERSACION"
 	llamadaValida="$LLAMADA_INVALIDA"
 fi
 eval "registroErrores='$llamadaValida;$idAgenteValido;$numeroAreaAValido;$numeroLineaAValido;\
 $numeroPaisBValido;$numeroAreaBValido;$numeroLineaBValido;$tiempoConversacionValido'"
-echo "llamadaValida = $llamadaValida"
-
-#echo "numeroAreaAValido = $numeroAreaAValido"
-#echo "numeroLineaAValido = $numeroLineaAValido"
-#echo "numeroPaisBValido = $numeroPaisBValido"
-#echo "numeroAreaBValido = $numeroAreaBValido"
-#echo "numeroLineaBValido = $numeroLineaBValido"
-#echo "tiempo de conversacion valido = $tiempoConversacionValido"
 }
 
 export -f validarLLamada

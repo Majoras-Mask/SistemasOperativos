@@ -3,7 +3,7 @@
 parsearLLamada() 
 {
 
-	lineaLLamada="$1"
+	local lineaLLamada="$1"
 	idAgente="$2"
 	numeroAreaA="$3"
 	numeroLineaA="$4"
@@ -19,13 +19,21 @@ parsearLLamada()
 	eval "numeroAreaB='$(echo "$lineaLLamada" | awk -F ';' ' { print $5 }')'"
 	eval "numeroLineaB='$(echo "$lineaLLamada" | awk -F ';' ' { print $6 }')'"
 	eval "tiempoConversacion='$(echo "$lineaLLamada" | awk -F ';' ' { print $7}')'"
+}
 
-	#echo "numeroAreaA = $numeroAreaA"
-	#echo "numeroLineaA = $numeroLineaA"
-	#echo "numeroPaisB = $numeroPaisB"
-	#echo "numeroAreaB = $numeroAreaB"
-	#echo "numeroLineaB = $numeroLineaB"
-	#echo "tiempo de conversacion = $tiempoConversacion" 
+parsearCodigosDeArea()
+{
+	local lineaLLamada="$1"
+	codigoAreaA="$2"
+	codigoPaisB="$3"
+	codigoAreaB="$4"
+	echo "linea lineaLLamada = $lineaLLamada"
+	#echo "$lineaLLamada" | awk -F ';' ' { print $2 }'
+	#echo "$lineaLLamada" | awk -F ';' ' { print $4 }'
+	#echo "$lineaLLamada" | awk -F ';' ' { print $5 }'
+	eval "codigoAreaA='$(echo "$lineaLLamada" | awk -F ';' ' { print $2 }')'"
+	eval "codigoPaisB='$(echo "$lineaLLamada" | awk -F ';' ' { print $4 }')'"
+	eval "codigoAreaB='$(echo "$lineaLLamada" | awk -F ';' ' { print $5 }')'"
 }
 
 export -f parsearLLamada
