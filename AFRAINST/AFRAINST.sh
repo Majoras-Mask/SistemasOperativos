@@ -374,6 +374,9 @@ VerificarEspacioEnDisco(){
     local espacio
     while true; do
         espacio=$(df -BM --output="avail" "$GRUPO" | sed -n 's/\([0-9]\+\)M$/\1/p')
+        if [ $espacio -gt $DATASIZE ];then
+            return 0
+        fi
         Loguear "Insuficiente espacio en disco."
         Loguear "Espacio disponible: $espacio Mb."
         Loguear "Espacio requerido $DATASIZE Mb."
@@ -404,6 +407,7 @@ DefinirVariables(){
 # Se usa cuando se le muestra al usuario el estado de la instalacion
 # luego de haber ingresado los valores solicitados.
 MostrarValoresVariables(){
+    echo
     Loguear "Directorio de Ejecutables: $GRUPO/$BINDIR"
     Loguear "Directorio de Maestros y Tablas: $GRUPO/$MAEDIR"
     Loguear "Directorio de recepción de archivos de llamadas: $GRUPO/$NOVEDIR"
@@ -636,31 +640,35 @@ VerificarEstadoInstalacion(){
     
     archivos=$(ls "$RUTA_MAESTROS_Y_TABLAS" 2>&1)
     
-    if [ ! $? -eq 0]; then
+    if [ ! $? -eq 0 ]; then
         Loguear "No se puede acceder a los maestros y tablas de respaldo. Reinstale la carpeta .files del paquete original" "ERR"
         FinAFRAINST 1
     fi
     
-    for file in $(<<<"$archivos");do
-        if ! [ -f "$GRUPO/$MAEDIR/$file" ]; then
-            faltantes="$faltantes$GRUPO/$MAEDIR/$file
-            "
-        fi
-    done
+    if [ ! -z "$files" ]; then        
+        while read -r file; do
+            if ! [ -f "$GRUPO/$MAEDIR/$file" ]; then
+                faltantes="$faltantes$GRUPO/$MAEDIR/$file
+                "
+            fi
+        done <<< "$archivos"
+    fi
     
     scripts=$(ls "$RUTA_SCRIPTS" 2>&1)
-    
-    if [ ! $? -eq 0]; then
+
+    if [ ! $? -eq 0 ]; then
         Loguear "No se puede acceder a los scripts de respaldo. Reinstale la carpeta .files del paquete original" "ERR"
         FinAFRAINST 1
     fi
     
-    for file in $(<<<"$scripts");do
-        if [ ! -f "$GRUPO/$BINDIR/$file" ]; then
-            faltantes="$faltantes$GRUPO/$BINDIR/$file
-            "
-        fi
-    done
+    if [ ! -z "$scripts" ]; then
+        while read -r file; do
+            if [ ! -f "$GRUPO/$BINDIR/$file" ]; then
+                faltantes="$faltantes$GRUPO/$BINDIR/$file
+                "
+            fi
+        done <<< "$scripts"
+    fi
         
     RETORNO="$faltantes"
     return 0
