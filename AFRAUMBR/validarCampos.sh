@@ -26,7 +26,7 @@ validarCampos()
 	registroErrores="$2"
 
 	cantidadCampos=$(echo "$linea" | awk -F ';' '{print NF}')
-	if [ "$cantidadCampos" -ne 7 ] 
+	if [ "$cantidadCampos" -ne 8 ] 
 	then
 		eval "registroErrores='$CANTIDAD_CAMPOS_INCORRECTOS'"
 		return 0

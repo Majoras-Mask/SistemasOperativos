@@ -30,6 +30,10 @@ do
 	while read linea
 	do
 	echo "$linea"
+	local idCentral=$(echo $linea | awk -F'_' '{ print $1 }')
+	echo "$idCentral"
+	local aniomes=$(echo $linea | awk -F'_' '{ print $2 }')
+	echo "$aniomes"
 	validarCampos "$linea" registroErrores
 	llamadaEsValida=$(echo "$registroErrores" | awk -F ';' '{ print $1 }')
 	case "$llamadaEsValida" in

@@ -56,12 +56,6 @@ if  [ "$tiempoConversacion" -lt 0 ]
 then
 	return 0
 fi
-
-if [ "$tiempoConversacion" -eq 0 ]
-then 
-	return 0
-fi
-
 return 1
 }
 
@@ -169,13 +163,14 @@ validarNumeroLineaB()
 local registroLLamada="$1"
 registroErrores="$2"
 local idAgente
+local fechaYHora
 local numeroAreaA
 local numeroLineaA
 local numeroPaisB
 local numeroAreaB
 local numeroLineaB
 local tiempoConversacion
-parsearLLamada "$registroLLamada" idAgente numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
+parsearLLamada "$registroLLamada" idAgente fechaYHora umeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
 llamadaValida="$LLAMADA_VALIDA"
 local idAgenteValido="$VALIDO"
 local numeroAreaAValido="$VALIDO"

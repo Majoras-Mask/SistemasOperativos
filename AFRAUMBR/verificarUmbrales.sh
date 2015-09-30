@@ -10,6 +10,7 @@ verificarUmbral()
 	local tipoLLamada="$2"
 	echo "tipoLLamada = $tipoLLamada"
 	local idAgente
+	local fechaYHora
 	local numeroAreaA
 	local numeroLineaA
 	local numeroPaisB
@@ -17,14 +18,14 @@ verificarUmbral()
 	local numeroLineaB
 	local tiempoConversacion
 	echo "registroLLamada = $registroLLamada"
-	parsearLLamada "$registroLLamada" idAgente numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
+	parsearLLamada "$registroLLamada" idAgente fechaYHora numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
 
 	local linea
 	local cont=0
 	while read linea
 	do
 		cont=`expr $cont + 1`
-		match=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;$tipoLLamada;[0-9]*;[0-9]*;[A-Z][a-z]*//")
+		match=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;$tipoLLamada;$numeroAreaB;[0-9]*;[A-Z][a-z]*//")
 		echo "match = $match"
 		if [ "$match" == "" ] 
 		then
@@ -42,11 +43,12 @@ verificarUmbral()
 				maximo="$?"
 				tiempoConversacion=`expr $tiempoConversacion`
 				if [ "$tiempoConversacion" -gt "$maximo" ]
-					then
+				then
 					echo "grabar llamada sospechosa"
 				fi
 				;;
 				"$INACTIVO")
+				echo "sin umbral"
 				break
 				;;
 			esac
