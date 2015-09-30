@@ -38,7 +38,9 @@ local linea
 
 while read linea
 do
-	idEsValido=$(echo $linea | sed -e "s/^"$idAgente";/:/" -e "s/;"$idAgente";/:/" -e "s/;"$idAgente"$/:/" | grep :)
+	idAgente=$(echo "$idAgente"| sed 's/\ //')
+	linea=$(echo "$linea" | sed 's/\ //')
+	idEsValido=$(echo "$linea" | sed -e "s/^"$idAgente";/:/" -e "s/;"$idAgente";/:/" -e "s/;"$idAgente"$/:/" | grep :)
 	if [ "$idEsValido" != "" ]
 	then
 	return 1

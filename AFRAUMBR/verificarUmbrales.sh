@@ -33,20 +33,16 @@ verificarUmbral()
 			case "$umbralActivo" in
 				"$ACTIVO")
 				#echo $linea
-				local umbral1=$( echo $linea | awk -F';' '{print $5}')
-				local umbral2=$( echo $linea | awk -F';' '{print $6}')
+				local umbral1=$( echo $linea | awk -F';' '{print $6}')
 				echo "umbral1 = $umbral1"
-				echo "umbral2 = $umbral2"
 				echo "tiempoConversacion = $tiempoConversacion"
 				umbral1=`expr $umbral1`
-				umbral2=`expr $umbral2`
-				maximoUmbral "$umbral1" "$umbral2" 
-				maximo="$?"
+				#maximoUmbral "$umbral1" "$umbral2" 
+				#maximo="$?"
 				tiempoConversacion=`expr $tiempoConversacion`
-				if [ "$tiempoConversacion" -gt "$maximo" ]
+				if [ "$tiempoConversacion" -gt "$umbral1" ]
 				then
 					echo "grabar llamada sospechosa"
-					let a=4
 				fi
 				;;
 				"$INACTIVO")
