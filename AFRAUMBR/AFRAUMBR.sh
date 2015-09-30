@@ -10,7 +10,8 @@ DIRCDA="MAEDIR/CdA.mae"
 DIRCDP="MAEDIR/CdP.mae"
 AGENTES="MAEDIR/agentes.mae"
 DIRLLAMADAS="ACEPDIR/"
-
+LLAMADA_VALIDA="llamada valida"
+LLAMADA_INVALIDA="llamada invalida"
 main () {
 
 ls  "$DIRLLAMADAS" | grep .csv > archivosllamadas.txt
@@ -29,24 +30,25 @@ do
 	local linea
 	while read linea
 	do
-	echo "$linea"
+	#echo "$linea"
 	local idCentral=$(echo $linea | awk -F'_' '{ print $1 }')
-	echo "$idCentral"
+	#echo "$idCentral"
 	local aniomes=$(echo $linea | awk -F'_' '{ print $2 }')
-	echo "$aniomes"
+	#echo "$aniomes"
 	validarCampos "$linea" registroErrores
 	llamadaEsValida=$(echo "$registroErrores" | awk -F ';' '{ print $1 }')
 	case "$llamadaEsValida" in
-		"$LLAMADA_VALIDA")
-		 clasificarLLamada "$linea" tipoLLamada
-		 echo "AF tipoLLamada = $tipoLLamada"
+		"llamada valida")
+		echo "$llamadaEsValida"
+		echo "llamadaEsValida"
+		clasificarLLamada "$linea" tipoLLamada
 		verificarUmbral "$linea" "$tipoLLamada"
 		;;
-		"$LLAMADA_INVALIDA")
+		"llamada invalida")
 		echo "llamada invalida"
 		;;
 		"$CANTIDAD_CAMPOS_INCORRECTOS")
-		echo "cantidad campos incorrectos"
+		echo "cantidad de campos incorrecto"
 		;;
 	esac
 	done < "$RUTA"

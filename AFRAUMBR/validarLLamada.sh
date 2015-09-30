@@ -35,11 +35,10 @@ validarIdAgente()
 {
 local idAgente="$1"
 local linea
+
 while read linea
 do
-	#echo "linea = $linea"
-	idEsValido=$(echo "$linea" | sed -e "s/^"$idAgente";/:/" -e "s/;"$idAgente";/:/" -e "s/;"$idAgente"$/:/" | grep :)
-	#echo "idEsValido = $idEsValido"
+	idEsValido=$(echo $linea | sed -e "s/^"$idAgente";/:/" -e "s/;"$idAgente";/:/" -e "s/;"$idAgente"$/:/" | grep :)
 	if [ "$idEsValido" != "" ]
 	then
 	return 1
@@ -116,12 +115,6 @@ validarNumeroLineaB()
 	then
 		eval "numeroLineaBValido='$NUMERO_LINEA_DESTINO_NO_NUMERICO'"
 		status=0
-	fi
-	esNumerico=$( echo "$numeroAreaB" | sed 's/[0-9]*//')
-	if [ "$esNumerico" != "" ]
-	then
-	eval "$numeroAreaBValido='$CODIGO_AREA_DESTINO_NO_NUMERICO'"
-	status=0
 	else
 		esDDI "$numeroPaisB"
 		res="$?"
@@ -141,20 +134,25 @@ validarNumeroLineaB()
 				eval "numeroAreaB='$CODIGO_AREA_DESTINO_INEXISTENTE'"
 				status="$res2"
 			fi
-		fi	
-	fi 		
-	if [ "$status" -eq 1 ]
-	then
-		codigoAreaBNumeroLinea="$numeroLineaB$numeroAreaB"
-		#echo "numero b completo = $codigoAreaBNumeroLinea"
-		#echo "size = ${#codigoAreaBNumeroLinea}"
-		if [ ${#codigoAreaBNumeroLinea} -ne 10 ]
+		else 
+			esNumerico=$( echo "$numeroAreaB" | sed 's/[0-9]*//')
+			if [ "$esNumerico" != "" ]
 			then
-			eval "numeroLineaBValido='$NUMERO_LINEA_DESTINO_INCORRECTO'"
-			status=0
+				eval "$numeroAreaBValido='$CODIGO_AREA_DESTINO_NO_NUMERICO'"
+			status=0		
+			if [ "$status" -eq 1 ]
+				then
+				codigoAreaBNumeroLinea="$numeroLineaB$numeroAreaB"
+				if [ ${#codigoAreaBNumeroLinea} -ne 10 ]
+					then
+					eval "numeroLineaBValido='$NUMERO_LINEA_DESTINO_INCORRECTO'"
+					status=0
+				fi
+			fi
 		fi
 	fi
-	return `expr $status`
+fi 		
+return `expr $status`
 }
 
  validarLLamada()

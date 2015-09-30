@@ -8,7 +8,7 @@ verificarUmbral()
 {
 	local registroLLamada="$1"
 	local tipoLLamada="$2"
-	echo "tipoLLamada = $tipoLLamada"
+	#echo "tipoLLamada = $tipoLLamada"
 	local idAgente
 	local fechaYHora
 	local numeroAreaA
@@ -17,7 +17,7 @@ verificarUmbral()
 	local numeroAreaB
 	local numeroLineaB
 	local tiempoConversacion
-	echo "registroLLamada = $registroLLamada"
+	#echo "registroLLamada = $registroLLamada"
 	parsearLLamada "$registroLLamada" idAgente fechaYHora numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
 
 	local linea
@@ -26,17 +26,18 @@ verificarUmbral()
 	do
 		cont=`expr $cont + 1`
 		match=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;$tipoLLamada;$numeroAreaB;[0-9]*;[A-Z][a-z]*//")
-		echo "match = $match"
+		#echo "match = $match"
 		if [ "$match" == "" ] 
 		then
 			local umbralActivo=$( echo "$linea" | awk -F';' '{print $7}')
 			case "$umbralActivo" in
 				"$ACTIVO")
-				echo $linea
+				#echo $linea
 				local umbral1=$( echo $linea | awk -F';' '{print $5}')
 				local umbral2=$( echo $linea | awk -F';' '{print $6}')
 				echo "umbral1 = $umbral1"
 				echo "umbral2 = $umbral2"
+				echo "tiempoConversacion = $tiempoConversacion"
 				umbral1=`expr $umbral1`
 				umbral2=`expr $umbral2`
 				maximoUmbral "$umbral1" "$umbral2" 
@@ -45,10 +46,12 @@ verificarUmbral()
 				if [ "$tiempoConversacion" -gt "$maximo" ]
 				then
 					echo "grabar llamada sospechosa"
+					let a=4
 				fi
 				;;
 				"$INACTIVO")
-				echo "sin umbral"
+					let a=5
+				#echo "sin umbral"
 				break
 				;;
 			esac
@@ -59,17 +62,17 @@ verificarUmbral()
 
 
 
-	case "$tipoLLamada" in
-		"$ES_DDI")
-			echo ""
-			;;
-		"$ES_DDN")
-			echo ""
-			;;
-		"$ES_LOCAL")
-			echo ""
-			;;
-	esac
+	#case "$tipoLLamada" in
+	#	"$ES_DDI")
+	#		echo ""
+	#		;;
+	#	"$ES_DDN")
+	#		echo ""
+	#		;;
+	#	"$ES_LOCAL")
+	#		echo ""
+	#		;;
+	#esac
 }
 
 maximoUmbral()
@@ -82,3 +85,5 @@ maximoUmbral()
 	fi
 	return `expr $umb2` 
 }
+
+export -f verificarUmbral

@@ -30,10 +30,6 @@ parsearCodigosDeArea()
 	codigoAreaA="$2"
 	codigoPaisB="$3"
 	codigoAreaB="$4"
-	echo "linea lineaLLamada = $lineaLLamada"
-	#echo "$lineaLLamada" | awk -F ';' ' { print $2 }'
-	#echo "$lineaLLamada" | awk -F ';' ' { print $4 }'
-	#echo "$lineaLLamada" | awk -F ';' ' { print $5 }'
 	eval "codigoAreaA='$(echo "$lineaLLamada" | awk -F ';' ' { print $3 }')'"
 	eval "codigoPaisB='$(echo "$lineaLLamada" | awk -F ';' ' { print $6 }')'"
 	eval "codigoAreaB='$(echo "$lineaLLamada" | awk -F ';' ' { print $7 }')'"
