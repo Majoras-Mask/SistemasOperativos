@@ -2,6 +2,8 @@
 source clasificarLLamada.sh
 source parserLLamada.sh
 UMBRALES="MAEDIR/umbrales.mae"
+ACTIVO="Activo"
+INACTIVO="Inactivo"
 verificarUmbral()
 {
 	local registroLLamada="$1"
@@ -22,28 +24,29 @@ verificarUmbral()
 	while read linea
 	do
 		cont=`expr $cont + 1`
-		local umb1=$(echo $linea | awk -F';' '{print $5}')
-		local umb2=$(echo $linea | awk -F';' '{print $6}')
-		local act=$(echo $linea | awk -F';' '{print $ 7}')
-		match=$( echo $linea | sed "s/$cont;//;s/$numeroAreaA;//;s/$numeroLineaA;//;s/$tipoLLamada;//;s/$umb1;$umb2;$act//")
+		match=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;$tipoLLamada;[0-9]*;[0-9]*;[A-Z][a-z]*//")
 		echo "match = $match"
 		if [ "$match" == "" ] 
 		then
-			local umbralActivo=$( echo linea | awk F';' '{print $7}')
+			local umbralActivo=$( echo "$linea" | awk -F';' '{print $7}')
 			case "$umbralActivo" in
-				"Activo")
-				local umbral1=	umbralActivo=$( echo linea | awk F';' '{print $5}')
-				local umbral2=	umbralActivo=$( echo linea | awk F';' '{print $6}')
-				umbral1=`expr umbral1`
-				umbral2=`expr umbral2`
-				maximoUmbral umbral1 umbral2 
+				"$ACTIVO")
+				echo $linea
+				local umbral1=$( echo $linea | awk -F';' '{print $5}')
+				local umbral2=$( echo $linea | awk -F';' '{print $6}')
+				echo "umbral1 = $umbral1"
+				echo "umbral2 = $umbral2"
+				umbral1=`expr $umbral1`
+				umbral2=`expr $umbral2`
+				maximoUmbral "$umbral1" "$umbral2" 
 				maximo="$?"
+				tiempoConversacion=`expr $tiempoConversacion`
 				if [ "$tiempoConversacion" -gt "$maximo" ]
 					then
 					echo "grabar llamada sospechosa"
 				fi
 				;;
-				"Inactivo")
+				"$INACTIVO")
 				break
 				;;
 			esac
@@ -69,11 +72,11 @@ verificarUmbral()
 
 maximoUmbral()
 {
-	local umb1=$1
-	local umb2=$2
+	local umb1=`expr $1`
+	local umb2=`expr $2`
 	if [ "$umb1" -gt "$umb2" ]
 		then
 		return `expr $umb1`
 	fi
-	return `expr"$umb2` 
+	return `expr $umb2` 
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 ES_DDI="DDI"
 ES_DDN="DDN"
-ES_LOCAL="LOCAL"
+ES_LOCAL="LOC"
 DIRCDP="MAEDIR/CdP.mae"
 DIRLLAMADAS="ACEPDIR/"
 DIRCDA="MAEDIR/CdA.mae"
@@ -45,10 +45,10 @@ esDDNOLocal()
 	resultado="$3"
 	if [ "$codigoAreaA"=="$codigoAreaB" ]
 	then
-		eval "$resultado='$ES_DDN'"
+		eval "$resultado='$ES_LOCAL'"
 		return 1
 	fi
-	eval "$resultado='$ES_LOCAL'"
+	eval "$resultado='$ES_DDN'"
 	return 1
 }
 
