@@ -4,7 +4,7 @@ GRUPO="$PWD"
 MAEDIR="MAEDIR"
 BINDIR="BINDIR"
 # Variable CONFDIR, directorio de configuracion
-CONFDIR="conf"
+CONFDIR="$PWD/conf"
 NOVEDIR="NOVEDIR"
 RECHDIR="RECHDIR"
 REPODIR="REPODIR"
@@ -18,12 +18,12 @@ RETORNO=""
 
 Loguear(){
     echo "$1"
-    echo "$1" >> "$CONFDIR/$LOGFILE"
+    echo "$1" >> "$LOGDIR/$LOGFILE"
 }
 
 LeerInput(){
     read input
-    echo "$input" >> "$CONFDIR/$LOGFILE"
+    echo "$input" >> "$LOGDIR/$LOGFILE"
 }
 
 LeerSiONo(){
@@ -66,12 +66,14 @@ loguearVariables(){
 }
 
 verificaInstalacionCompleta(){
+
+	MAEDIR=$(grep '^MAEDIR' $CONFDIR | cut -d '=' -f 2)
 	local archivos=('CdP.mae' 'CdA.mae' 'CdC.mae' 'agentes.mae' 'tllama.tab' 'umbral.tab')
 	local cant=${#archivos[@]}
 	local faltantes=()
 
 	for(( i=0; i<$cant; i++ )); do
-		if ! [ -f "$GRUPO/$MAEDIR/${archivos[${i}]}" ]; then
+		if ! [ -f "$MAEDIR/${archivos[${i}]}" ]; then
 			faltantes[${i}]="${archivos[${i}]}"
 		fi
 	done
@@ -83,22 +85,44 @@ verificaInstalacionCompleta(){
 }
 
 verificarPermisos(){
+	BINDIR=$(grep '^BINDIR' $CONFDIR | cut -d '=' -f 2)
+	MAEDIR=$(grep '^MAEDIR' $CONFDIR | cut -d '=' -f 2)
+	
 	for file in $(ls "$BINDIR"); do
 		if ! [ -x "$BINDIR/$file" ]; then
 			chmod +x "$BINDIR/$file"
+			if [ "$?" = -1  ]; then
+      				Loguear "No se pudo setear los permisos de $BINDIR/$file"     
+    			fi
 		fi			
 	done
 
 	for file in $(ls "$MAEDIR"); do
 		if ! [ -r "$MAEDIR/$file" ]; then
 			chmod +r "$MAEDIR/$file"
+			if [ "$?" = -1  ]; then
+                                Loguear "No se pudo setear los permisos de $MAEDIR/$file"
+			fi
+
 		fi
 	done
 }		
 
 inicializarAmbiente(){
-
-
+	GRUPO=$(grep '^GRUPO' $CONFDIR | cut -d '=' -f 2)
+	CONFDIR=$(grep '^CONFDIR' $CONFDIR | cut -d '=' -f 2)
+	BINDIR=$(grep '^BINDIR' $CONFDIR | cut -d '=' -f 2)
+	MAEDIR=$(grep '^MAEDIR' $CONFDIR | cut -d '=' -f 2)
+	DATASIZE=$(grep '^DATASIZE' $CONFDIR | cut -d '=' -f 2)
+	ACEPDIR=$(grep '^ACEPDIR' $CONFDIR | cut -d '=' -f 2)
+	RECHDIR=$(grep '^RECHDIR' $CONFDIR | cut -d '=' -f 2)
+	PRODIR=$(grep '^PROCDIR' $CONFDIR | cut -d '=' -f 2)
+	REPDIR=$(grep '^REPODIR' $CONFDIR | cut -d '=' -f 2)
+	NOVDIR=$(grep '^NOVEDIR' $CONFDIR | cut -d '=' -f 2)
+	LOGDIR=$(grep '^LOGDIR' $CONFDIR | cut -d '=' -f 2)
+	LOGSIZE=$(grep '^LOGSIZE' $CONFDIR | cut -d '=' -f 2)
+	
+	#falta inicializar PATH: no tengo idea que poner ahi.
 }
 	
 
@@ -108,8 +132,8 @@ arrancarAFRAECI(){
 	LeerSiONo "¿Desea efectuar la activación de AFRARECI? Si – No"
 	if[ $RETORNO == "No" ]; then
 		echo "Debe ingresar el comando ARRANCAR <parametros> por consola."
-	else
-		if [ "( pidof ARRANCAR.sh )" ]; then
+	else	
+		if [ "$(pidof ARRANCAR.sh)" ]; then  #utilizar variable de ambiente
 			echo "Proceso ARRACAR ya iniciado. Debe utilizar el comando DETENER para terminarlo"
 		else
 			./ARRANCAR.sh &
@@ -123,7 +147,7 @@ arrancarAFRAECI(){
 }
 
 Inicializar(){
-        if ["( pidof AFRAINIC.sh )"]; then
+        if ["$(pidof AFRAINIC.sh)"]; then
                 echo "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente"  
         else
 		verificaInstalacionCompleta
