@@ -4,7 +4,7 @@ GRUPO="$PWD"
 MAEDIR="MAEDIR"
 BINDIR="BINDIR"
 # Variable CONFDIR, directorio de configuracion
-CONFDIR="$PWD/conf"
+CONF="$PWD/conf/conf.log"
 NOVEDIR="NOVEDIR"
 RECHDIR="RECHDIR"
 REPODIR="REPODIR"
@@ -67,7 +67,7 @@ loguearVariables(){
 
 verificaInstalacionCompleta(){
 
-	MAEDIR=$(grep '^MAEDIR' $CONFDIR | cut -d '=' -f 2)
+	MAEDIR=$(grep '^MAEDIR' $CONF | cut -d '=' -f 2)
 	local archivos=('CdP.mae' 'CdA.mae' 'CdC.mae' 'agentes.mae' 'tllama.tab' 'umbral.tab')
 	local cant=${#archivos[@]}
 	local faltantes=()
@@ -85,8 +85,8 @@ verificaInstalacionCompleta(){
 }
 
 verificarPermisos(){
-	BINDIR=$(grep '^BINDIR' $CONFDIR | cut -d '=' -f 2)
-	MAEDIR=$(grep '^MAEDIR' $CONFDIR | cut -d '=' -f 2)
+	BINDIR=$(grep '^BINDIR' $CONF | cut -d '=' -f 2)
+	MAEDIR=$(grep '^MAEDIR' $CONF | cut -d '=' -f 2)
 	
 	for file in $(ls "$BINDIR"); do
 		if ! [ -x "$BINDIR/$file" ]; then
@@ -109,18 +109,18 @@ verificarPermisos(){
 }		
 
 inicializarAmbiente(){
-	GRUPO=$(grep '^GRUPO' $CONFDIR | cut -d '=' -f 2)
-	CONFDIR=$(grep '^CONFDIR' $CONFDIR | cut -d '=' -f 2)
-	BINDIR=$(grep '^BINDIR' $CONFDIR | cut -d '=' -f 2)
-	MAEDIR=$(grep '^MAEDIR' $CONFDIR | cut -d '=' -f 2)
-	DATASIZE=$(grep '^DATASIZE' $CONFDIR | cut -d '=' -f 2)
-	ACEPDIR=$(grep '^ACEPDIR' $CONFDIR | cut -d '=' -f 2)
-	RECHDIR=$(grep '^RECHDIR' $CONFDIR | cut -d '=' -f 2)
-	PRODIR=$(grep '^PROCDIR' $CONFDIR | cut -d '=' -f 2)
-	REPDIR=$(grep '^REPODIR' $CONFDIR | cut -d '=' -f 2)
-	NOVDIR=$(grep '^NOVEDIR' $CONFDIR | cut -d '=' -f 2)
-	LOGDIR=$(grep '^LOGDIR' $CONFDIR | cut -d '=' -f 2)
-	LOGSIZE=$(grep '^LOGSIZE' $CONFDIR | cut -d '=' -f 2)
+	GRUPO=$(grep '^GRUPO' $CONF | cut -d '=' -f 2)
+	CONFDIR=$(grep '^CONFDIR' $CONF | cut -d '=' -f 2)
+	BINDIR=$(grep '^BINDIR' $CONF | cut -d '=' -f 2)
+	MAEDIR=$(grep '^MAEDIR' $CONF | cut -d '=' -f 2)
+	DATASIZE=$(grep '^DATASIZE' $CONF | cut -d '=' -f 2)
+	ACEPDIR=$(grep '^ACEPDIR' $CONF | cut -d '=' -f 2)
+	RECHDIR=$(grep '^RECHDIR' $CONF | cut -d '=' -f 2)
+	PRODIR=$(grep '^PROCDIR' $CONF | cut -d '=' -f 2)
+	REPDIR=$(grep '^REPODIR' $CONF | cut -d '=' -f 2)
+	NOVDIR=$(grep '^NOVEDIR' $CONF | cut -d '=' -f 2)
+	LOGDIR=$(grep '^LOGDIR' $CONF | cut -d '=' -f 2)
+	LOGSIZE=$(grep '^LOGSIZE' $CONF | cut -d '=' -f 2)
 	
 	#falta inicializar PATH: no tengo idea que poner ahi.
 }
