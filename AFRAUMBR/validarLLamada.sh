@@ -38,11 +38,12 @@ local linea
 
 while read linea
 do
-	idAgente=$(echo "$idAgente"| sed 's/\ //')
-	linea=$(echo "$linea" | sed 's/\ //')
+	idAgente=$(echo "$idAgente"| sed 's/ //g')
+	linea=$(echo $linea | sed 's/ //g')
 	idEsValido=$(echo "$linea" | sed -e "s/^"$idAgente";/:/" -e "s/;"$idAgente";/:/" -e "s/;"$idAgente"$/:/" | grep :)
 	if [ "$idEsValido" != "" ]
 	then
+
 	return 1
 	fi
 
@@ -115,45 +116,42 @@ validarNumeroLineaB()
 	esNumerico=$( echo "$numeroLineaB" | sed 's/[0-9]*//')
 	if [ "$esNumerico" != "" ]
 	then
+		echo "linea b no numerico"
 		eval "numeroLineaBValido='$NUMERO_LINEA_DESTINO_NO_NUMERICO'"
 		status=0
 	else
 		esDDI "$numeroPaisB"
-		res="$?"
+		local res="$?"
 		if [ "$res" -eq 1 ]
 		then
 			llamadaDDIvalida "$numeroPaisB"
-			res1="$?"
+			local res1="$?"
 			if [ "$res1" -eq  0 ]
 			then
 				eval "numeroPaisBValido='$CODIGO_PAIS_INEXISTENETE'"
 				status="$res1"
 			fi
-			validarCodigoArea "$numeroAreaB"
-			res2="$?"
-			if [ "$res2" -eq 0 ] 
-			then
-				eval "numeroAreaB='$CODIGO_AREA_DESTINO_INEXISTENTE'"
-				status="$res2"
-			fi
+			
 		else 
-			esNumerico=$( echo "$numeroAreaB" | sed 's/[0-9]*//')
-			if [ "$esNumerico" != "" ]
+			if [ "$numeroAreaB" != "" ]
 			then
-				eval "$numeroAreaBValido='$CODIGO_AREA_DESTINO_NO_NUMERICO'"
-			status=0		
-			if [ "$status" -eq 1 ]
+				validarCodigoArea "$numeroAreaB"
+				local res2="$?"
+				if [ "$res2" -eq 0 ] 
 				then
+					eval "numeroAreaB='$CODIGO_AREA_DESTINO_INEXISTENTE'"
+					status="$res2"
+				fi
+			else
 				codigoAreaBNumeroLinea="$numeroLineaB$numeroAreaB"
 				if [ ${#codigoAreaBNumeroLinea} -ne 10 ]
 					then
 					eval "numeroLineaBValido='$NUMERO_LINEA_DESTINO_INCORRECTO'"
 					status=0
 				fi
-			fi
+			fi	
 		fi
-	fi
-fi 		
+	fi		
 return `expr $status`
 }
 
@@ -197,7 +195,7 @@ then
 	llamadaValida="$LLAMADA_INVALIDA"
 fi
 
-validarNumeroLineaA "$numeroLineaA" "$numeroAreaA" "$numeroAreaAValido" "$numeroLineaAValido"
+validarNumeroLineaA "$numeroLineaA" "$numeroAreaA" numeroAreaAValido numeroLineaAValido
 local numeroLineaAEsValido="$?"
 if [ "$numeroLineaAEsValido" -eq 0 ]
 then
@@ -205,7 +203,7 @@ then
 fi
 
 
-validarNumeroLineaB "$numeroLineaB" "$numeroPaisB" "$numeroAreaB" "$numeroAreaBValido" "$numeroPaisBValido" "$numeroLineaBValido"
+validarNumeroLineaB "$numeroLineaB" "$numeroPaisB" "$numeroAreaB" numeroAreaBValido numeroPaisBValido numeroLineaBValido
 local numeroLineaBEsValido="$?"
 
 if [ "$numeroLineaBEsValido" -eq 0 ]

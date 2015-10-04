@@ -31,7 +31,7 @@ validarCampos()
 		eval "registroErrores='$CANTIDAD_CAMPOS_INCORRECTOS'"
 		return 0
 	fi	
-	validarLLamada "$linea" "$registroErrores"
+	validarLLamada "$linea" registroErrores
 	return 1
 }
 

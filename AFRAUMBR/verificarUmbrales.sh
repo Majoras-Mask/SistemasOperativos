@@ -4,7 +4,7 @@ source parserLLamada.sh
 UMBRALES="MAEDIR/umbrales.mae"
 ACTIVO="Activo"
 INACTIVO="Inactivo"
-verificarUmbral()
+verificarUmbralYgrabarLLamadaSospechosa()
 {
 	local registroLLamada="$1"
 	local tipoLLamada="$2"
@@ -25,50 +25,31 @@ verificarUmbral()
 	while read linea
 	do
 		cont=`expr $cont + 1`
-		match=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;$tipoLLamada;$numeroAreaB;[0-9]*;[A-Z][a-z]*//")
+		match1=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;$tipoLLamada;$numeroAreaB;[0-9]*;[A-Z][a-z]*//")
+		match2=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;$tipoLLamada;$numeroAreaB;[0-9]*;[0-9]*;[A-Z][a-z]*//")
 		#echo "match = $match"
-		if [ "$match" == "" ] 
+		if [ "$match1" == "" ] || [ "$match2" == "" ] 
 		then
-			local umbralActivo=$( echo "$linea" | awk -F';' '{print $7}')
-			case "$umbralActivo" in
-				"$ACTIVO")
-				#echo $linea
-				local umbral1=$( echo $linea | awk -F';' '{print $6}')
-				echo "umbral1 = $umbral1"
-				echo "tiempoConversacion = $tiempoConversacion"
-				umbral1=`expr $umbral1`
-				#maximoUmbral "$umbral1" "$umbral2" 
-				#maximo="$?"
-				tiempoConversacion=`expr $tiempoConversacion`
-				if [ "$tiempoConversacion" -gt "$umbral1" ]
+			if [ "$match1" == "" ]
 				then
+				verificarUmbral "$linea" "$tiempoConversacion"
+				local res="$?"
+				if [ "$res" -eq  1 ]
+					then
 					echo "grabar llamada sospechosa"
 				fi
-				;;
-				"$INACTIVO")
-					let a=5
-				#echo "sin umbral"
-				break
-				;;
-			esac
+			else
+				verificarUmbralConMasDeUno "$linea" "$tiempoConversacion"
+				local res="$?"
+				if [ "$res" -eq  1 ]
+					then
+					echo "grabar llamada sospechosa"
+				fi
+			fi	
 		break
 		fi
 	done < "$UMBRALES"
 
-
-
-
-	#case "$tipoLLamada" in
-	#	"$ES_DDI")
-	#		echo ""
-	#		;;
-	#	"$ES_DDN")
-	#		echo ""
-	#		;;
-	#	"$ES_LOCAL")
-	#		echo ""
-	#		;;
-	#esac
 }
 
 maximoUmbral()
@@ -82,4 +63,60 @@ maximoUmbral()
 	return `expr $umb2` 
 }
 
-export -f verificarUmbral
+
+verificarUmbralConMasDeUno() {
+	local linea="$1"
+	local tiempoConversacion="$2"
+	
+	local umbralActivo=$( echo "$linea" | awk -F';' '{print $8 }')
+	case "$umbralActivo" in
+	"$ACTIVO")
+		#echo $linea
+		local umbral1=$( echo $linea | awk -F';' '{ print $6 }')
+		local umbral1=$( echo $linea | awk -F';' '{ print $7 }')
+		echo "umbral1 = $umbral1"
+		echo "tiempoConversacion = $tiempoConversacion"
+		umbral1=`expr $umbral1`
+		umbral2=`expr $umbral2`
+		maximoUmbral "$umbral1" "$umbral2" 
+		maximo="$?"
+		tiempoConversacion=`expr $tiempoConversacion`
+		if [ "$tiempoConversacion" -gt "$maximo" ]
+		then
+			return 1
+		fi
+		return 0
+	;;
+	"$INACTIVO")
+		
+		echo "sin umbral"
+		return 0
+		;;
+	esac
+}
+verificarUmbral() {
+	local linea="$1"
+	local tiempoConversacion="$2"
+	
+	local umbralActivo=$( echo "$linea" | awk -F';' '{print $7 }')
+	case "$umbralActivo" in
+	"$ACTIVO")
+		#echo $linea
+		local umbral1=$( echo $linea | awk -F';' '{ print $6 }')
+		echo "umbral1 = $umbral1"
+		echo "tiempoConversacion = $tiempoConversacion"
+		umbral1=`expr $umbral1`	
+		tiempoConversacion=`expr $tiempoConversacion`
+		if [ "$tiempoConversacion" -gt "$umbral1" ]
+		then
+			return 1
+		fi
+		return 0
+		;;
+	"$INACTIVO")
+		echo "sin umbral"
+	return 0
+	;;
+	esac
+}
+export -f verificarUmbralYgrabarLLamadaSospechosa
