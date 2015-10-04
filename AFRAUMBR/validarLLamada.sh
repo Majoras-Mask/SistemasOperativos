@@ -35,11 +35,12 @@ validarIdAgente()
 {
 local idAgente="$1"
 local linea
+
 while read linea
 do
-	#echo "linea = $linea"
+	idAgente=$(echo "$idAgente"| sed 's/\ //')
+	linea=$(echo "$linea" | sed 's/\ //')
 	idEsValido=$(echo "$linea" | sed -e "s/^"$idAgente";/:/" -e "s/;"$idAgente";/:/" -e "s/;"$idAgente"$/:/" | grep :)
-	#echo "idEsValido = $idEsValido"
 	if [ "$idEsValido" != "" ]
 	then
 	return 1
@@ -56,12 +57,6 @@ if  [ "$tiempoConversacion" -lt 0 ]
 then
 	return 0
 fi
-
-if [ "$tiempoConversacion" -eq 0 ]
-then 
-	return 0
-fi
-
 return 1
 }
 
@@ -122,12 +117,6 @@ validarNumeroLineaB()
 	then
 		eval "numeroLineaBValido='$NUMERO_LINEA_DESTINO_NO_NUMERICO'"
 		status=0
-	fi
-	esNumerico=$( echo "$numeroAreaB" | sed 's/[0-9]*//')
-	if [ "$esNumerico" != "" ]
-	then
-	eval "$numeroAreaBValido='$CODIGO_AREA_DESTINO_NO_NUMERICO'"
-	status=0
 	else
 		esDDI "$numeroPaisB"
 		res="$?"
@@ -147,20 +136,25 @@ validarNumeroLineaB()
 				eval "numeroAreaB='$CODIGO_AREA_DESTINO_INEXISTENTE'"
 				status="$res2"
 			fi
-		fi	
-	fi 		
-	if [ "$status" -eq 1 ]
-	then
-		codigoAreaBNumeroLinea="$numeroLineaB$numeroAreaB"
-		#echo "numero b completo = $codigoAreaBNumeroLinea"
-		#echo "size = ${#codigoAreaBNumeroLinea}"
-		if [ ${#codigoAreaBNumeroLinea} -ne 10 ]
+		else 
+			esNumerico=$( echo "$numeroAreaB" | sed 's/[0-9]*//')
+			if [ "$esNumerico" != "" ]
 			then
-			eval "numeroLineaBValido='$NUMERO_LINEA_DESTINO_INCORRECTO'"
-			status=0
+				eval "$numeroAreaBValido='$CODIGO_AREA_DESTINO_NO_NUMERICO'"
+			status=0		
+			if [ "$status" -eq 1 ]
+				then
+				codigoAreaBNumeroLinea="$numeroLineaB$numeroAreaB"
+				if [ ${#codigoAreaBNumeroLinea} -ne 10 ]
+					then
+					eval "numeroLineaBValido='$NUMERO_LINEA_DESTINO_INCORRECTO'"
+					status=0
+				fi
+			fi
 		fi
 	fi
-	return `expr $status`
+fi 		
+return `expr $status`
 }
 
  validarLLamada()
@@ -169,13 +163,14 @@ validarNumeroLineaB()
 local registroLLamada="$1"
 registroErrores="$2"
 local idAgente
+local fechaYHora
 local numeroAreaA
 local numeroLineaA
 local numeroPaisB
 local numeroAreaB
 local numeroLineaB
 local tiempoConversacion
-parsearLLamada "$registroLLamada" idAgente numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
+parsearLLamada "$registroLLamada" idAgente fechaYHora umeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
 llamadaValida="$LLAMADA_VALIDA"
 local idAgenteValido="$VALIDO"
 local numeroAreaAValido="$VALIDO"
