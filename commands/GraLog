@@ -1,4 +1,7 @@
 #!/bin/bash
+#LOGDIR="logdir"
+#LOGEXT="txt"
+#LOGSIZE=5000
 command=$1
 message=$2
 type=$3
