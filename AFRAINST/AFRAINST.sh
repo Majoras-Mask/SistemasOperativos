@@ -35,6 +35,9 @@ A T E N C I O N: Al instalar UD. expresa aceptar los términos y condiciones del
 # $1 : Mensaje a loguear
 # $2 : Tipo de mensaje
 LoguearAlArchivo(){
+	if [ ! -d "$CONFDIR" ]; then
+		mkdir "$CONFDIR"
+	fi
     local where="AFRAINST"
     local what="INFO"
     local why="$1" # mensaje
@@ -141,9 +144,15 @@ LeerDirectorio(){
     while true; do
         Loguear "$mensaje"; LeerInput
 
-        if [ -z $input ]; then
-            Loguear "Introducir un directorio valido."
-            continue
+        #if [ -z "$input" ]; then
+        #   Loguear "Introducir un directorio valido."
+        #    continue
+        #fi
+        
+        local c=$(echo "$input" | grep -c "^[/0-9a-zA-Z_-]\+$")
+        if [ $c -eq 0 ];then 
+			Loguear "Introducir un directorio valido."
+			continue
         fi
         
         local mensaje2
@@ -162,7 +171,7 @@ LeerDirectorio(){
             mensaje3=${mensaje2}
         fi
         
-        if [ -z $mensaje3 ]; then
+        if [ -z "$mensaje3" ]; then
             Loguear "Introducir un directorio valido."
         elif [ "$mensaje3" == "conf" ]; then
             Loguear "No esta permitido utilizar el directorio reservado conf."
@@ -431,7 +440,7 @@ MostrarValoresVariables(){
 CrearDirectorio(){
     local directorio="$1"
     local salida
-    salida=$(mkdir "$directorio")
+    salida=$(mkdir -p "$directorio")
     if [ $? -eq 0 ]; then
         Loguear "Directorio $directorio creado."
     else
