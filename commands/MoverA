@@ -26,5 +26,10 @@ if [ -f "$origin" ] && [ -d "$destiny" ];then
 		mv "$origin" "$duplicate"
 	fi
 else
-	echo "los parametros son erroneos"
+	if [ ! -f "$origin" ];then
+		GraLog MoverA "el archivo de origen no existe" ERROR
+	fi
+	if [ ! -d "$destiny" ];then
+		GraLog MoverA "el directorio de destino no existe" ERROR
+	fi
 fi
