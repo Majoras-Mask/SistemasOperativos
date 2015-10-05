@@ -1,14 +1,15 @@
 #!/bin/bash
-if [ -z "$CONFDIR" ] || [ -z "$BINDIR" ] || [ -z "$MAEDIR" ] ||
-	[ -z "$NOVEDIR"] || [ -z "$ACEPDIR"] || [ -z "$PROCDIR"] ||
-	[ -z "$REPODIR"] || [ -z "$LOGDIR" ] || [ -z "$RECHDIR" ]; then
-	[ -z "$AFRARECIRUN" ] || [ -z "$AFRAUMBRRUN" ] || [ -z "$AFRALISTRUN" ]; then
-		echo "error"
-	else
-		if [ -z "\$$1RUN" ]; then
-			$BINDIR/$@
+#if [ -z "$CONFDIR" ] || [ -z "$BINDIR" ] || [ -z "$MAEDIR" ] ||
+#	[ -z "$NOVEDIR"] || [ -z "$ACEPDIR"] || [ -z "$PROCDIR"] ||
+#	[ -z "$REPODIR"] || [ -z "$LOGDIR" ] || [ -z "$RECHDIR" ]; then
+#	[ -z "$AFRARECIRUN" ] || [ -z "$AFRAUMBRRUN" ] || [ -z "$AFRALISTRUN" ];then
+#		echo "error"
+#	else
+		pid=$(ps aux | grep $1 | grep -v grep | awk '{print $2}')
+		if [ -z $pid ]; then
+			./$@ &
 		else
 			echo "error"
 		fi
-	fi
+#fi
 
