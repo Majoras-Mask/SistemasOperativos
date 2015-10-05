@@ -15,15 +15,16 @@ llamadaDDIvalida()
 {
 local codigoPaisB="$1"
 local linea
+
 while read linea
 	do
-	     #echo "linea = $linea"
-	     es_DDI=$(echo $linea | sed 's/;[A-Z]*[a-z]*//')
+	     local es_DDI=$(echo $linea | awk -F ';' '{ print $1 }' )
 	     if [ "$es_DDI" == "$codigoPaisB" ]
 	     	then 
-	     	return 1
+	     		return 1
 	     fi
 	done < "$DIRCDP"
+	echo "aja"
 return 0
 }
 

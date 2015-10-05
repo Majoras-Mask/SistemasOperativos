@@ -28,8 +28,10 @@ do
 
 	local RUTA=$DIRLLAMADAS$nombreArchivo
 	local linea
+	local cont1=0
 	while read linea
 	do
+	let cont1=cont1+1
 	#echo "$linea"
 	local idCentral=$(echo $linea | awk -F'_' '{ print $1 }')
 	#echo "$idCentral"
@@ -42,10 +44,10 @@ do
 		echo "$llamadaEsValida"
 		echo "llamadaEsValida"
 		clasificarLLamada "$linea" tipoLLamada
-		verificarUmbral "$linea" "$tipoLLamada"
+		verificarUmbralYgrabarLLamadaSospechosa "$linea" "$tipoLLamada"
 		;;
 		"llamada invalida")
-		echo "llamada invalida"
+		echo "llamada invalida $cont1 regis = $registroErrores"
 		;;
 		"$CANTIDAD_CAMPOS_INCORRECTOS")
 		echo "cantidad de campos incorrecto"
