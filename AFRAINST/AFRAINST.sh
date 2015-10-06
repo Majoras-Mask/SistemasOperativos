@@ -45,7 +45,7 @@ LoguearAlArchivo(){
         tipo="$2"
     fi
     
-    local who="$USERNAME"
+    local who="$USER"
     local when=$(date +"%d/%m/%y %R")
     
     echo "$when-$who-$where-$what-$why" >> "$CONFDIR/$LOGFILE" 
@@ -190,11 +190,11 @@ LeerDirectorio(){
 LeerNumero(){
     local mensaje=$1
     Loguear "$mensaje";LeerInput
-    local numero=$(echo $input | grep "[0-9]\+")
-    while [ -z $numero ]; do
+    local numero=$(echo $input | grep "^[0-9]\+$")
+    while [ -z "$numero" ]; do
         Loguear "Debe ingresarse un numero"
         Loguear "$mensaje"; LeerInput
-        numero=$(echo $input | grep "[0-9]\+")
+        numero=$(echo $input | grep "^[0-9]\+$")
     done
     RETORNO=$numero
     return 0
@@ -312,7 +312,7 @@ DefinirDATASIZE(){
     while true; do
         mensaje="Defina espacio mínimo libre para la recepción de archivos de llamadas en Mbytes ( $DATASIZE ): "
         LeerNumero "$mensaje"
-        if [ $RETORNO -gt 0 ]; then
+        if [ "$RETORNO" -gt 0 ]; then
             DATASIZE=${RETORNO:="100"}
             return 0
         else
@@ -362,7 +362,7 @@ DefinirLOGSIZE(){
     while true; do
         mensaje="Defina el tamaño maximo para cada archivo de log en Kbytes ( $LOGSIZE ): "
         LeerNumero "$mensaje"
-        if [ $RETORNO -gt 0 ]; then
+        if [ "$RETORNO" -gt 0 ]; then
             LOGSIZE=${RETORNO:="400"}
             return 0
         else
