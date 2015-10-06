@@ -1,6 +1,7 @@
 #!/bin/bash
 source clasificarLLamada.sh
 source parserLLamada.sh
+
 #mover esto a un
 # archivo de configuracion
 DIRLLAMADAS="ACEPDIR/"
@@ -80,8 +81,6 @@ validarNumeroLineaA()
 {
 local numeroLineaA="$1"
 local codigoAreaA="$2"
-local codigoAreaAValido="$3"
-local numeroLineaAValido="$4"
 
 local areaEsNumerica=$( echo "$codigoAreaA" | grep "^-\?[0-9]*$")
 local lineaEsNumerica=$(echo "$numeroLineaA" | grep "^-\?[0-9]*$")
@@ -109,9 +108,6 @@ validarNumeroLineaB()
 	local numeroLineaB="$1"
 	local numeroPaisB="$2"
 	local numeroAreaB="$3"
-	local numeroAreaBValido="$4"
-	local numeroPaisBValido="$5"
-	local numeroLineaBValido="$6"
 	local status=1
 	esNumerico=$( echo "$numeroLineaB" | sed 's/[0-9]*//')
 	if [ "$esNumerico" != "" ]
@@ -139,13 +135,15 @@ validarNumeroLineaB()
 				local res2="$?"
 				if [ "$res2" -eq 0 ] 
 				then
-					eval "numeroAreaB='$CODIGO_AREA_DESTINO_INEXISTENTE'"
+					eval "numeroAreaBValido='$CODIGO_AREA_DESTINO_INEXISTENTE'"
 					status="$res2"
 				fi
 			else
 				codigoAreaBNumeroLinea="$numeroLineaB$numeroAreaB"
 				if [ ${#codigoAreaBNumeroLinea} -ne 10 ]
 					then
+					echo "numero area = $numeroAreaB"
+					echo "numero linea = $numeroLineaB"
 					eval "numeroLineaBValido='$NUMERO_LINEA_DESTINO_INCORRECTO'"
 					status=0
 				fi
@@ -170,13 +168,13 @@ local numeroLineaB
 local tiempoConversacion
 parsearLLamada "$registroLLamada" idAgente fechaYHora umeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
 llamadaValida="$LLAMADA_VALIDA"
-local idAgenteValido="$VALIDO"
-local numeroAreaAValido="$VALIDO"
-local numeroLineaAValido="$VALIDO"
-local numeroAreaBValido="$VALIDO"
-local numeroPaisBValido="$VALIDO"
-local numeroLineaBValido="$VALIDO"
-local tiempoConversacionValido="$VALIDO"
+idAgenteValido="$VALIDO"
+numeroAreaAValido="$VALIDO"
+numeroLineaAValido="$VALIDO"
+numeroAreaBValido="$VALIDO"
+numeroPaisBValido="$VALIDO"
+numeroLineaBValido="$VALIDO"
+tiempoConversacionValido="$VALIDO"
 
 validarIdAgente "$idAgente"
 	local idAgenteEsValido=$?
@@ -195,7 +193,7 @@ then
 	llamadaValida="$LLAMADA_INVALIDA"
 fi
 
-validarNumeroLineaA "$numeroLineaA" "$numeroAreaA" numeroAreaAValido numeroLineaAValido
+validarNumeroLineaA "$numeroLineaA" "$numeroAreaA"
 local numeroLineaAEsValido="$?"
 if [ "$numeroLineaAEsValido" -eq 0 ]
 then
@@ -203,7 +201,7 @@ then
 fi
 
 
-validarNumeroLineaB "$numeroLineaB" "$numeroPaisB" "$numeroAreaB" numeroAreaBValido numeroPaisBValido numeroLineaBValido
+validarNumeroLineaB "$numeroLineaB" "$numeroPaisB" "$numeroAreaB"
 local numeroLineaBEsValido="$?"
 
 if [ "$numeroLineaBEsValido" -eq 0 ]

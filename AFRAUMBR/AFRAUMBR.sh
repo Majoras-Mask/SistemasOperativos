@@ -2,6 +2,7 @@
 source validarCampos.sh
 source validarLLamada.sh
 source verificarUmbrales.sh
+#source ../commands/MoverA
 # mover estas variables a un archivo
 # de configuracion
 
@@ -10,6 +11,7 @@ DIRCDA="MAEDIR/CdA.mae"
 DIRCDP="MAEDIR/CdP.mae"
 AGENTES="MAEDIR/agentes.mae"
 DIRLLAMADAS="ACEPDIR/"
+DIR_RECHAZADAS="RECHDIR/"
 LLAMADA_VALIDA="llamada valida"
 LLAMADA_INVALIDA="llamada invalida"
 main () {
@@ -23,7 +25,7 @@ do
 	if [ $esArchivoValido  -eq 0 ] 
 	then
 		echo "Se rechaza el archivo por estar DUPLICADO."
-		continue
+		#MoverA "$nombreArchivo" "$DIR_RECHAZADAS"
 	fi 
 
 	local RUTA=$DIRLLAMADAS$nombreArchivo
@@ -50,7 +52,7 @@ do
 		echo "llamada invalida $cont1 regis = $registroErrores"
 		;;
 		"$CANTIDAD_CAMPOS_INCORRECTOS")
-		echo "cantidad de campos incorrecto"
+		#MoverA "$nombreArchivo" "$DIR_RECHAZADAS"
 		;;
 	esac
 	done < "$RUTA"
