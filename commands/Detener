@@ -1,0 +1,8 @@
+#!/bin/bash
+pid=$(ps aux | grep $1 | grep -v 'Detener' | grep -v 'grep' | head -n 1 | awk '{print $2}')
+if [ ! -z $pid ]; then
+	kill $pid
+	return 0
+else
+	return 1
+fi

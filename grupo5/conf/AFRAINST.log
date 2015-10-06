@@ -1,0 +1,117 @@
+06/10/15 19:58-ubuntu-mate-AFRAINST-INFO-Perl Version: 
+This is perl 5, version 20, subversion 2 (v5.20.2) built for i686-linux-gnu-thread-multi-64int
+(with 39 registered patches, see perl -V for more detail)
+
+Copyright 1987-2015, Larry Wall
+
+Perl may be copied only under the terms of either the Artistic License or the
+GNU General Public License, which may be found in the Perl 5 source kit.
+
+Complete documentation for Perl, including FAQ lists, should be found on
+this system using "man perl" or "perldoc perl".  If you have access to the
+Internet, point your browser at http://www.perl.org/, the Perl Home Page.
+06/10/15 19:58-ubuntu-mate-AFRAINST-INFO-
+*************************************************************
+*       Proceso de Instalación de "AFRAI-I"                *
+*   Tema I Copyright © Grupo 05 - Segundo Cuatrimestre 2015 *
+*************************************************************
+
+A T E N C I O N: Al instalar UD. expresa aceptar los términos y condiciones del "ACUERDO DE LICENCIA DE SOFTWARE" incluido en este paquete.
+
+06/10/15 19:58-ubuntu-mate-AFRAINST-INFO-Acepta? Si - No: 
+06/10/15 19:58-ubuntu-mate-AFRAINST-INFO-Input: si
+06/10/15 19:58-ubuntu-mate-AFRAINST-INFO-Defina el directorio de instalación de los ejecutables (/home/ubuntu-mate/SistemasOperativos/grupo5/bin): 
+06/10/15 19:58-ubuntu-mate-AFRAINST-INFO-Input: BIN
+06/10/15 19:58-ubuntu-mate-AFRAINST-INFO-Defina directorio para maestros y tablas (/home/ubuntu-mate/SistemasOperativos/grupo5/mae): 
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Input: MAE
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Defina el Directorio de recepción de archivos de llamadas (/home/ubuntu-mate/SistemasOperativos/grupo5/novedades): 
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Input: NOVE
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Defina espacio mínimo libre para la recepción de archivos de llamadas en Mbytes ( 100 ): 
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Input: 6666
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Insuficiente espacio en disco.
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Espacio disponible: 1738 Mb.
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Espacio requerido 6666 Mb.
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Intentelo nuevamente.
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Insuficiente espacio en disco.
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Espacio disponible: 1738 Mb.
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Espacio requerido 6666 Mb.
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Intentelo nuevamente.
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Perl Version: 
+This is perl 5, version 20, subversion 2 (v5.20.2) built for i686-linux-gnu-thread-multi-64int
+(with 39 registered patches, see perl -V for more detail)
+
+Copyright 1987-2015, Larry Wall
+
+Perl may be copied only under the terms of either the Artistic License or the
+GNU General Public License, which may be found in the Perl 5 source kit.
+
+Complete documentation for Perl, including FAQ lists, should be found on
+this system using "man perl" or "perldoc perl".  If you have access to the
+Internet, point your browser at http://www.perl.org/, the Perl Home Page.
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-
+*************************************************************
+*       Proceso de Instalación de "AFRAI-I"                *
+*   Tema I Copyright © Grupo 05 - Segundo Cuatrimestre 2015 *
+*************************************************************
+
+A T E N C I O N: Al instalar UD. expresa aceptar los términos y condiciones del "ACUERDO DE LICENCIA DE SOFTWARE" incluido en este paquete.
+
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Acepta? Si - No: 
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Input: si
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Defina el directorio de instalación de los ejecutables (/home/ubuntu-mate/SistemasOperativos/grupo5/bin): 
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Input: EXE
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Defina directorio para maestros y tablas (/home/ubuntu-mate/SistemasOperativos/grupo5/mae): 
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Input: MAE
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Defina el Directorio de recepción de archivos de llamadas (/home/ubuntu-mate/SistemasOperativos/grupo5/novedades): 
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Input: LLAMADA
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Defina espacio mínimo libre para la recepción de archivos de llamadas en Mbytes ( 100 ): 
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Input: 100
+06/10/15 19:59-ubuntu-mate-AFRAINST-INFO-Defina el directorio de grabación de los archivos de llamadas aceptadas (/home/ubuntu-mate/SistemasOperativos/grupo5/aceptadas): 
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Input: ACEPTADAS
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Defina el directorio de grabación de los registros de llamadas sospechosas (/home/ubuntu-mate/SistemasOperativos/grupo5/sospechosas): 
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Input: LLAMADASSOSPECHOSAS
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Defina el directorio de grabación de los reportes (/home/ubuntu-mate/SistemasOperativos/grupo5/reportes): 
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Input: REPORTES
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Defina el directorio para los archivos de log (/home/ubuntu-mate/SistemasOperativos/grupo5/log): 
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Input: LOG
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Defina el nombre para la extensión de lso archivos de log ( log ): 
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Input: log
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Defina el tamaño maximo para cada archivo de log en Kbytes ( 400 ): 
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Input: 
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Debe ingresarse un numero
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Defina el tamaño maximo para cada archivo de log en Kbytes ( 400 ): 
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Input: 400
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Defina el directorio de grabación de Archivos rechazados (/home/ubuntu-mate/SistemasOperativos/grupo5/rechazados): 
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Input: RECHAZADOS
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio de Ejecutables: /home/ubuntu-mate/SistemasOperativos/grupo5/EXE
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio de Maestros y Tablas: /home/ubuntu-mate/SistemasOperativos/grupo5/MAE
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio de recepción de archivos de llamadas: /home/ubuntu-mate/SistemasOperativos/grupo5/LLAMADA
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Espacio mínimo libre para arribos: 100 Mb
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio de Archivos de llamadas Aceptados: /home/ubuntu-mate/SistemasOperativos/grupo5/ACEPTADAS
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio de Archivos de llamadas Sospechosas: /home/ubuntu-mate/SistemasOperativos/grupo5/LLAMADASSOSPECHOSAS
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio de Archivos de Reportes de llamadas: /home/ubuntu-mate/SistemasOperativos/grupo5/REPORTES
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio de Archivos de Log: /home/ubuntu-mate/SistemasOperativos/grupo5/LOG
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Extensión para los archivos de log: log
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Tamaño máximo para los archivos de log: 400 Kb
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio de Archivos Rechazados: /home/ubuntu-mate/SistemasOperativos/grupo5/RECHAZADOS
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Estado de la instalación: LISTA
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Desea continuar con la instalacion? ( Si - No ): 
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Input: si
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Iniciando Instalación. Esta Ud. seguro? ( Si - No): 
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Input: si
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Creando Estructuras de directorio. . . .
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio /home/ubuntu-mate/SistemasOperativos/grupo5/EXE creado.
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio /home/ubuntu-mate/SistemasOperativos/grupo5/MAE creado.
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio /home/ubuntu-mate/SistemasOperativos/grupo5/LLAMADA creado.
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio /home/ubuntu-mate/SistemasOperativos/grupo5/ACEPTADAS creado.
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio /home/ubuntu-mate/SistemasOperativos/grupo5/LLAMADASSOSPECHOSAS creado.
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio /home/ubuntu-mate/SistemasOperativos/grupo5/LLAMADASSOSPECHOSAS/proc creado.
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio /home/ubuntu-mate/SistemasOperativos/grupo5/REPORTES creado.
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio /home/ubuntu-mate/SistemasOperativos/grupo5/LOG creado.
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio /home/ubuntu-mate/SistemasOperativos/grupo5/RECHAZADOS creado.
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Directorio /home/ubuntu-mate/SistemasOperativos/grupo5/RECHAZADOS/llamadas creado.
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Instalando Programas y Funciones
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Instalando Archivos Maestros y Tablas
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Actualizando la configuración del sistema
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Instalación CONCLUIDA.
+06/10/15 20:00-ubuntu-mate-AFRAINST-INFO-Finalización de AFRAINST con exito.

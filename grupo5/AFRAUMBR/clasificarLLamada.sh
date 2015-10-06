@@ -1,7 +1,7 @@
 #!/bin/bash
 ES_DDI="DDI"
 ES_DDN="DDN"
-ES_LOCAL="LOCAL"
+ES_LOCAL="LOC"
 DIRCDP="MAEDIR/CdP.mae"
 DIRLLAMADAS="ACEPDIR/"
 DIRCDA="MAEDIR/CdA.mae"
@@ -10,24 +10,26 @@ AGENTES="MAEDIR/agentes.mae"
 DIRLLAMADAS="ACEPDIR/"
 LLAMADA_VALIDA="valido"
 CODIGO_PAIS_INEXISTENETE=" El codigo de pais no existe"
-
-llamada_ddi_valida()
+source parserLLamada.sh
+llamadaDDIvalida()
 {
 local codigoPaisB="$1"
 local linea
+
 while read linea
 	do
-	     es_DDI=$(echo "$linea"| sed 's/;[A-Z]*[a-z]*//')
+	     local es_DDI=$(echo $linea | awk -F ';' '{ print $1 }' )
 	     if [ "$es_DDI" == "$codigoPaisB" ]
 	     	then 
-	     	return 1
+	     		return 1
 	     fi
 	done < "$DIRCDP"
+	echo "aja"
 return 0
 }
 
 
-es_ddi()
+esDDI()
 {
 	local codigoPaisB="$1"
 	if [ "$codigoPaisB" == "" ]
@@ -38,36 +40,42 @@ es_ddi()
 return 1
 }
 
-es_ddn_o_local() 
+esDDNOLocal() 
 {
 	local codigoAreaA="$1"
 	local codigoAreaB="$2"
 	resultado="$3"
 	if [ "$codigoAreaA"=="$codigoAreaB" ]
 	then
-		eval "$resultado='$ES_DDN'"
+		eval "$resultado='$ES_LOCAL'"
 		return 1
 	fi
-	eval "$resultado='$ES_LOCAL'"
+	eval "$resultado='$ES_DDN'"
 	return 1
 }
 
-clasificar_llamada()
+clasificarLLamada()
 {
-	local codigoAreaA="$1"
-	local codigoPaisB="$2"
-	local codigoAreaB="$3"
-	resultado="$4"
-	es_ddi "$codigoPaisB"
-	es_DDI="$?"
-	if [ "$es_DDI" -eq 1 ]
+	
+	local lineaLLamada="$1"
+	tipoLLamada="$2"
+
+	local codigoAreaA
+	local codigoPaisB
+	local codigoAreaB
+	parsearCodigosDeArea "$lineaLLamada" codigoAreaA codigoPaisB codigoAreaB
+	esDDI "$codigoPaisB"
+	local es_DDi="$?"
+	if [ "$es_DDi" -eq 1 ]
 	then	
-		eval "$resultado='$ES_DDI'"
+		eval "tipoLLamada='$ES_DDI'"
 		return 1
 	fi
-	es_ddn_o_local "$codigoAreaA" "$codigoAreaB" esDDN_LOCAL
-	eval "$resultado='$esDDN_LOCAL'"
+	local esDDNOLocal
+	esDDNOLocal "$codigoAreaA" "$codigoAreaB" esDDNLOCAL
+	eval "tipoLLamada='$esDDNLOCAL'"
 	return 1	
 }
 
-export -f es_ddi
+export -f esDDI
+export -f clasificarLLamada
