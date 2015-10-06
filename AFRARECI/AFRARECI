@@ -36,6 +36,7 @@ checkNuevosArchivosNovedades() {
 	for DIRECTORIO in $( ls "$NOVEDIR" -F | grep "/$" )
 	do
 		DIRECTORIO=`echo $DIRECTORIO | sed "s-/--"`
+		#$LOGDIR/GraLog "AFRARECI" "Directorio hallado: $DIRECTORIO en novedades. Sera movido a rechazados" "INFO"		
 		mv "$NOVEDIR/$DIRECTORIO" "$RECHDIR"
 	done
 	
@@ -101,10 +102,10 @@ checkCentral(){
 	TESTCENTRAL=`grep "^$centralActual;.*" $MAEDIR/Cdc.mae | cut -d";" -f1`
 	if [ "$centralActual" != "$TESTCENTRAL" ]
 	then
-		#$LOGDIR/GraLog "AFRARECI" "Gestion invalida $TESTCENTRAL" "INFO"
+		#$LOGDIR/GraLog "AFRARECI" "Centarl invalida $TESTCENTRAL" "INFO"
 		return $FALSE
 	else	
-		#$LOGDIR/GraLog "AFRARECI" "Gestion valida $TESTCENTRAL" "INFO"
+		#$LOGDIR/GraLog "AFRARECI" "Central valida $TESTCENTRAL" "INFO"
 		return $TRUE
 	fi		
 }
@@ -215,10 +216,10 @@ checkFecha(){
 		
 		if [ "$esFechaValida" = "$TRUE" ]
 		then 	
-			#$LOGDIR/GraLog "AFRARECI" "Fecha de valida" "INFO"
+			#$LOGDIR/GraLog "AFRARECI" "Fecha valida" "INFO"
 			return $TRUE	
 		else
-			#$LOGDIR/GraLog "AFRARECI" "Fecha de invalida " "INFO"
+			#$LOGDIR/GraLog "AFRARECI" "Fecha invalida " "INFO"
 			return $FALSE
 		fi
 	fi
