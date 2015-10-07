@@ -231,7 +231,7 @@ InicializacionConfVariables(){
     MAEDIR=$(LeerArchivoConf MAEDIR)
     NOVEDIR=$(LeerArchivoConf NOVEDIR)
     DATASIZE=$(LeerArchivoConf DATASIZE)
-    ACEPTDIR=$(LeerArchivoConf ACEPTDIR)
+    ACEPDIR=$(LeerArchivoConf ACEPDIR)
     PROCDIR=$(LeerArchivoConf PROCDIR)
     REPODIR=$(LeerArchivoConf REPODIR)
     LOGDIR=$(LeerArchivoConf LOGDIR)
@@ -246,34 +246,34 @@ InicializacionConfVariables(){
 # Verifica que las variables de configuracion esten inicializadas.
 # Caso contrario, se establece un default.
 VerificarVariables(){
-    BINDIR=${BINDIR:="bin"}
-    MAEDIR=${MAEDIR:="mae"}
-    NOVEDIR=${NOVEDIR:="novedades"}
+    BINDIR=${BINDIR:="$GRUPO/bin"}
+    MAEDIR=${MAEDIR:="$GRUPO/mae"}
+    NOVEDIR=${NOVEDIR:="$GRUPO/novedades"}
     DATASIZE=${DATASIZE:="100"}
-    ACEPDIR=${ACEPDIR:="aceptadas"}
-    PROCDIR=${PROCDIR:="sospechosas"}
-    REPODIR=${REPODIR:="reportes"}
-    LOGDIR=${LOGDIR:="log"}
+    ACEPDIR=${ACEPDIR:="$GRUPO/aceptadas"}
+    PROCDIR=${PROCDIR:="$GRUPO/sospechosas"}
+    REPODIR=${REPODIR:="$GRUPO/reportes"}
+    LOGDIR=${LOGDIR:="$GRUPO/log"}
     LOGEXT=${LOGEXT:="log"}
     LOGSIZE=${LOGSIZE:="400"}
-    RECHDIR=${RECHDIR:="rechazados"}
+    RECHDIR=${RECHDIR:="$GRUPO/rechazados"}
     
     return 0
 }
 
 # Inicializa las variables de configuracion a su default
 InicializacionDefaultVariables(){
-    BINDIR="bin"
-    MAEDIR="mae"
-    NOVEDIR="novedades"
+    BINDIR="$GRUPO/bin"
+    MAEDIR="$GRUPO/mae"
+    NOVEDIR="$GRUPO/novedades"
     DATASIZE="100"
-    ACEPDIR="aceptadas"
-    PROCDIR="sospechosas"
-    REPODIR="reportes"
-    LOGDIR="log"
+    ACEPDIR="$GRUPO/aceptadas"
+    PROCDIR="$GRUPO/sospechosas"
+    REPODIR="$GRUPO/reportes"
+    LOGDIR="$GRUPO/log"
     LOGEXT="log"
     LOGSIZE="400"
-    RECHDIR="rechazados"
+    RECHDIR="$GRUPO/rechazados"
     
     return 0
 }
@@ -282,23 +282,23 @@ InicializacionDefaultVariables(){
 # Funciones Definir. Se lee de stdin para setear la variable de configuracion
 # Si se lee algo incorrecto, se setea default.
 DefinirBINDIR(){
-    local mensaje="Defina el directorio de instalación de los ejecutables ($GRUPO/$BINDIR): "
+    local mensaje="Defina el directorio de instalación de los ejecutables ($BINDIR): "
     LeerDirectorio "$mensaje"
-    BINDIR=${RETORNO:="bin"}
+    BINDIR=$GRUPO/${RETORNO:="bin"}
     return 0
 }
 
 DefinirMAEDIR(){
-    local mensaje="Defina directorio para maestros y tablas ($GRUPO/$MAEDIR): "
+    local mensaje="Defina directorio para maestros y tablas ($MAEDIR): "
     LeerDirectorio "$mensaje"
-    MAEDIR=${RETORNO:="mae"}
+    MAEDIR=$GRUPO/${RETORNO:="mae"}
     return 0
 }
 
 DefinirNOVEDIR(){
-    local mensaje="Defina el Directorio de recepción de archivos de llamadas ($GRUPO/$NOVEDIR): "
+    local mensaje="Defina el Directorio de recepción de archivos de llamadas ($NOVEDIR): "
     LeerDirectorio "$mensaje"
-    NOVEDIR=${RETORNO:="novedades"}
+    NOVEDIR=$GRUPO/${RETORNO:="novedades"}
     return 0
 }
 
@@ -318,30 +318,30 @@ DefinirDATASIZE(){
 }
 
 DefinirACEPDIR(){
-    local mensaje="Defina el directorio de grabación de los archivos de llamadas aceptadas ($GRUPO/$ACEPDIR): "
+    local mensaje="Defina el directorio de grabación de los archivos de llamadas aceptadas ($ACEPDIR): "
     LeerDirectorio "$mensaje"
-    ACEPDIR=${RETORNO:="aceptadas"}
+    ACEPDIR=$GRUPO/${RETORNO:="aceptadas"}
     return 0
 }
 
 DefinirPROCDIR(){
-    local mensaje="Defina el directorio de grabación de los registros de llamadas sospechosas ($GRUPO/$PROCDIR): "
+    local mensaje="Defina el directorio de grabación de los registros de llamadas sospechosas ($PROCDIR): "
     LeerDirectorio "$mensaje"
-    PROCDIR=${RETORNO:="sospechosas"}
+    PROCDIR=$GRUPO/${RETORNO:="sospechosas"}
     return 0
 }
 
 DefinirREPODIR(){
-    local mensaje="Defina el directorio de grabación de los reportes ($GRUPO/$REPODIR): "
+    local mensaje="Defina el directorio de grabación de los reportes ($REPODIR): "
     LeerDirectorio "$mensaje"
-    REPODIR=${RETORNO:="reportes"}
+    REPODIR=$GRUPO/${RETORNO:="reportes"}
     return 0
 }
 
 DefinirLOGDIR(){
-    local mensaje="Defina el directorio para los archivos de log ($GRUPO/$LOGDIR): "
+    local mensaje="Defina el directorio para los archivos de log ($LOGDIR): "
     LeerDirectorio "$mensaje"
-    LOGDIR=${RETORNO:="log"}
+    LOGDIR=$GRUPO/${RETORNO:="log"}
     return 0
 }
 
@@ -368,9 +368,9 @@ DefinirLOGSIZE(){
 }
 
 DefinirRECHDIR(){
-    local mensaje="Defina el directorio de grabación de Archivos rechazados ($GRUPO/$RECHDIR): "
+    local mensaje="Defina el directorio de grabación de Archivos rechazados ($RECHDIR): "
     LeerDirectorio "$mensaje"
-    RECHDIR=${RETORNO:="rechazadas"}
+    RECHDIR=$GRUPO/${RETORNO:="rechazadas"}
     return 0
 }
 
@@ -412,17 +412,17 @@ DefinirVariables(){
 # luego de haber ingresado los valores solicitados.
 MostrarValoresVariables(){
     echo
-    Loguear "Directorio de Ejecutables: $GRUPO/$BINDIR"
-    Loguear "Directorio de Maestros y Tablas: $GRUPO/$MAEDIR"
-    Loguear "Directorio de recepción de archivos de llamadas: $GRUPO/$NOVEDIR"
+    Loguear "Directorio de Ejecutables: $BINDIR"
+    Loguear "Directorio de Maestros y Tablas: $MAEDIR"
+    Loguear "Directorio de recepción de archivos de llamadas: $NOVEDIR"
     Loguear "Espacio mínimo libre para arribos: $DATASIZE Mb"
-    Loguear "Directorio de Archivos de llamadas Aceptados: $GRUPO/$ACEPDIR"
-    Loguear "Directorio de Archivos de llamadas Sospechosas: $GRUPO/$PROCDIR"
-    Loguear "Directorio de Archivos de Reportes de llamadas: $GRUPO/$REPODIR"
-    Loguear "Directorio de Archivos de Log: $GRUPO/$LOGDIR"
+    Loguear "Directorio de Archivos de llamadas Aceptados: $ACEPDIR"
+    Loguear "Directorio de Archivos de llamadas Sospechosas: $PROCDIR"
+    Loguear "Directorio de Archivos de Reportes de llamadas: $REPODIR"
+    Loguear "Directorio de Archivos de Log: $LOGDIR"
     Loguear "Extensión para los archivos de log: $LOGEXT"
     Loguear "Tamaño máximo para los archivos de log: $LOGSIZE Kb"
-    Loguear "Directorio de Archivos Rechazados: $GRUPO/$RECHDIR"
+    Loguear "Directorio de Archivos Rechazados: $RECHDIR"
     Loguear "Estado de la instalación: LISTA"
     return 0
 }
@@ -446,16 +446,16 @@ CrearDirectorio(){
 # Creacion de los directorios solicitados.
 CrearDirectorios(){
     Loguear "Creando Estructuras de directorio. . . ."
-    CrearDirectorio "$GRUPO/$BINDIR"
-    CrearDirectorio "$GRUPO/$MAEDIR"
-    CrearDirectorio "$GRUPO/$NOVEDIR"
-    CrearDirectorio "$GRUPO/$ACEPDIR"
-    CrearDirectorio "$GRUPO/$PROCDIR"
-    CrearDirectorio "$GRUPO/$PROCDIR/proc"
-    CrearDirectorio "$GRUPO/$REPODIR"
-    CrearDirectorio "$GRUPO/$LOGDIR"
-    CrearDirectorio "$GRUPO/$RECHDIR"
-    CrearDirectorio "$GRUPO/$RECHDIR/llamadas"
+    CrearDirectorio "$BINDIR"
+    CrearDirectorio "$MAEDIR"
+    CrearDirectorio "$NOVEDIR"
+    CrearDirectorio "$ACEPDIR"
+    CrearDirectorio "$PROCDIR"
+    CrearDirectorio "$PROCDIR/proc"
+    CrearDirectorio "$REPODIR"
+    CrearDirectorio "$LOGDIR"
+    CrearDirectorio "$RECHDIR"
+    CrearDirectorio "$RECHDIR/llamadas"
     return 0
 }
 
@@ -483,8 +483,11 @@ CopiarArchivos(){
     fi
     
     while read -r file; do
-        if [ ! -f "$destino/$file" ]; then
-            cp "$origen/$file" "$destino"
+        #if [ ! -f "$destino/$file" ]; then
+        #    cp "$origen/$file" "$destino"
+        #fi
+        if [ ! -z "$file" ];then
+			cp "$origen/$file" "$destino"
         fi
     done <<< "$files"
     
@@ -494,17 +497,17 @@ CopiarArchivos(){
 # Funcion que lee del paquete para ubicar los archivos a las carpetas.
 MoverEjecutables(){
     Loguear "Instalando Programas y Funciones"
-    CopiarArchivos "$GRUPO/AFRAINIC" "$GRUPO/$BINDIR"
-    CopiarArchivos "$GRUPO/AFRARECI" "$GRUPO/$BINDIR"
-    CopiarArchivos "$GRUPO/AFRAUMBR" "$GRUPO/$BINDIR"
-    CopiarArchivos "$GRUPO/FUNCIONES" "$GRUPO/$BINDIR"
+    CopiarArchivos "$GRUPO/AFRAINIC" "$BINDIR"
+    CopiarArchivos "$GRUPO/AFRARECI" "$BINDIR"
+    CopiarArchivos "$GRUPO/AFRAUMBR" "$BINDIR"
+    CopiarArchivos "$GRUPO/FUNCIONES" "$BINDIR"
     return 0
 }
 
 # Funcion que lee del paquete para ubicar los archivos a las carpetas.
 MoverArchivosMaestrosYTablas(){
     Loguear "Instalando Archivos Maestros y Tablas"
-    CopiarArchivos "$GRUPO/ARCHIVOS" "$GRUPO/$MAEDIR"
+    CopiarArchivos "$GRUPO/ARCHIVOS" "$MAEDIR"
     return 0
 }
 
@@ -513,17 +516,17 @@ GrabarArchivoDeConfiguracion(){
     Loguear "Actualizando la configuración del sistema"
     echo GRUPO=$GRUPO=$USER=$(date +"%d/%m/%y %R") > "$CONFDIR/$CONFFILE"
     echo CONFDIR=$CONFDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo BINDIR=$GRUPO/$BINDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo MAEDIR=$GRUPO/$MAEDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo NOVEDIR=$GRUPO/$NOVEDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo DATASIZE=$GRUPO/$DATASIZE=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo ACEPDIR=$GRUPO/$ACEPDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo PROCDIR=$GRUPO/$PROCDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo REPODIR=$GRUPO/$REPODIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo LOGDIR=$GRUPO/$LOGDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo LOGEXT=$GRUPO/$LOGEXT=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo LOGSIZE=$GRUPO/$LOGSIZE=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo RECHDIR=$GRUPO/$RECHDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo BINDIR=$BINDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo MAEDIR=$MAEDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo NOVEDIR=$NOVEDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo DATASIZE=$DATASIZE=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo ACEPDIR=$ACEPDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo PROCDIR=$PROCDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo REPODIR=$REPODIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo LOGDIR=$LOGDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo LOGEXT=$LOGEXT=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo LOGSIZE=$LOGSIZE=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo RECHDIR=$RECHDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
     
     return 0
 }
@@ -568,71 +571,71 @@ MostrarEstadoDirectorios(){
     if [ $? -eq 0 ]; then
         Loguear "$files"
     else
-        Loguear "No se encuentra el directorio $GRUPO/$CONFDIR instalado" "ERR"
-        CrearDirectorio "$GRUPO/$CONFDIR"
+        Loguear "No se encuentra el directorio $CONFDIR instalado" "ERR"
+        CrearDirectorio "$CONFDIR"
     fi
     
-    Loguear "Directorio de Ejecutables: $GRUPO/$BINDIR"
-    files=$(ls "$GRUPO/$BINDIR" 2>&1)
+    Loguear "Directorio de Ejecutables: $BINDIR"
+    files=$(ls "$BINDIR" 2>&1)
     if [ $? -eq 0 ]; then
         Loguear "$files"
     else
-        Loguear "No se encuentra el directorio $GRUPO/$BINDIR instalado" "ERR"
-        CrearDirectorio "$GRUPO/$BINDIR"
+        Loguear "No se encuentra el directorio $BINDIR instalado" "ERR"
+        CrearDirectorio "$BINDIR"
     fi
     
-    Loguear "Directorio de Maestros y Tablas: $GRUPO/$MAEDIR"
-    files=$(ls "$GRUPO/$MAEDIR" 2>&1)
+    Loguear "Directorio de Maestros y Tablas: $MAEDIR"
+    files=$(ls "$MAEDIR" 2>&1)
     if [ $? -eq 0 ]; then
         Loguear "$files"
     else
-        Loguear "No se encuentra el directorio $GRUPO/$MAEDIR instalado" "ERR"
-        CrearDirectorio "$GRUPO/$MAEDIR"
+        Loguear "No se encuentra el directorio $MAEDIR instalado" "ERR"
+        CrearDirectorio "$MAEDIR"
     fi
     
-    Loguear "Directorio de recepción de archivos de llamadas: $GRUPO/$NOVEDIR"
-    files=$(ls "$GRUPO/$NOVEDIR" 2>&1)
+    Loguear "Directorio de recepción de archivos de llamadas: $NOVEDIR"
+    files=$(ls "$NOVEDIR" 2>&1)
     if ! [ $? -eq 0 ]; then
-        Loguear "No se encuentra el directorio $GRUPO/$NOVEDIR" "ERR"
-        CrearDirectorio "$GRUPO/$NOVEDIR"
+        Loguear "No se encuentra el directorio $NOVEDIR" "ERR"
+        CrearDirectorio "$NOVEDIR"
     fi
     
         
-    Loguear "Directorio de Archivos de llamadas Aceptados: $GRUPO/$ACEPDIR"
-    files=$(ls "$GRUPO/$ACEPDIR" 2>&1)
+    Loguear "Directorio de Archivos de llamadas Aceptados: $ACEPDIR"
+    files=$(ls "$ACEPDIR" 2>&1)
     if ! [ $? -eq 0 ]; then
-        Loguear "No se encuentra el directorio $GRUPO/$ACEPDIR" "ERR"
-        CrearDirectorio "$GRUPO/$ACEPDIR"
+        Loguear "No se encuentra el directorio $ACEPDIR" "ERR"
+        CrearDirectorio "$ACEPDIR"
     fi
     
-    Loguear "Directorio de Archivos de llamadas Sospechosas: $GRUPO/$PROCDIR"
-    files=$(ls "$GRUPO/$PROCDIR" 2>&1)
+    Loguear "Directorio de Archivos de llamadas Sospechosas: $PROCDIR"
+    files=$(ls "$PROCDIR" 2>&1)
     if ! [ $? -eq 0 ]; then
-        Loguear "No se encuentra el directorio $GRUPO/$PROCDIR" "ERR"
-        CrearDirectorio "$GRUPO/$PROCDIR"
+        Loguear "No se encuentra el directorio $PROCDIR" "ERR"
+        CrearDirectorio "$PROCDIR"
     fi
     
-    Loguear "Directorio de Archivos de Reportes de llamadas: $GRUPO/$REPODIR"
-    files=$(ls "$GRUPO/$REPODIR" 2>&1)
+    Loguear "Directorio de Archivos de Reportes de llamadas: $REPODIR"
+    files=$(ls "$REPODIR" 2>&1)
     if ! [ $? -eq 0 ]; then
-        Loguear "No se encuentra el directorio $GRUPO/$REPODIR" "ERR"
-        CrearDirectorio "$GRUPO/$REPODIR"
+        Loguear "No se encuentra el directorio $REPODIR" "ERR"
+        CrearDirectorio "$REPODIR"
     fi
     
-    Loguear "Directorio de Archivos de Log: $GRUPO/$LOGDIR"
-    files=$(ls "$GRUPO/$LOGDIR" 2>&1)
+    Loguear "Directorio de Archivos de Log: $LOGDIR"
+    files=$(ls "$LOGDIR" 2>&1)
     if [ $? -eq 0 ]; then
         Loguear "$files"
     else
-        Loguear "No se encuentra el directorio $GRUPO/$LOGDIR instalado" "ERR"
-        CrearDirectorio "$GRUPO/$LOGDIR"
+        Loguear "No se encuentra el directorio $LOGDIR instalado" "ERR"
+        CrearDirectorio "$LOGDIR"
     fi
     
-    Loguear "Directorio de Archivos Rechazados: $GRUPO/$RECHDIR"
-    files=$(ls "$GRUPO/$RECHDIR" 2>&1)
+    Loguear "Directorio de Archivos Rechazados: $RECHDIR"
+    files=$(ls "$RECHDIR" 2>&1)
     if ! [ $? -eq 0 ]; then
-        Loguear "No se encuentra el directorio $GRUPO/$RECHDIR" "ERR"
-        CrearDirectorio "$GRUPO/$RECHDIR"
+        Loguear "No se encuentra el directorio $RECHDIR" "ERR"
+        CrearDirectorio "$RECHDIR"
     fi
     
     return 0
@@ -645,37 +648,53 @@ VerificarEstadoInstalacion(){
     local scripts=""
     local faltantes=""
     
-    archivos=$(ls "$RUTA_MAESTROS_Y_TABLAS" 2>&1)
-    
+    archivos=$(ls "$GRUPO/ARCHIVOS" 2>&1)
     if [ ! $? -eq 0 ]; then
-        Loguear "No se puede acceder a los maestros y tablas de respaldo. Reinstale la carpeta .files del paquete original" "ERR"
+		Loguear "No se puede acceder a la carpeta ARCHIVOS. Reinstale el paquete original" "ERR"
+    fi
+                
+	while read -r file; do
+		if [ ! -z "$file" ] && [ ! -f "$MAEDIR/$file" ]; then
+			faltantes="$faltantes
+			$MAEDIR/$file"
+		fi
+	done <<< "$archivos"
+    
+    scriptsAFRAINIC=$(ls -1 "$GRUPO/AFRAINIC" 2>&1)
+    if [ ! $? -eq 0 ]; then
+        Loguear "No se puede acceder a la carpeta AFRAINIC. Reinstale el paquete original" "ERR"
         FinAFRAINST 1
     fi
     
-    if [ ! -z "$files" ]; then        
-        while read -r file; do
-            if ! [ -f "$GRUPO/$MAEDIR/$file" ]; then
-                faltantes="$faltantes$GRUPO/$MAEDIR/$file
-                "
-            fi
-        done <<< "$archivos"
-    fi
-    
-    scripts=$(ls "$RUTA_SCRIPTS" 2>&1)
-
+    scriptsAFRARECI=$(ls -1 "$GRUPO/AFRARECI" 2>&1)
     if [ ! $? -eq 0 ]; then
-        Loguear "No se puede acceder a los scripts de respaldo. Reinstale la carpeta .files del paquete original" "ERR"
+		Loguear "No se puede acceder a la carpeta AFRARECI. Reinstale el paquete original" "ERR"
         FinAFRAINST 1
     fi
     
-    if [ ! -z "$scripts" ]; then
-        while read -r file; do
-            if [ ! -f "$GRUPO/$BINDIR/$file" ]; then
-                faltantes="$faltantes$GRUPO/$BINDIR/$file
-                "
-            fi
-        done <<< "$scripts"
+    scriptsAFRAUMBR=$(ls -1 "$GRUPO/AFRAUMBR" 2>&1)
+    if [ ! $? -eq 0 ]; then
+		Loguear "No se puede acceder a la carpeta AFRAUMBR. Reinstale el paquete original" "ERR"
+        FinAFRAINST 1
     fi
+    
+    scriptsAFRALIST=$(ls -1 "$GRUPO/AFRALIST" 2>&1)
+    if [ ! $? -eq 0 ]; then
+		Loguear "No se puede acceder a la carpeta AFRALIST. Reinstale el paquete original" "ERR"
+        FinAFRAINST 1
+    fi
+    
+    scripts="$scriptsAFRAINIC
+    $scriptsAFRARECI
+    $scriptsAFRAUMBR
+    $scriptsAFRALIST"
+	
+	while read -r file; do
+		if [ ! -z "$file" ] && [ ! -f "$BINDIR/$file" ]; then
+			faltantes="$faltantes
+			$BINDIR/$file"
+		fi
+	done <<< "$scripts"
         
     RETORNO="$faltantes"
     return 0
@@ -691,8 +710,11 @@ VerificarInstalacionCompleta(){
         Loguear "Componentes faltantes: $RETORNO"
         LeerSiONo "Desea completar la instalación? ( Si - No ): "
         if [ "$RETORNO" == "Si" ]; then
-            CopiarArchivos "$RUTA_SCRIPTS" "$GRUPO/$BINDIR"
-            CopiarArchivos "$RUTA_MAESTROS_Y_TABLAS" "$GRUPO/$MAEDIR"
+            CopiarArchivos "$GRUPO/AFRAINIC" "$BINDIR"
+            CopiarArchivos "$GRUPO/AFRARECI" "$BINDIR"
+            CopiarArchivos "$GRUPO/AFRAUMBR" "$BINDIR"
+            CopiarArchivos "$GRUPO/AFRALIST" "$BINDIR"
+            CopiarArchivos "$GRUPO/ARCHIVOS" "$MAEDIR"
             MostrarEstadoDirectorios
             Loguear "Estado de la instalación: Completa"
             Loguear "Proceso de Instalación Finalizado"
