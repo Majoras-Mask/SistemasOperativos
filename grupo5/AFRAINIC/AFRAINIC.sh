@@ -4,7 +4,7 @@ GRUPO="$PWD"
 MAEDIR="MAEDIR"
 BINDIR="BINDIR"
 # Variable CONFDIR, directorio de configuracion
-CONF="$(echo "$PWD" | sed -n "s_^\(.*\)/grupo5_\1_p")/conf/conf.log"	#la carpeta de configuracion donde saco todas las direcciones
+CONF=$(echo "$PWD" | sed -n 's-^\(.*\)grupo5.*-\1grupo5/conf/AFRAINST.conf-p')
 NOVEDIR="NOVEDIR"
 RECHDIR="RECHDIR"
 REPODIR="REPODIR"
@@ -67,8 +67,8 @@ loguearVariables(){
 
 verificaInstalacionCompleta(){
 
-	MAEDIR=$(grep '^MAEDIR' $CONF | cut -d '=' -f 2)
-	local archivos=('CdP.csv' 'CdA.csv' 'CdC.csv' 'agentes.csv' 'tllama.csv' 'umbrales.csv')
+	MAEDIR=$(grep '^MAEDIR' "$CONF" | cut -d '=' -f 2)
+	local archivos=('CdP.mae' 'CdA.mae' 'CdC.mae' 'agentes.mae' 'tllama.tab' 'umbrales.tab')
 	local cant=${#archivos[@]}
 	local faltantes=()
 	local cF=0
@@ -80,7 +80,7 @@ verificaInstalacionCompleta(){
 		fi
 	done
 
-	BINDIR=$(grep '^BINDIR' $CONF | cut -d '=' -f 2)
+	BINDIR=$(grep '^BINDIR' "$CONF" | cut -d '=' -f 2)
 
 	local bin=('AFRAINIC.sh')
 	local cantBin=${#bin[@]}
@@ -104,8 +104,8 @@ verificaInstalacionCompleta(){
 }
 
 verificarPermisos(){
-	BINDIR=$(grep '^BINDIR' $CONF | cut -d '=' -f 2)
-	MAEDIR=$(grep '^MAEDIR' $CONF | cut -d '=' -f 2)
+	BINDIR=$(grep '^BINDIR' "$CONF" | cut -d '=' -f 2)
+	MAEDIR=$(grep '^MAEDIR' "$CONF" | cut -d '=' -f 2)
 	
 	for file in $(ls "$BINDIR"); do
 		if ! [ -x "$BINDIR/$file" ]; then
@@ -132,20 +132,19 @@ verificarPermisos(){
 }		
 
 inicializarAmbiente(){
-	GRUPO=$(grep '^GRUPO' $CONF | cut -d '=' -f 2)
-	CONFDIR=$(grep '^CONFDIR' $CONF | cut -d '=' -f 2)
-	BINDIR=$(grep '^BINDIR' $CONF | cut -d '=' -f 2)
-	MAEDIR=$(grep '^MAEDIR' $CONF | cut -d '=' -f 2)
-	DATASIZE=$(grep '^DATASIZE' $CONF | cut -d '=' -f 2)
-	ACEPDIR=$(grep '^ACEPDIR' $CONF | cut -d '=' -f 2)
-	RECHDIR=$(grep '^RECHDIR' $CONF | cut -d '=' -f 2)
-	PROCDIR=$(grep '^PROCDIR' $CONF | cut -d '=' -f 2)
-	REPDIR=$(grep '^REPODIR' $CONF | cut -d '=' -f 2)
-	NOVEDIR=$(grep '^NOVEDIR' $CONF | cut -d '=' -f 2)
-	LOGDIR=$(grep '^LOGDIR' $CONF | cut -d '=' -f 2)
-	LOGSIZE=$(grep '^LOGSIZE' $CONF | cut -d '=' -f 2)
+	export GRUPO=$(grep '^GRUPO' "$CONF" | cut -d '=' -f 2)
+	export CONFDIR=$(grep '^CONFDIR' "$CONF" | cut -d '=' -f 2)
+	export BINDIR=$(grep '^BINDIR' "$CONF" | cut -d '=' -f 2)
+	export MAEDIR=$(grep '^MAEDIR' "$CONF" | cut -d '=' -f 2)
+	export DATASIZE=$(grep '^DATASIZE' "$CONF" | cut -d '=' -f 2)
+	export ACEPDIR=$(grep '^ACEPDIR' "$CONF" | cut -d '=' -f 2)
+	export RECHDIR=$(grep '^RECHDIR' "$CONF" | cut -d '=' -f 2)
+	export PROCDIR=$(grep '^PROCDIR' "$CONF" | cut -d '=' -f 2)
+	export REPDIR=$(grep '^REPODIR' "$CONF" | cut -d '=' -f 2)
+	export NOVEDIR=$(grep '^NOVEDIR' "$CONF" | cut -d '=' -f 2)
+	export LOGDIR=$(grep '^LOGDIR' "$CONF" | cut -d '=' -f 2)
+	export LOGSIZE=$(grep '^LOGSIZE' "$CONF" | cut -d '=' -f 2)
 	
-	#falta inicializar PATH: no tengo idea que poner ahi.
 }
 	
 
@@ -153,28 +152,29 @@ inicializarAmbiente(){
 arrancarAFRAECI(){
 
 	LeerSiONo "¿Desea efectuar la activación de AFRARECI? Si – No"
-	
+		
 	if [ $RETORNO == "No" ]; then
-		echo "Debe ingresar el comando ARRANCAR <parametros> por consola."
+		Loguear "Debe ingresar el comando ./Arrancar AFRARECI.sh por consola."
 	else	
-		if ! [ "$(ps aux | grep -c '/bin/bash \.ARRANCAR\.sh')" -le 2 ]; then  
-			echo "Proceso ARRACAR ya iniciado. Debe utilizar el comando DETENER para terminarlo"
+		pid=$(ps aux | grep "AFRARECI" | grep -v 'Arrancar' | grep -v 'grep' | head -n 1 | awk '{print $2}')
+		
+		if [ ! -z "$pid" ]; then  
+			Loguear "Proceso AFRARECI ya iniciado. Debe utilizar el comando DETENER para terminarlo"
 		else
-			./ARRANCAR.sh &
+			#"$BINDIR/AFRARECI"
 			ID=$!
 			Loguear "AFRARECI corriendo bajo el no.: $ID" 
 		fi
 	fi
-	
-
-
 }
 
 Inicializar(){
-	echo "$CONF"
-
-	if ! [ "$(ps aux | grep -c '/bin/bash \./AFRAINIC\.sh')" -le 2 ]  ; then
-        	echo "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente"  
+	echo "CONF:$CONF"
+	
+    if [ -z "$GRUPO" ] || [  -z "$CONFDIR" ] || [ -z "$BINDIR" ] || [ -z "$MAEDIR" ] ||
+		[ -z "$NOVEDIR" ] || [ -z "$ACEPDIR" ] || [ -z "$PROCDIR" ] || [ -z "$REPODIR" ]
+		[ -z "$LOGDIR" ] || [ -z "$RECHDIR" ]; then
+		Loguear "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente"  
         else
 		verificaInstalacionCompleta
 		local completa=$?

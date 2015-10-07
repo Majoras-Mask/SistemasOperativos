@@ -11,11 +11,6 @@ CONFDIR="$PWD/conf"
 # Archivos a generar en este script
 LOGFILE="AFRAINST.log"
 CONFFILE="AFRAINST.conf"
-# Archivos a chequear
-# Ruta de los Archivos Maestros y Tablas
-RUTA_MAESTROS_Y_TABLAS="$GRUPO/.files/archivos"
-# Ruta de los scripts
-RUTA_SCRIPTS="$GRUPO/.files/scripts"
 
 # Version solicitada para perl
 PERL_VERSION=5
@@ -499,33 +494,36 @@ CopiarArchivos(){
 # Funcion que lee del paquete para ubicar los archivos a las carpetas.
 MoverEjecutables(){
     Loguear "Instalando Programas y Funciones"
-    CopiarArchivos "$RUTA_SCRIPTS" "$GRUPO/$BINDIR"
+    CopiarArchivos "$GRUPO/AFRAINIC" "$GRUPO/$BINDIR"
+    CopiarArchivos "$GRUPO/AFRARECI" "$GRUPO/$BINDIR"
+    CopiarArchivos "$GRUPO/AFRAUMBR" "$GRUPO/$BINDIR"
+    CopiarArchivos "$GRUPO/FUNCIONES" "$GRUPO/$BINDIR"
     return 0
 }
 
 # Funcion que lee del paquete para ubicar los archivos a las carpetas.
 MoverArchivosMaestrosYTablas(){
     Loguear "Instalando Archivos Maestros y Tablas"
-    CopiarArchivos "$RUTA_MAESTROS_Y_TABLAS" "$GRUPO/$MAEDIR"
+    CopiarArchivos "$GRUPO/ARCHIVOS" "$GRUPO/$MAEDIR"
     return 0
 }
 
 # Grabacion del archivo de configuracion
 GrabarArchivoDeConfiguracion(){
     Loguear "Actualizando la configuración del sistema"
-    echo GRUPO=$GRUPO=$USERNAME=$(date +"%d/%m/%y %R") > "$CONFDIR/$CONFFILE"
-    echo CONFDIR=$GRUPO/$CONFDIR=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo BINDIR=$GRUPO/$BINDIR=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo MAEDIR=$GRUPO/$MAEDIR=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo NOVEDIR=$GRUPO/$NOVEDIR=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo DATASIZE=$GRUPO/$DATASIZE=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo ACEPDIR=$GRUPO/$ACEPDIR=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo PROCDIR=$GRUPO/$PROCDIR=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo REPODIR=$GRUPO/$REPODIR=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo LOGDIR=$GRUPO/$LOGDIR=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo LOGEXT=$GRUPO/$LOGEXT=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo LOGSIZE=$GRUPO/$LOGSIZE=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
-    echo RECHDIR=$GRUPO/$RECHDIR=$USERNAME=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo GRUPO=$GRUPO=$USER=$(date +"%d/%m/%y %R") > "$CONFDIR/$CONFFILE"
+    echo CONFDIR=$CONFDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo BINDIR=$GRUPO/$BINDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo MAEDIR=$GRUPO/$MAEDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo NOVEDIR=$GRUPO/$NOVEDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo DATASIZE=$GRUPO/$DATASIZE=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo ACEPDIR=$GRUPO/$ACEPDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo PROCDIR=$GRUPO/$PROCDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo REPODIR=$GRUPO/$REPODIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo LOGDIR=$GRUPO/$LOGDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo LOGEXT=$GRUPO/$LOGEXT=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo LOGSIZE=$GRUPO/$LOGSIZE=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
+    echo RECHDIR=$GRUPO/$RECHDIR=$USER=$(date +"%d/%m/%y %R") >> "$CONFDIR/$CONFFILE"
     
     return 0
 }
