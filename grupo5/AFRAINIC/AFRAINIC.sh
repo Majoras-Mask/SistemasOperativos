@@ -161,7 +161,7 @@ arrancarAFRAECI(){
 		if [ ! -z "$pid" ]; then  
 			Loguear "Proceso AFRARECI ya iniciado. Debe utilizar el comando DETENER para terminarlo"
 		else
-			#"$BINDIR/AFRARECI"
+			#"$BINDIR/AFRARECI" &
 			ID=$!
 			Loguear "AFRARECI corriendo bajo el no.: $ID" 
 		fi
