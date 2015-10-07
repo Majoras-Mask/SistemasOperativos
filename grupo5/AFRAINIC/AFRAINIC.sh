@@ -156,7 +156,7 @@ arrancarAFRAECI(){
 	if [ $RETORNO == "No" ]; then
 		Loguear "Debe ingresar el comando ./Arrancar AFRARECI.sh por consola."
 	else	
-		pid=$(ps aux | grep "AFRARECI" | grep -v 'Arrancar' | grep -v 'grep' | head -n 1 | awk '{print $2}')
+		pid=$(ps aux | grep "AFRARECI" | grep -v 'ARRANCAR' | grep -v 'grep' | head -n 1 | awk '{print $2}')
 		
 		if [ ! -z "$pid" ]; then  
 			Loguear "Proceso AFRARECI ya iniciado. Debe utilizar el comando DETENER para terminarlo"
