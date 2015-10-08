@@ -2,16 +2,17 @@
 RETORNO=""
 # Variable usada para leer entrada
 input=""
-# Variables del sistema
-VARIABLES="GRUPO CONFDIR BINDIR MAEDIR DATASIZE ACEPDIR RECHDIR PROCDIR REPODIR LOGDIR LOGSIZE"
 # Variable GRUPO, directorio de trabajo
-GRUPO="$PWD"
+if [ $(echo $0| grep -c '^/.*' ) -ne 0 ] && [ $(echo $0 | grep -c 'grupo5') -eq 1 ]; then
+	GRUPO=$(echo "$0" | sed -n 's-^\(.*\)grupo5.*-\1grupo5-p')
+else
+	GRUPO=$(echo "$PWD" | sed -n 's-^\(.*\)grupo5.*-\1grupo5-p')
+fi
 # Variable CONFDIR, directorio de configuracion
-CONFDIR="$PWD/conf"
+CONFDIR="$GRUPO/conf"
 # Archivos a generar en este script
 LOGFILE="AFRAINST.log"
 CONFFILE="AFRAINST.conf"
-
 # Version solicitada para perl
 PERL_VERSION=5
 PERL_MENSAJE_ERROR_VERSION="Para ejecutar el sistema AFRA-I es necesario contar con Perl 5 o superior.
@@ -19,7 +20,7 @@ Efectúe su isntalación e inténtelo nuevamente.
 Proceso de Instalación Cancelado"
 TERMINOS_Y_CONDICIONES="
 *************************************************************
-*       Proceso de Instalación de \"AFRAI-I\"                *
+*       Proceso de Instalación de \"AFRAI-I\"				*
 *   Tema I Copyright © Grupo 05 - Segundo Cuatrimestre 2015 *
 *************************************************************
 
@@ -37,7 +38,7 @@ LoguearAlArchivo(){
     local what="INFO"
     local why="$1" # mensaje
     if [ ! -z "$2" ]; then
-        tipo="$2"
+        what="$2"
     fi
     
     local who="$USER"
@@ -128,6 +129,14 @@ LeerSiONo(){
     done
 }
 
+VerificarDirectorioReservado(){
+	local directorio=$1
+	local dirPrincipal=$(echo $directorio | sed -n 's-^/\?\([^/]*\).*-\1-p')
+	if [ "$dirPrincipal" == "conf" ]; then
+		return 1
+	fi
+	return 0
+}
 
 #Bucle para leer un directorio valido. Directorio valido es una cadena no
 # vacia. Se le elimina el caracter / si se encuentra presente al principio
@@ -145,20 +154,20 @@ LeerDirectorio(){
         #fi
         
         local c=$(echo "$input" | grep -c "^[/0-9a-zA-Z_-]\+$")
-        if [ $c -eq 0 ];then 
+        if [ "$c" -eq 0 ];then 
 			Loguear "Introducir un directorio valido."
 			continue
         fi
         
         local mensaje2
-        if [ ${input:0:1} == '/' ]; then
+        if [ "${input:0:1}" == '/' ]; then
             mensaje2=${input:1}
         else
             mensaje2=${input}
         fi
         
         local mensaje3
-        if [ ${mensaje2:(-1)} == '/' ]; then
+        if [ "${mensaje2:(-1)}" == '/' ]; then
             local len=${#mensaje2}
             let len--
             mensaje3=${mensaje2:0:len}
@@ -168,8 +177,8 @@ LeerDirectorio(){
         
         if [ -z "$mensaje3" ]; then
             Loguear "Introducir un directorio valido."
-        elif [ "$mensaje3" == "conf" ]; then
-            Loguear "No esta permitido utilizar el directorio reservado conf."
+        elif [ "$( VerificarDirectorioReservado "$mensaje3"; echo $? )" -ne 0 ]; then
+            Loguear "No esta permitido utilizar un directorio reservado."
         else
             RETORNO=$mensaje3
             return 0
@@ -186,8 +195,8 @@ LeerNumero(){
     local mensaje=$1
     Loguear "$mensaje";LeerInput
     local numero=$(echo $input | grep "^[0-9]\+$")
-    while [ -z "$numero" ]; do
-        Loguear "Debe ingresarse un numero"
+    while [ -z "$numero" ] || [ ${#numero} -gt 15 ]; do
+        Loguear "Debe ingresarse un numero valido"
         Loguear "$mensaje"; LeerInput
         numero=$(echo $input | grep "^[0-9]\+$")
     done
@@ -307,12 +316,11 @@ DefinirDATASIZE(){
     while true; do
         mensaje="Defina espacio mínimo libre para la recepción de archivos de llamadas en Mbytes ( $DATASIZE ): "
         LeerNumero "$mensaje"
-        if [ "$RETORNO" -gt 0 ]; then
+        if [ $RETORNO -gt 0 ]; then
             DATASIZE=${RETORNO:="100"}
             return 0
         else
             Loguear "Debe ingresar un numero mayor a cero!" "WAR"
-            LeerNumero "$mensaje"
         fi
     done
 }
@@ -362,7 +370,6 @@ DefinirLOGSIZE(){
             return 0
         else
             Loguear "Debe ingresar un numero mayor a cero!" "WAR"
-            LeerNumero "$mensaje"
         fi
     done
 }
@@ -381,11 +388,12 @@ VerificarEspacioEnDisco(){
         if [ $espacio -gt $DATASIZE ];then
             return 0
         fi
-        Loguear "Insuficiente espacio en disco."
-        Loguear "Espacio disponible: $espacio Mb."
-        Loguear "Espacio requerido $DATASIZE Mb."
-        Loguear "Intentelo nuevamente."
-        sleep '10s'
+        Loguear "Insuficiente espacio en disco." "ERR"
+        Loguear "Espacio disponible: $espacio Mb." "ERR"
+        Loguear "Espacio requerido $DATASIZE Mb." "ERR"
+        Loguear "Intentelo nuevamente." "ERR"
+        #sleep '10s'
+        FinAFRAINST 1
     done
     return 0
 }
@@ -655,8 +663,7 @@ VerificarEstadoInstalacion(){
                 
 	while read -r file; do
 		if [ ! -z "$file" ] && [ ! -f "$MAEDIR/$file" ]; then
-			faltantes="$faltantes
-			$MAEDIR/$file"
+			faltantes=$(echo -e "$faltantes\n$MAEDIR/$file")
 		fi
 	done <<< "$archivos"
     
@@ -678,6 +685,12 @@ VerificarEstadoInstalacion(){
         FinAFRAINST 1
     fi
     
+    scriptsFUNCIONES=$(ls -1 "$GRUPO/FUNCIONES" 2>&1)
+    if [ ! $? -eq 0 ]; then
+		Loguear "No se puede acceder a la carpeta FUNCIONES. Reinstale el paquete original" "ERR"
+        FinAFRAINST 1
+    fi
+    
     scriptsAFRALIST=$(ls -1 "$GRUPO/AFRALIST" 2>&1)
     if [ ! $? -eq 0 ]; then
 		Loguear "No se puede acceder a la carpeta AFRALIST. Reinstale el paquete original" "ERR"
@@ -687,12 +700,14 @@ VerificarEstadoInstalacion(){
     scripts="$scriptsAFRAINIC
     $scriptsAFRARECI
     $scriptsAFRAUMBR
+    $scriptsFUNCIONES
     $scriptsAFRALIST"
 	
 	while read -r file; do
 		if [ ! -z "$file" ] && [ ! -f "$BINDIR/$file" ]; then
-			faltantes="$faltantes
-			$BINDIR/$file"
+			#faltantes="$faltantes
+			#$BINDIR/$file"
+			faltantes=$(echo -e "$faltantes\n$BINDIR/$file")
 		fi
 	done <<< "$scripts"
         
@@ -714,6 +729,7 @@ VerificarInstalacionCompleta(){
             CopiarArchivos "$GRUPO/AFRARECI" "$BINDIR"
             CopiarArchivos "$GRUPO/AFRAUMBR" "$BINDIR"
             CopiarArchivos "$GRUPO/AFRALIST" "$BINDIR"
+            CopiarArchivos "$GRUPO/FUNCIONES" "$BINDIR"
             CopiarArchivos "$GRUPO/ARCHIVOS" "$MAEDIR"
             MostrarEstadoDirectorios
             Loguear "Estado de la instalación: Completa"
