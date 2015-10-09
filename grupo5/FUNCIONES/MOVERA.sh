@@ -27,16 +27,20 @@ if [ -f "$origin" ] && [ -d "$destiny" ];then
 		mv "$origin" "$duplicate"
 	fi
 else
-	message=""
 	if [ -z "$command" ];then
-		command="MoverA"
+		if [ ! -f "$origin" ];then
+			echo "El archivo de origen $origin no existe"
+		fi
+		if [ ! -d "$destiny" ];then
+			echo "El directorio de destino $destiny no existe"
+		fi
 	else
-		message="usando MoverA "
+		if [ ! -f "$origin" ];then
+			"$BINDIR"/GRALOG.sh "$command" "El archivo de origen $origin no existe" "ERR"
+		fi
+		if [ ! -d "$destiny" ];then
+			"$BINDIR"/GRALOG.sh "$command" "El directorio de destino $destiny no existe" "ERR"
+		fi
 	fi
-	if [ ! -f "$origin" ];then
-		GraLog "$command" "${message}el archivo de origen no existe" "ERROR"
-	fi
-	if [ ! -d "$destiny" ];then
-		GraLog "$command" "${message}el directorio de destino no existe" "ERROR"
-	fi
+	
 fi

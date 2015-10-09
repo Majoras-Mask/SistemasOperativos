@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ -z "$CONFDIR" ] || [ -z "$BINDIR" ] || [ -z "$MAEDIR" ] || [ -z "$NOVEDIR"] || [ -z "$ACEPDIR"] || [ -z "$PROCDIR"] || [ -z "$REPODIR"] || [ -z "$LOGDIR" ] || [ -z "$RECHDIR" ]; then
+if [ -z "$CONFDIR" ] || [ -z "$BINDIR" ] || [ -z "$MAEDIR" ] || [ -z "$NOVEDIR" ] || [ -z "$ACEPDIR" ] || [ -z "$PROCDIR" ] || [ -z "$REPODIR" ] || [ -z "$LOGDIR" ] || [ -z "$RECHDIR" ]; then
 	echo "Variables de entorno no inicializadas."
 	exit 1
 else
