@@ -152,15 +152,15 @@ arrancarAFRAECI(){
 	"$BINDIR"/GRALOG.sh "AFRAINIC" "$RETORNO" "INFO"
 	
 	if [ $RETORNO == "No" ]; then
-		Loguear "Debe ingresar el comando ./ARRANCAR.sh AFRARECI.sh por consola." "INFO"
+		Loguear "Debe ingresar el comando $BINDIR/ARRANCAR.sh AFRARECI.sh por consola." "INFO"
 	else	
 		pid=$(ps aux | grep "AFRARECI" | grep -v 'ARRANCAR' | grep -v 'grep' | head -n 1 | awk '{print $2}')
 		
 		if [ ! -z "$pid" ]; then  
-			Loguear "Proceso AFRARECI ya iniciado. Debe utilizar el comando DETENER para terminarlo: ./DETENER.sh AFRARECI.sh" "WAR"
+			Loguear "Proceso AFRARECI ya iniciado. Debe utilizar el comando DETENER para terminarlo: $BINDIR/DETENER.sh AFRARECI.sh" "WAR"
 		else	
 			
-			"$BINDIR"/nada.sh &
+			"$BINDIR"/AFRARECI.sh &
 			ID=$!
 			Loguear "AFRARECI corriendo bajo el no.: $ID" "INFO"
 		fi
@@ -173,7 +173,7 @@ existenCarpetas(){
 	local cant=${#folder[@]}
 
 	for(( i=0; i<$cant; i++ )); do
-		if ! [ -d ${folder[${i}]} ]; then
+		if ! [ -d "${folder[${i}]}" ]; then
 			Loguear "No existe carpeta: ${folder[${i}]}. Volver a instalar ejecutando ./AFRAINST.sh" "ERR"
 			return 1		
 		fi

@@ -25,7 +25,8 @@ if [ -f "$file" ];then
 		fi
 	done
 	if [ "$filesize" -gt "$LOGSIZE" ];then
-		echo $(tail --lines=50 "$file") > "$file"
+		tail --lines=50 "$file" > "/tmp/temporal.txt"
+		cat "/tmp/temporal.txt" > "$file"
 		echo "$(date +"%d/%m/%y %R")---$USER---GRALOG---INFO---El Log ha superado su tamaño maximo" >> "$file"
 	fi
 	echo "$(date +"%d/%m/%y %R")---$USER---$command---$type---$message" >> "$file"

@@ -14,7 +14,7 @@ if [ -f "$origin" ] && [ -d "$destiny" ];then
 			mkdir "${destiny}duplicates"
 		fi
 		duplicate=${destiny}duplicates/${filename}
-		if [ ! -f ${duplicate}.001 ];then
+		if [ ! -f "${duplicate}.001" ];then
 			mv "$origin" "${duplicate}.001"
 		else
 			extension=(${duplicate}.*)
