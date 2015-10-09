@@ -20,10 +20,11 @@ export FALSE=0
 # Chequeo si se inicializó el ambiente desde el -comando AFRAINIC-
 #*****************************************************************
 checkAmbienteInicializado(){
-	  if [ "$INICIALIZADO" == "TRUE" ]
-	  then
-	  return $TRUE # Contrato: AFRAINIC setea la INICIALIZADO= 1 (TRUE) /0 (FALSE)
-	  fi
+	if [ -z "$BINDIR" ] || [ -z "$MAEDIR" ] || [ -z "$NOVEDIR" ] || [ -z "$ACEPDIR" ] || [ -z "$RECHDIR" ]; then
+		return $FALSE
+	else
+		return $TRUE
+	fi
 }
 
 #********************************************************************
@@ -36,7 +37,6 @@ checkNuevosArchivosNovedades() {
 	for DIRECTORIO in $( ls "$NOVEDIR" -F | grep "/$" )
 	do
 		DIRECTORIO=`echo $DIRECTORIO | sed "s-/--"`
-		#$LOGDIR/GraLog "AFRARECI" "Directorio hallado: $DIRECTORIO en novedades. Sera movido a rechazados" "INFO"		
 		mv "$NOVEDIR/$DIRECTORIO" "$RECHDIR"
 	done
 	
@@ -44,7 +44,7 @@ checkNuevosArchivosNovedades() {
 	local cant_archivos=`find "$1" -maxdepth 1 -type f | wc --lines`			
 	if [ "$cant_archivos" != 0 ]	
 	then
-		#$LOGDIR/GraLog "AFRARECI" "Cantidad de archivos nuevos en $NOVEDIR: $cant_archivos" "INFO"		
+		$BINDIR/GRALOG.sh "AFRARECI" "Cantidad de archivos nuevos en $NOVEDIR: $cant_archivos" "INFO"		
 		return $TRUE 
 	else
 		return $FALSE
@@ -59,7 +59,7 @@ checkNuevosArchivosAceptados(){
 	local cant_archivos=`find "$1" -type f | wc --lines`
 	if [ "$cant_archivos" -gt 0 ]	
 	then
-		#$LOGDIR/GraLog "AFRARECI" "Cantidad de archivos nuevos en $ACEPDIR: $cant_archivos" "INFO"			
+		$BINDIR/GRALOG.sh "AFRARECI" "Cantidad de archivos nuevos en $ACEPDIR: $cant_archivos" "INFO"			
 		return $TRUE 
 	else
 		return $FALSE
@@ -71,26 +71,27 @@ checkNuevosArchivosAceptados(){
 #*********************************************************************
 checkFormatoNombreArchivo(){
 	#chequeamos que tenga todos los separadores
+
 	cantidadGuiones=`echo $1 | grep -o '_' | wc -w`	
 	if [ $cantidadGuiones == 1 ]
 	then
-		#recortamos del nombre del file todas las secciones	
+	   	#recortamos del nombre del file todas las secciones	
 		central=`echo $1 | cut -d"_" -f1`
 		fecha=`echo $1 | cut -d"_" -f2`
-		
+           
 		#Si alguno es vacio, no tiene los campos completos		
 		if [ -z "$central" -o -z "$fecha" ]
 		then
-			#$LOGDIR/GraLog "AFRARECI" "Formato de nombre de archivo incompleto" "INFO"
+			$BINDIR/GRALOG.sh "AFRARECI" "Formato de nombre de archivo incompleto" "INFO"
 			return $FALSE
 		
 		else
-			#$LOGDIR/GraLog "AFRARECI" "Formato de nombre de archivo completo" "INFO"
+			$BINDIR/GRALOG.sh "AFRARECI" "Formato de nombre de archivo completo" "INFO"
 			return $TRUE 
 		fi
 	else
 		#No tiene la cantidad de separadores correctos
-		#$LOGDIR/GraLog "AFRARECI" "Formato de nombre de archivo invalido" "INFO"		
+		$BINDIR/GRALOG.sh "AFRARECI" "Formato de nombre de archivo invalido" "INFO"		
 		return $FALSE
 	fi
 }
@@ -99,13 +100,13 @@ checkFormatoNombreArchivo(){
 #*********************************************************************
 checkCentral(){	
 	centralActual=$1
-	TESTCENTRAL=`grep "^$centralActual;.*" $MAEDIR/Cdc.mae | cut -d";" -f1`
+	TESTCENTRAL=`grep "^$centralActual;.*" $MAEDIR/CdC.mae | cut -d";" -f1`
 	if [ "$centralActual" != "$TESTCENTRAL" ]
 	then
-		#$LOGDIR/GraLog "AFRARECI" "Centarl invalida $TESTCENTRAL" "INFO"
+		$BINDIR/GRALOG.sh "AFRARECI" "Central invalida $TESTCENTRAL" "INFO"
 		return $FALSE
 	else	
-		#$LOGDIR/GraLog "AFRARECI" "Central valida $TESTCENTRAL" "INFO"
+		$BINDIR/GRALOG.sh "AFRARECI" "Central valida $TESTCENTRAL" "INFO"
 		return $TRUE
 	fi		
 }
@@ -118,11 +119,11 @@ checkExtension(){
 	local arch=`echo $1 | grep -i '\.'`
 	if [ -n "$arch" ] ; 
 	then
-		#$LOGDIR/GraLog "AFRARECI" "Extension $arch invalida" "INFO"
+		$BINDIR/GRALOG.sh "AFRARECI" "Extension $arch invalida" "INFO"
 		return $FALSE
 		
 	else
-		#$LOGDIR/GraLog "AFRARECI" "Extension valida" "INFO"
+		$BINDIR/GRALOG.sh "AFRARECI" "Extension valida" "INFO"
 		return $TRUE
 	fi
 }
@@ -208,7 +209,7 @@ checkFecha(){
 
 	if [ -z "$testDia" -o -z "$testMes" -o -z "$testAnio" ]
 	then
-		#$LOGDIR/GraLog "AFRARECI" "Fecha de formato invalida " "INFO"
+		$BINDIR/GRALOG.sh "AFRARECI" "Fecha de formato invalida " "INFO"
 		return $FALSE
 	else
 		checkDiasMes $1
@@ -216,10 +217,10 @@ checkFecha(){
 		
 		if [ "$esFechaValida" = "$TRUE" ]
 		then 	
-			#$LOGDIR/GraLog "AFRARECI" "Fecha valida" "INFO"
+			$BINDIR/GRALOG.sh "AFRARECI" "Fecha de valida" "INFO"
 			return $TRUE	
 		else
-			#$LOGDIR/GraLog "AFRARECI" "Fecha invalida " "INFO"
+			$BINDIR/GRALOG.sh "AFRARECI" "Fecha de invalida " "INFO"
 			return $FALSE
 		fi
 	fi
@@ -231,19 +232,19 @@ checkFecha(){
 #$1= nombre completo del archivo
 checkNombreCompletoArchivo(){	
 	central=`echo $1 | cut -d"_" -f1`
-	checkCentral $gestion
+	checkCentral $central
 	RESULCENTRAL=$?
 			
-	fecha=`echo $1 | cut -d"_" -f5 | cut -d"." -f1`
-	checkFecha $fecha
-	RESULFECHA=$?
-
-	if [ $RESULCENTRAL == 1 -a $RESULFECHA == 1];
+#	fecha=`echo $1 | cut -d"_" -f5 | cut -d"." -f1`
+#	checkFecha $fecha
+#	RESULFECHA=$?
+#	if [ $RESULCENTRAL == 1 -a $RESULFECHA == 1 ];
+	if [ $RESULCENTRAL == 1 ];
 		then
-		#$LOGDIR/GraLog "AFRARECI" "Nombre de archivo valido" "INFO"
+		$BINDIR/GRALOG.sh "AFRARECI" "Nombre de archivo valido" "INFO"
 		return $TRUE
 	else
-		#$LOGDIR/GraLog "AFRARECI" "Nombre de archivo invalido" "INFO"
+		$BINDIR/GRALOG.sh "AFRARECI" "Nombre de archivo invalido" "INFO"
 		return $FALSE
 	fi
 }
@@ -270,12 +271,12 @@ checkArchivos(){
 		if [ $RESULFORMATONOMBREARCH == 1 -a $RESULNOMBREARCHIVO == 1 -a $RESULEXTENSIONARCHIVO == 1 ];
 		then
 										
-			#$BINDIR/MoverA $NOVEDIR/$ARCHIVO $ACEPDIR
-			#$LOGDIR/GraLog "AFRARECI" "Archivo valido movido: $ARCHIVO" "INFO"	
-				
+			$BINDIR/MOVERA.sh $NOVEDIR/$ARCHIVO $ACEPDIR
+			$BINDIR/GRALOG.sh "AFRARECI" "Archivo valido movido: $ARCHIVO" "INFO"
+
 		else
-			#$BINDIR/MoverA $NOVEDIR/$ARCHIVO $RECHDIR
-			#$LOGDIR/GraLog "AFRARECI" "Archivo invalido movido: $ARCHIVO" "INFO" 
+			$BINDIR/MOVERA.sh $NOVEDIR/$ARCHIVO $RECHDIR
+			$BINDIR/GRALOG.sh "AFRARECI" "Archivo invalido movido: $ARCHIVO" "INFO" 
 		fi
 	done	
 }
@@ -285,7 +286,7 @@ checkArchivos(){
 #**********************************************************************
 ejecutar(){
 	i=0
-	#$LOGDIR/GraLog "AFRARECI" "Comienzo de Ejecucion" "INFO"
+	$BINDIR/GRALOG.sh "AFRARECI" "Comienzo de Ejecucion" "INFO"
 	 
 	while [ "$CANLOOP" = "TRUE" ]
 	do
@@ -293,7 +294,7 @@ ejecutar(){
 		EXISTENOVEDAD=$?
 		if [ $EXISTENOVEDAD -eq $TRUE ]
 		then
-			#$LOGDIR/GraLog "AFRARECI" "Archivos a validar encontrados en novedades" "INFO"
+			$BINDIR/GRALOG.sh "AFRARECI" "Archivos a validar encontrados en novedades" "INFO"
 			checkArchivos $NOVEDIR
 		else
 			checkNuevosArchivosAceptados $ACEPDIR
@@ -304,30 +305,30 @@ ejecutar(){
 				PROCESO=`ps | grep -c "AFRAUMBR"`
 				if [ "$PROCESO" = "0" ]
 				then
-			      		#$LOGDIR/GraLog "AFRARECI" "Archivos a protocolizar encontrados en aceptados" "INFO"
-			      		#$LOGDIR/GraLog "AFRARECI" "Inicio ejecucion del proceso AFRAUMBR" "INFO"
-			      		#$LOGDIR/ARRANCAR "AFRAUMBR"
+			      		$BINDIR/GRALOG.sh "AFRARECI" "Archivos a protocolizar encontrados en aceptados" "INFO"
+			      		$BINDIR/GRALOG.sh "AFRARECI" "Inicio ejecucion del proceso AFRAUMBR" "INFO"
+			      		#$BINDIR/ARRANCAR.sh "AFRAUMBR.sh"
 				fi	
 					
 			fi
 		fi
 		i=`expr $i + 1`
-		#$LOGDIR/GraLog "AFRARECI" "Fin ciclo Nro:"$i "INFO"
+		$BINDIR/GRALOG.sh "AFRARECI" "Fin ciclo Nro:"$i "INFO"
 		sleep $TESPERA
 	done
-	#$LOGDIR/GraLog "AFRARECI" "Fin de Ejecucion AFRARECI" "INFO"
+	$BINDIR/GRALOG.sh "AFRARECI" "Fin de Ejecucion AFRARECI" "INFO"
 }
 #**********************************************************************
 # PRINCIPAL
 #**********************************************************************
 
-#$LOGDIR/GraLog "AFRARECI" "Inicio AFRARECI" "INFO"
+$BINDIR/GRALOG.sh "AFRARECI" "Inicio AFRARECI" "INFO"
 checkAmbienteInicializado
 	if [ $? -eq $TRUE ];
 	then
-		#$LOGDIR/GraLog "AFRARECI" "Ambiente  inicializado" "INFO"		
+		$BINDIR/GRALOG.sh "AFRARECI" "Ambiente  inicializado" "INFO"		
 		ejecutar
 	else
-		#$LOGDIR/GraLog "AFRARECI" "Ambiente no inicializado" "ERR"
+		$BINDIR/GRALOG.sh "AFRARECI" "Ambiente no inicializado" "ERR"
 		exit 0
 	fi
