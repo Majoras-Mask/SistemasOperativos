@@ -34,6 +34,7 @@ LoguearAlArchivo(){
 	if [ ! -d "$CONFDIR" ]; then
 		mkdir "$CONFDIR"
 	fi
+	
     local where="AFRAINST"
     local what="INFO"
     local why="$1" # mensaje
@@ -44,7 +45,7 @@ LoguearAlArchivo(){
     local who="$USER"
     local when=$(date +"%d/%m/%y %R")
     
-    echo "$when-$who-$where-$what-$why" >> "$CONFDIR/$LOGFILE" 
+    echo "$when---$who---$where---$what---$why" >> "$CONFDIR/$LOGFILE" 
 }
 
 # Funcion para loguear a stdout y al logfile
