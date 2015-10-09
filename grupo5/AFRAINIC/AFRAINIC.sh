@@ -1,22 +1,19 @@
 #!/bin/bash
-
-GRUPO="$PWD"
-MAEDIR="MAEDIR"
-# Variable CONFDIR, directorio de configuracion
-CONF=$(echo "$PWD" | sed -n 's-^\(.*\)grupo5.*-\1grupo5/conf/AFRAINST.conf-p')
-BINDIR="BINDIR"
-NOVEDIR="NOVEDIR"
-RECHDIR="RECHDIR"
-REPODIR="REPODIR"
-ACEPDIR="ACEPDIR"
-PROCDIR="PROCDIR"
-LOGDIR="LOGDIR"
-LOGEXT=$(grep '^LOGEXT' "$CONF" | cut -d '=' -f 2)
 RETORNO=""
 
 Loguear(){
 	echo "$1"
 	"$BINDIR"/GRALOG.sh "AFRAINIC" "$1" "$2"
+}
+
+minInicializacion(){
+	CONF=$(echo "$PWD" | sed -n 's-^\(.*\)grupo5.*-\1grupo5/conf/AFRAINST.conf-p')
+
+	export MAEDIR=$(grep '^MAEDIR' "$CONF" | cut -d '=' -f 2)
+	export BINDIR=$(grep '^BINDIR' "$CONF" | cut -d '=' -f 2)
+	export LOGEXT=$(grep '^LOGEXT' "$CONF" | cut -d '=' -f 2)
+	export LOGDIR=$(grep '^LOGDIR' "$CONF" | cut -d '=' -f 2)
+	export LOGSIZE=$(grep '^LOGSIZE' "$CONF" | cut -d '=' -f 2)
 }
 
 LeerSiONo(){
@@ -59,30 +56,44 @@ loguearVariables(){
 
 verificaInstalacionCompleta(){
 
-	MAEDIR=$(grep '^MAEDIR' "$CONF" | cut -d '=' -f 2)
+	if ! [ -d "$LOGDIR" ]; then
+		echo "No existe carpeta $LOGDIR. Volver a instalar ejecutando ./AFRAINST.sh -- ERR"
+		return 1
+	fi
+
 	local archivos=('CdP.mae' 'CdA.mae' 'CdC.mae' 'agentes.mae' 'tllama.tab' 'umbrales.tab')
 	local cant=${#archivos[@]}
 	local faltantes=()
 	local cF=0
 
-	for(( i=0; i<$cant; i++ )); do
-		if ! [ -f "$MAEDIR/${archivos[${i}]}" ]; then
-			faltantes[${cf}]="${archivos[${i}]}"
-			((cF++))
-		fi
-	done
-
-	BINDIR=$(grep '^BINDIR' "$CONF" | cut -d '=' -f 2)
+	if [ -d "$MAEDIR" ]; then
+		for(( i=0; i<$cant; i++ )); do
+		
+			if ! [ -f "$MAEDIR/${archivos[${i}]}" ]; then
+				faltantes[${cf}]="${archivos[${i}]}"
+				((cF++))
+			fi
+		done
+	else
+		Loguear "No existe carpeta $MAEDIR. Volver a instalar ejecutando ./AFRAINST.sh" "ERR"
+		return 1
+	fi
 
 	local bin=('AFRAINIC.sh' 'AFRARECI' 'AFRAUMBR.sh' 'ARRANCAR.sh' 'clasificarLLamada.sh' 'DETENER.sh' 'GRALOG.sh' 'MOVERA.sh' 'parserLLamada.sh' 'validarCampos.sh' 'validarLLamada.sh' 'verificarUmbrales.sh')
 	local cantBin=${#bin[@]}
 
-	for(( j=0; j<$cantBin; j++ )); do
-		if ! [ -f "$BINDIR/${bin[${j}]}" ]; then
-			faltantes[${cF}]="${bin[${j}]}"
-			((cF++))
-		fi
-	done
+	if [ -d "$BINDIR" ]; then
+		for(( j=0; j<$cantBin; j++ )); do
+		
+			if ! [ -f "$BINDIR/${bin[${j}]}" ]; then
+				faltantes[${cF}]="${bin[${j}]}"
+				((cF++))
+			fi
+		done
+	else
+		echo "No existe carpeta $BINDIR. Volver a instalar ejecutando ./AFRAINST.sh -- ERR"
+		return 1
+	fi
 	
 	if [ ${#faltantes[@]} -ne 0 ]; then
 		Loguear "Archivos faltantes en la instalación: ${faltantes[*]}" "ERR"
@@ -96,8 +107,6 @@ verificaInstalacionCompleta(){
 }
 
 verificarPermisos(){
-	BINDIR=$(grep '^BINDIR' "$CONF" | cut -d '=' -f 2)
-	MAEDIR=$(grep '^MAEDIR' "$CONF" | cut -d '=' -f 2)
 	
 	for file in $(ls "$BINDIR"); do
 		if ! [ -x "$BINDIR/$file" ]; then
@@ -126,17 +135,12 @@ verificarPermisos(){
 inicializarAmbiente(){
 	export GRUPO=$(grep '^GRUPO' "$CONF" | cut -d '=' -f 2)
 	export CONFDIR=$(grep '^CONFDIR' "$CONF" | cut -d '=' -f 2)
-	export BINDIR=$(grep '^BINDIR' "$CONF" | cut -d '=' -f 2)
-	export MAEDIR=$(grep '^MAEDIR' "$CONF" | cut -d '=' -f 2)
 	export DATASIZE=$(grep '^DATASIZE' "$CONF" | cut -d '=' -f 2)
 	export ACEPDIR=$(grep '^ACEPDIR' "$CONF" | cut -d '=' -f 2)
 	export RECHDIR=$(grep '^RECHDIR' "$CONF" | cut -d '=' -f 2)
 	export PROCDIR=$(grep '^PROCDIR' "$CONF" | cut -d '=' -f 2)
 	export REPODIR=$(grep '^REPODIR' "$CONF" | cut -d '=' -f 2)
 	export NOVEDIR=$(grep '^NOVEDIR' "$CONF" | cut -d '=' -f 2)
-	export LOGDIR=$(grep '^LOGDIR' "$CONF" | cut -d '=' -f 2)
-	export LOGSIZE=$(grep '^LOGSIZE' "$CONF" | cut -d '=' -f 2)
-	export LOGEXT=$(grep '^LOGEXT' "$CONF" | cut -d '=' -f 2)
 	
 }
 	
@@ -154,21 +158,37 @@ arrancarAFRAECI(){
 		
 		if [ ! -z "$pid" ]; then  
 			Loguear "Proceso AFRARECI ya iniciado. Debe utilizar el comando DETENER para terminarlo: ./DETENER.sh AFRARECI.sh" "WAR"
-		else
-			"$BINDIR"/AFRARECI &
+		else	
+			
+			"$BINDIR"/nada.sh &
 			ID=$!
 			Loguear "AFRARECI corriendo bajo el no.: $ID" "INFO"
 		fi
 	fi
 }
 
+existenCarpetas(){
+
+	local folder=("$NOVEDIR" "$ACEPDIR" "$PROCDIR" "$REPODIR" "$RECHDIR")
+	local cant=${#folder[@]}
+
+	for(( i=0; i<$cant; i++ )); do
+		if ! [ -d ${folder[${i}]} ]; then
+			Loguear "No existe carpeta: ${folder[${i}]}. Volver a instalar ejecutando ./AFRAINST.sh" "ERR"
+			return 1		
+		fi
+	done
+	return 0
+	
+}
+
 Inicializar(){
 	
-    if [ -z "$GRUPO" ] || [  -z "$CONFDIR" ] || [ -z "$BINDIR" ] || [ -z "$MAEDIR" ] ||
-		[ -z "$NOVEDIR" ] || [ -z "$ACEPDIR" ] || [ -z "$PROCDIR" ] || [ -z "$REPODIR" ]
+	if [ -z "$GRUPO" ] || [ -z "$CONFDIR" ] || [ -z "$BINDIR" ] || [ -z "$MAEDIR" ] ||
+		[ -z "$NOVEDIR" ] || [ -z "$ACEPDIR" ] || [ -z "$PROCDIR" ] || [ -z "$REPODIR" ] ||
 		[ -z "$LOGDIR" ] || [ -z "$RECHDIR" ]; then
-		Loguear "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente" "INFO"
-        else	
+
+		minInicializacion
 		verificaInstalacionCompleta
 		local completa=$?
 		
@@ -178,10 +198,20 @@ Inicializar(){
 
 			if [ "$permisos" == 0 ]; then
 				inicializarAmbiente
-				loguearVariables
-				arrancarAFRAECI
+				existenCarpetas
+
+				if [ $? == 0 ]; then
+					loguearVariables
+					arrancarAFRAECI
+				else
+					unset GRUPO
+				fi
 			fi
 		fi
+
+	else	
+		Loguear "Ambiente ya inicializado, para reiniciar termine la sesión e ingrese nuevamente" "INFO"
 	fi	
 }
+
 Inicializar
