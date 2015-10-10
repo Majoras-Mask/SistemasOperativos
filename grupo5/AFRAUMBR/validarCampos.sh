@@ -1,7 +1,7 @@
 #!/bin/bash
 #mover esto a un
 # archivo de configuracion
-CANTIDAD_CAMPOS_INCORRECTOS="La cantidad de campos correspondiente a la \
+export CANTIDAD_CAMPOS_INCORRECTOS="La cantidad de campos correspondiente a la \
 llamada no es correcta"
 source validarLLamada.sh
 

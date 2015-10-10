@@ -2,21 +2,12 @@
 source validarCampos.sh
 source validarLLamada.sh
 source verificarUmbrales.sh
-#source ../commands/MoverA
-# mover estas variables a un archivo
-# de configuracion
 
-DIRLLAMADAS="ACEPDIR/"
-DIRCDA="MAEDIR/CdA.mae"
-DIRCDP="MAEDIR/CdP.mae"
-AGENTES="MAEDIR/agentes.mae"
-DIRLLAMADAS="ACEPDIR/"
-DIR_RECHAZADAS="RECHDIR/"
-LLAMADA_VALIDA="llamada valida"
-LLAMADA_INVALIDA="llamada invalida"
+export LLAMADA_VALIDA="llamada valida"
+export LLAMADA_INVALIDA="llamada invalida"
 main () {
 
-ls  "$DIRLLAMADAS" | grep .csv > archivosllamadas.txt
+ls  "$ACEPDIR" | grep .csv > archivosllamadas.txt
 
 while read nombreArchivo 
 do	
@@ -25,10 +16,10 @@ do
 	if [ $esArchivoValido  -eq 0 ] 
 	then
 		echo "Se rechaza el archivo por estar DUPLICADO."
-		#MoverA "$nombreArchivo" "$DIR_RECHAZADAS"
+		$BINDIR"/"MOVERA "$nombreArchivo" "$RECHDIR"
 	fi 
 
-	local RUTA=$DIRLLAMADAS$nombreArchivo
+	local RUTA="$ACEPDIR/"$nombreArchivo
 	local linea
 	local cont1=0
 	while read linea

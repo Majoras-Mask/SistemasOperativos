@@ -1,16 +1,10 @@
 #!/bin/bash
-ES_DDI="DDI"
-ES_DDN="DDN"
-ES_LOCAL="LOC"
-DIRCDP="MAEDIR/CdP.mae"
-DIRLLAMADAS="ACEPDIR/"
-DIRCDA="MAEDIR/CdA.mae"
-DIRCDP="MAEDIR/CdP.mae"
-AGENTES="MAEDIR/agentes.mae"
-DIRLLAMADAS="ACEPDIR/"
-LLAMADA_VALIDA="valido"
-CODIGO_PAIS_INEXISTENETE=" El codigo de pais no existe"
+export ES_DDI="DDI"
+export ES_DDN="DDN"
+export ES_LOCAL="LOC"
+DIRCDP="/CdP.mae"
 source parserLLamada.sh
+
 llamadaDDIvalida()
 {
 local codigoPaisB="$1"
@@ -23,7 +17,7 @@ while read linea
 	     	then 
 	     		return 1
 	     fi
-	done < "$DIRCDP"
+	done < "$MAEDIR$DIRCDP"
 	echo "aja"
 return 0
 }

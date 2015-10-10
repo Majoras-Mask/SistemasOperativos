@@ -5,10 +5,9 @@ source parserLLamada.sh
 #mover esto a un
 # archivo de configuracion
 DIRLLAMADAS="ACEPDIR/"
-DIRCDA="MAEDIR/CdA.mae"
-DIRCDP="MAEDIR/CdP.mae"
-AGENTES="MAEDIR/agentes.mae"
-DIRLLAMADAS="ACEPDIR/"
+DIRCDA="/CdA.mae"
+DIRCDP="/CdP.mae"
+AGENTES="/agentes.mae"
 ID_AGENTE_INEXISTENTE=" el id de agente no es valido"
 CODIGO_AREA_ORIGEN_INEXISTENTE="El codigo de area origen no es valido"
 NUMERO_LINEA_ORIGEN_INCORRECTO=" El numero de linea de origen no suma 10 \
@@ -48,7 +47,7 @@ do
 	return 1
 	fi
 
-done < "$AGENTES"
+done < "$MAEDIR$AGENTES"
 return 0
 }
 
@@ -73,7 +72,7 @@ do
         then
                 return 1
         fi
-        done < "$DIRCDA"
+        done < "$MAEDIR$DIRCDA"
 return 0
 }
 
