@@ -3,7 +3,9 @@ RETORNO=""
 
 Loguear(){
 	echo "$1"
-	"$BINDIR"/GRALOG.sh "AFRAINIC" "$1" "$2"
+	if [ -f "$BINDIR"/GRALOG.sh ]; then
+		"$BINDIR"/GRALOG.sh "AFRAINIC" "$1" "$2"
+	fi
 }
 
 minInicializacion(){
@@ -79,7 +81,7 @@ verificaInstalacionCompleta(){
 		return 1
 	fi
 
-	local bin=('AFRAINIC.sh' 'AFRARECI' 'AFRAUMBR.sh' 'ARRANCAR.sh' 'clasificarLLamada.sh' 'DETENER.sh' 'GRALOG.sh' 'MOVERA.sh' 'parserLLamada.sh' 'validarCampos.sh' 'validarLLamada.sh' 'verificarUmbrales.sh')
+	local bin=('AFRAINIC.sh' 'AFRARECI.sh' 'AFRAUMBR.sh' 'ARRANCAR.sh' 'clasificarLLamada.sh' 'DETENER.sh' 'GRALOG.sh' 'MOVERA.sh' 'parserLLamada.sh' 'validarCampos.sh' 'validarLLamada.sh' 'verificarUmbrales.sh')
 	local cantBin=${#bin[@]}
 
 	if [ -d "$BINDIR" ]; then
@@ -91,7 +93,7 @@ verificaInstalacionCompleta(){
 			fi
 		done
 	else
-		echo "No existe carpeta $BINDIR. Volver a instalar ejecutando ./AFRAINST.sh -- ERR"
+		Loguear "No existe carpeta $BINDIR. Volver a instalar ejecutando ./AFRAINST.sh -- ERR"
 		return 1
 	fi
 	
