@@ -79,7 +79,7 @@ verificaInstalacionCompleta(){
 		return 1
 	fi
 
-	local bin=('AFRAINIC.sh' 'AFRARECI' 'AFRAUMBR.sh' 'ARRANCAR.sh' 'clasificarLLamada.sh' 'DETENER.sh' 'GRALOG.sh' 'MOVERA.sh' 'parserLLamada.sh' 'validarCampos.sh' 'validarLLamada.sh' 'verificarUmbrales.sh')
+	local bin=('AFRAINIC.sh' 'AFRARECI.sh' 'AFRAUMBR.sh' 'ARRANCAR.sh' 'clasificarLLamada.sh' 'DETENER.sh' 'GRALOG.sh' 'MOVERA.sh' 'parserLLamada.sh' 'validarCampos.sh' 'validarLLamada.sh' 'verificarUmbrales.sh')
 	local cantBin=${#bin[@]}
 
 	if [ -d "$BINDIR" ]; then
