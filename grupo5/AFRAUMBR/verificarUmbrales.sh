@@ -9,10 +9,11 @@ verificarUmbralYgrabarLLamadaSospechosa()
 	local registroLLamada="$1"
 	local tipoLLamada="$2"
 	local idCentral="$3"
-	local anioMesDia="$4"
+	anioMesDia="$4"
 	conUmbral="$5"
 	sinUmbral="$6"
 	sospechosas="$7"
+	echo "$anioMesDia"
 	#echo "tipoLLamada = $tipoLLamada"
 	local idAgente
 	local fechaYHora
@@ -22,53 +23,68 @@ verificarUmbralYgrabarLLamadaSospechosa()
 	local numeroAreaB
 	local numeroLineaB
 	local tiempoConversacion
-	#echo "registroLLamada = $registroLLamada"
+	echo "sospechosas = $sospechosas"
 	parsearLLamada "$registroLLamada" idAgente fechaYHora numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
-
+	echo 
 	local linea
 	local cont=0
 	while read linea || [ -n "$linea" ]
 	do
 		cont=`expr $cont + 1`
-		match1=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;\
-			$tipoLLamada;$numeroAreaB;[0-9]*;[A-Z][a-z]*//")
-		match2=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;\
-			$tipoLLamada;$numeroAreaB;[0-9]*;[0-9]*;[A-Z][a-z]*//")
-		
+		match1=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;$tipoLLamada;$numeroAreaB;[0-9]*;[A-Z][a-z]*//")
+		match3=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;$tipoLLamada;$numeroPaisB;[0-9]*;[A-Z][a-z]*//")
+		match2=$( echo $linea | sed "s/$cont;$numeroAreaA;$numeroLineaA;$tipoLLamada;$numeroAreaB;[0-9]*;[0-9]*;[A-Z][a-z]*//")
 		#echo "match = $match"
-		if [ "$match1" == "" ] || [ "$match2" == "" ] 
+		if [ "$match1" == "" ] || [ "$match2" == "" ] || [ "$match3" == "" ] 
 		then
+		echo "tiempoConversacionm = $tiempoConversacion"
 			if [ "$match1" == "" ]
 				then
-				verificarUmbral "$linea" "$tiempoConversacion" conUmbral sinUmbral
+				verificarUmbral "$linea" "$tiempoConversacion" 
 				local res="$?"
-				if [ "$res" -eq  1 ]
+				if [ "$res" -ne  0 ]
 					then
-					eval "sospechosas=`expr $sospechosas + 1 `" 
-					grabarLLamadaSospechosa "$idUmbral" "$idCentral" \
-					"$idAgente" "$tipoLLamada" "$fechaYHora"\
-					 "$tiempoConversacion" "$numeroAreaA" "$numeroLineaA"\
-					 "$numeroPaisB" "$numeroAreaB" "$numeroLineaB" "$anioMesDia"
-					 "$Activo"
+					echo "tiempoConversacionif = $tiempoConversacion"
+					if [ "$res" -eq 2 ]
+						then
+						idUmbral=$(echo $linea | awk -F';' '{ print $1 }')
+						grabarLLamadaSospechosa "$idUmbral" "$idCentral" "$idAgente" "$tipoLLamada" "$fechaYHora" "$tiempoConversacion" "$numeroAreaA" "$numeroLineaA" "$numeroPaisB" "$numeroAreaB" "$numeroLineaB" "$anioMesDia" "$Activo"
+					fi
 				fi
 			else
-				verificarUmbralConMasDeUno "$linea" "$tiempoConversacion" conUmbral sinUmbral
-				local res="$?"
-				if [ "$res" -eq  1 ]
-					then
-					eval "sospechosas=`expr $sospechosas + 1 `"
-					idUmbral=$(echo $linea | awk -F';' '{ print $1 }')
-					Activo=$(echo $linea | awk -F ';' '{print $NF}')
-					grabarLLamadaSospechosa "$idUmbral" "$idCentral" \
-					"$idAgente" "$tipoLLamada" "$fechaYHora"\
-					 "$tiempoConversacion" "$numeroAreaA" "$numeroLineaA"\
-					 "$numeroPaisB" "$numeroAreaB" "$numeroLineaB" "$anioMesDia"
+				if [ "$match3" == "" ]
+				then
+					verificarUmbral "$linea" "$tiempoConversacion" 
+					local res="$?"
+					if [ "$res" -ne   0 ]
+						then
+						echo "tiempoConversacionif = $tiempoConversacion"
+						
+						if [ "$res" -eq 2 ]
+							then
+							idUmbral=$(echo $linea | awk -F';' '{ print $1 }')
+							grabarLLamadaSospechosa "$idUmbral" "$idCentral" "$idAgente" "$tipoLLamada" "$fechaYHora" "$tiempoConversacion" "$numeroAreaA" "$numeroLineaA" "$numeroPaisB" "$numeroAreaB" "$numeroLineaB" "$anioMesDia" "$Activo"
+						fi
+					fi
+					return "$res"
+				else
+					verificarUmbralConMasDeUno "$linea" "$tiempoConversacion" 
+					local res="$?"
+					if [ "$res" -ne  0 ]
+						then
+						if [ "$res" -eq 2]
+							then
+							idUmbral=$(echo $linea | awk -F';' '{ print $1 }')
+							grabarLLamadaSospechosa "$idUmbral" "$idCentral" "$idAgente" "$tipoLLamada" "$fechaYHora" "$tiempoConversacion" "$numeroAreaA" "$numeroLineaA" "$numeroPaisB" "$numeroAreaB" "$numeroLineaB" "$anioMesDia"
+						fi
+					fi
+					return "$res"
 				fi
+				return "$res"
 			fi	
-		break
 		fi
 	done < "$UMBRALES"
-
+	return 0
 }
 
 maximoUmbral()
@@ -104,9 +120,9 @@ verificarUmbralConMasDeUno() {
 		tiempoConversacion=`expr $tiempoConversacion`
 		if [ "$tiempoConversacion" -gt "$maximo" ]
 		then
-			return 1
+			return 2
 		fi
-		return 0
+		return 1
 	;;
 	"$INACTIVO")
 		sinUmbral=`expr $sinUmbral + 1`
@@ -132,12 +148,11 @@ verificarUmbral() {
 		tiempoConversacion=`expr $tiempoConversacion`
 		if [ "$tiempoConversacion" -gt "$umbral1" ]
 		then
-			return 1
+			return 2
 		fi
-		return 0
+		return 1
 		;;
 	"$INACTIVO")
-	sinUmbral=`expr $sinUmbral + 1`
 		echo "sin umbral"
 	return 0
 	;;
@@ -158,12 +173,15 @@ grabarLLamadaSospechosa() {
 	local numeroLineaB="$11"
 	local anioMesDia="$12"
 	local activo="$13"
-	local anioMes=$("${anioMesDia::-2}]")
+	local anioMes=$(echo "${anioMesDia::-2}]")
 	local registroLLamadaSospechosa="$idCentral;$idAgente;\
 	$idUmbral;$tipoLLamada;$fechaYHora$tiempoConversacion;\
 	$numeroAreaA;$numeroLineaA;$numeroPaisB;$numeroAreaB;\
 	$numeroLineaB,$anioMesDia"
-	echo "$registroLLamadaSospechosa" >> "$PROCDIR"/"$idCentral_$anioMes"
+	#echo "$registroRechazo" >> "$RECHDIR/$idCentral.rech"
+	echo "aniomes $anioMes"
+	echo "anioMesDia $anioMesDia"
+	echo "$registroLLamadaSospechosa" >> "$PROCDIR/proc/$idCentral_$anioMes.csv"
 }
 
 export -f verificarUmbralYgrabarLLamadaSospechosa

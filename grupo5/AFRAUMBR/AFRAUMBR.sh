@@ -15,28 +15,30 @@ do
 	echo "en el while"
 	validarArchivoLlamada "$nombreArchivo"
 	esArchivoValido=$?
+	local RUTA="$ACEPDIR/"$nombreArchivo
 	if [ $esArchivoValido  -eq 0 ] 
 	then
 		"$BINDIR"/GRALOG.sh "AFRAUMBR" "Se rechaza el archivo por estar DUPLICADO." "INFO"
-		"$BINDIR"/MOVERA.sh "$nombreArchivo" "$RECHDIR"
+		"$BINDIR"/MOVERA.sh "$RUTA" "$RECHDIR"
 	else 
 		"$BINDIR"/GRALOG.sh "AFRAUMBR" "Archivo a procesar: $nombreArchivo" "INFO"
-		local RUTA="$ACEPDIR/"$nombreArchivo
+		local idCentral=$(echo $nombreArchivo | awk -F'_' '{ print $1 }')
+		echo "$idCentral"
+		aniomesdia=$(echo $nombreArchivo | awk -F'_' '{ print $2 }')
+		echo "$aniomesdia"
+		
 		local linea
-		sospechosas=0
-		noSospechosas=0
-		conUmbral=0
-		sinUmbral=0
-		registrosRechazados=0
-		cantidadLLamadas
+		let sospechosas=0
+		let noSospechosas=0
+		let conUmbral=0
+		let sinUmbral=0
+		let registrosRechazados=0
+		let cantidadLLamadas=0
 		while read linea
 		do
-			cantidadLLamadas=`expr cantidadLLamadas + 1`
+			cantidadLLamadas=`expr $cantidadLLamadas + 1`
 			#echo "$linea"
-			local idCentral=$(echo $linea | awk -F'_' '{ print $1 }')
-			#echo "$idCentral"
-			local aniomesdia=$(echo $linea | awk -F'_' '{ print $2 }')
-			#echo "$aniomesdia"
+			
 			validarCampos "$linea" registroErrores 
 			llamadaEsValida=$(echo "$registroErrores" | awk -F ';' '{ print $1 }')
 			case "$llamadaEsValida" in
@@ -44,8 +46,20 @@ do
 				echo "$llamadaEsValida"
 				echo "llamadaEsValida"
 				clasificarLLamada "$linea" tipoLLamada
-				verificarUmbralYgrabarLLamadaSospechosa "$linea" "$tipoLLamada" "$idCentral" "$aniomesdia" conUmbral sinUmbral sospechosas
-				"$BINDIR"/MOVERA.sh "$nombreArchivo" "$PROCDIR/proc/" "AFRAUMBR"
+				echo "tipollamada = $tipoLLamada"
+				verificarUmbralYgrabarLLamadaSospechosa "$linea" "$tipoLLamada" "$idCentral" "$aniomesdia"
+				local res="$?"
+				if [ "$res" -eq 0 ]
+					then
+					sinUmbral=`expr $sinUmbral + 1`
+				else
+					conUmbral=`expr $conUmbral + 1` 
+					if [ "$res" eq 2 ]
+						then
+						sospechosas=`expr $sospechosas +1`
+					fi
+				fi
+				echo "despues de verificarUmbrales"
 			;;
 			"llamada invalida")
 				echo "llamada invalida $cont1 regis = $registroErrores"
@@ -55,12 +69,13 @@ do
 				#
 			;;
 			"$CANTIDAD_CAMPOS_INCORRECTOS")
-				#MoverA "$nombreArchivo" "$DIR_RECHAZADAS"
+				
 				registrosRechazados=`expr $registrosRechazados + 1`
+				grabarLLamadaRechazada "$linea" "$registroErrores" "$idCentral"
 			;;
 			esac
 		done < "$RUTA"
-		noSospechosas=`expr $cantidadLLamadas - sospechosas` 
+		noSospechosas=`expr $cantidadLLamadas - $sospechosas` 
 		
 		"$BINDIR"/GRALOG.sh "AFRAUMBR" "Cantidad de llamadas = \
 		$cantidadLLamadas: Rechazadas $registrosRechazados, \
@@ -88,9 +103,9 @@ grabarLLamadaRechazada() {
 	motivosDeRechazo=$( echo "$registroErrores" | sed -e 's/valido;//' -e 's/;valido;//' -e 's/;valido$//')
 	motivosDeRechazo=$(echo $motivosDeRechazo | sed 's/;/,/')
 	registroRechazo="$nombreArchivo;$motivosDeRechazo;$idAgente;$fechaYHora;\
-	$tiempoConversacion;$numeroAreaA;$numeroLineaA;$numeroPais;BnumeroAreaB\
+	$tiempoConversacion;$numeroAreaA;$numeroLineaA;$numeroPais;$numeroAreaB\
 	;$numeroLineaB"
-	echo "$registroRechazo" >> "$PROCDIR/proc/$idCentral.rech"
+	
 }
 
 

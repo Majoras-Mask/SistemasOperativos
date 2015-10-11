@@ -3,7 +3,7 @@ export ES_DDI="DDI"
 export ES_DDN="DDN"
 export ES_LOCAL="LOC"
 DIRCDP="/CdP.mae"
-source parserLLamada.sh
+source "$BINDIR"/parserLLamada.sh
 
 llamadaDDIvalida()
 {
@@ -38,13 +38,13 @@ esDDNOLocal()
 {
 	local codigoAreaA="$1"
 	local codigoAreaB="$2"
-	resultado="$3"
+	esDDNLocal="$3"
 	if [ "$codigoAreaA"=="$codigoAreaB" ]
 	then
-		eval "$resultado='$ES_LOCAL'"
+		eval "$esDDNLocal='$ES_LOCAL'"
 		return 1
 	fi
-	eval "$resultado='$ES_DDN'"
+	eval "$esDDNLocal='$ES_DDN'"
 	return 1
 }
 
@@ -65,7 +65,6 @@ clasificarLLamada()
 		eval "tipoLLamada='$ES_DDI'"
 		return 1
 	fi
-	local esDDNOLocal
 	esDDNOLocal "$codigoAreaA" "$codigoAreaB" esDDNLOCAL
 	eval "tipoLLamada='$esDDNLOCAL'"
 	return 1	
