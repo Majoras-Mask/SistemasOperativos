@@ -10,7 +10,7 @@ llamadaDDIvalida()
 local codigoPaisB="$1"
 local linea
 
-while read linea
+while read linea || [ -n "$linea" ]
 	do
 	     local es_DDI=$(echo $linea | awk -F ';' '{ print $1 }' )
 	     if [ "$es_DDI" == "$codigoPaisB" ]

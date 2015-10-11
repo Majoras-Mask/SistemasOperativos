@@ -155,8 +155,9 @@ return `expr $status`
  validarLLamada()
 {
 
-local registroLLamada="$1"
+local linea="$1"
 registroErrores="$2"
+
 local idAgente
 local fechaYHora
 local numeroAreaA
@@ -165,7 +166,7 @@ local numeroPaisB
 local numeroAreaB
 local numeroLineaB
 local tiempoConversacion
-parsearLLamada "$registroLLamada" idAgente fechaYHora umeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
+parsearLLamada "$linea" idAgente fechaYHora numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
 llamadaValida="$LLAMADA_VALIDA"
 idAgenteValido="$VALIDO"
 numeroAreaAValido="$VALIDO"
