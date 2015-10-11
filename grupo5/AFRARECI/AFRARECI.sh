@@ -22,7 +22,6 @@ checkAmbienteInicializado(){
 	if [ -z "$BINDIR" ] || [ -z "$MAEDIR" ] || [ -z "$NOVEDIR" ] || [ -z "$ACEPDIR" ] || [ -z "$RECHDIR" ]; then
 		return $FALSE
 	else
-		echo "ruta de aceptados: $ACEPDIR"
 		return $TRUE
 	fi
 }
@@ -112,22 +111,45 @@ checkCentral(){
 }
 
 #*********************************************************************
-# Validar extension de archivo
+# Validar que no supere la fecha de hoy
 #*********************************************************************
 checkFechaNoSuperaHoy(){
 
-	fecha=`echo $1 | cut -d"_" -f2`
+	fecha=$1
 	diaActual="$(date +"%d")"
 	mesActual="$(date +"%m")"
 	anioActual="$(date +"%Y")"
 	fechaActual=$anioActual$mesActual$diaActual	
-	echo "fecha a procesar : $fecha  y fecha actual: $fechaActual"
+	
 	if [ $fecha -le $fechaActual ]; 
 	then
 		"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha no supera la de hoy" "INFO"
 		return $TRUE		
 	else
 		"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha supera hoy" "ERR"
+		return $FALSE	
+	fi
+}
+
+#*********************************************************************
+# Validar que a lo sumo sea de un año de antiguedad
+#*********************************************************************
+checkSuperaAnioLimiteDeAntiguedad(){
+
+	fecha=$1
+	diaActual="$(date +"%d")"
+	mesActual="$(date +"%m")"
+	anioActual="$(date +"%Y")"		
+	anioLimite=`expr $anioActual - 1`
+	
+	fechaLimite=$anioLimite$mesActual$diaActual
+
+	if [ $fecha -ge $fechaLimite ]; 
+	then
+		"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha es menor a 1 anio de antigüedad" "INFO"
+		return $TRUE		
+	else
+		"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha es mayor a 1 anio de antigüedad" "ERR"
 		return $FALSE	
 	fi
 }
@@ -234,9 +256,11 @@ checkFecha(){
 				
 				checkFechaNoSuperaHoy $fecha
 				RESULFECHANOSUPERAHOY=$?
-				echo "El resultado de la fecha es $RESULFECHANOSUPERAHOY"
+				
+				checkSuperaAnioLimiteDeAntiguedad $fecha
+				RESULFECHANOSUPERAANIOANTIGUEDAD=$?
 
-				if [ "$RESULFECHANOSUPERAHOY" == "$TRUE" ]
+				if [ "$RESULFECHANOSUPERAHOY" == "$TRUE" -a "$RESULFECHANOSUPERAANIOANTIGUEDAD" == "$TRUE" ]
 				then
 					"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha correcta para procesar hoy" "INFO"
 					return $TRUE
