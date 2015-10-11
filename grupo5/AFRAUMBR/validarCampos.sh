@@ -3,14 +3,13 @@
 # archivo de configuracion
 export CANTIDAD_CAMPOS_INCORRECTOS="La cantidad de campos correspondiente a la \
 llamada no es correcta"
-source validarLLamada.sh
+source "$BINDIR/"validarLLamada.sh
 
 validarArchivoLlamada()
 {	
 
 	nombre="$1"
-    PROCDIR="PROCDIR/proc/"	
-	match=$(ls "$PROCDIR"| grep "$nombre")
+	match=$(ls "$PROCDIR/proc"| grep "$nombre")
         if [ -z  "$match" ]
         then 
 		 return 1

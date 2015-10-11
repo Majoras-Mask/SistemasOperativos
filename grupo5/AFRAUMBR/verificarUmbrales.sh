@@ -1,7 +1,7 @@
 #!/Bin/bash
-source clasificarLLamada.sh
-source parserLLamada.sh
-UMBRALES="MAEDIR/umbrales.mae"
+source "$BINDIR/"clasificarLLamada.sh
+source "$BINDIR/"parserLLamada.sh
+UMBRALES="$MAEDIR/umbrales.tab"
 ACTIVO="Activo"
 INACTIVO="Inactivo"
 verificarUmbralYgrabarLLamadaSospechosa()

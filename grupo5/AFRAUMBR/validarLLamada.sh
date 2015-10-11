@@ -1,6 +1,6 @@
 #!/bin/bash
-source clasificarLLamada.sh
-source parserLLamada.sh
+source "$BINDIR/"clasificarLLamada.sh
+source "$BINDIR/"parserLLamada.sh
 
 #mover esto a un
 # archivo de configuracion
@@ -36,7 +36,7 @@ validarIdAgente()
 local idAgente="$1"
 local linea
 
-while read linea
+while read linea || [ -n "$linea" ]
 do
 	idAgente=$(echo "$idAgente"| sed 's/ //g')
 	linea=$(echo $linea | sed 's/ //g')
@@ -64,7 +64,7 @@ return 1
 validarCodigoArea()
 {
 	local linea
-while read  linea
+while read  linea || [ -n "$linea" ]
 do
        
         area=$(echo "$linea" | awk -F ';' ' { print $2 }')

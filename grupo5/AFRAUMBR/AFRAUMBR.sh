@@ -1,22 +1,24 @@
 #!/bin/bash
-source validarCampos.sh
-source validarLLamada.sh
-source verificarUmbrales.sh
+source "$BINDIR/"validarCampos.sh
+source "$BINDIR/"validarLLamada.sh
+source "$BINDIR/"verificarUmbrales.sh
 
 export LLAMADA_VALIDA="llamada valida"
 export LLAMADA_INVALIDA="llamada invalida"
 main () {
-
-ls  "$ACEPDIR" | grep .csv > archivosllamadas.txt
-
-while read nombreArchivo 
+echo "inicia afraumbr"
+ls  "$ACEPDIR" > archivosllamadas.txt
+echo "acepdir = $ACEPDIR"
+echo "despues del ls"
+while read nombreArchivo || [ -n "$nombreArchivo" ]
 do	
+	echo "en el while"
 	validarArchivoLlamada "$nombreArchivo"
 	esArchivoValido=$?
 	if [ $esArchivoValido  -eq 0 ] 
 	then
 		echo "Se rechaza el archivo por estar DUPLICADO."
-		$BINDIR"/"MOVERA "$nombreArchivo" "$RECHDIR"
+		"$BINDIR"/MOVERA.sh "$nombreArchivo" "$RECHDIR"
 	fi 
 
 	local RUTA="$ACEPDIR/"$nombreArchivo
@@ -38,6 +40,7 @@ do
 		echo "llamadaEsValida"
 		clasificarLLamada "$linea" tipoLLamada
 		verificarUmbralYgrabarLLamadaSospechosa "$linea" "$tipoLLamada"
+		"$BINDIR"/MOVERA.sh "$nombreArchivo" "$PROCDIR/proc/" "AFRAUMBR"
 		;;
 		"llamada invalida")
 		echo "llamada invalida $cont1 regis = $registroErrores"
