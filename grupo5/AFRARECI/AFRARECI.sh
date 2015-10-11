@@ -7,8 +7,7 @@
 #ACEPDIR
 #MAEDIR
 #RECHDIR
-#LOGDIR
-#INICIALIZADO
+#BINDIR
 
 #VARIBLES CONFIGURABLES
 export TESPERA=2
@@ -23,6 +22,7 @@ checkAmbienteInicializado(){
 	if [ -z "$BINDIR" ] || [ -z "$MAEDIR" ] || [ -z "$NOVEDIR" ] || [ -z "$ACEPDIR" ] || [ -z "$RECHDIR" ]; then
 		return $FALSE
 	else
+		echo "ruta de aceptados: $ACEPDIR"
 		return $TRUE
 	fi
 }
@@ -82,7 +82,7 @@ checkFormatoNombreArchivo(){
 		#Si alguno es vacio, no tiene los campos completos		
 		if [ -z "$central" -o -z "$fecha" ]
 		then
-			"$BINDIR"/GRALOG.sh "AFRARECI" "Formato de nombre de archivo incompleto" "INFO"
+			"$BINDIR"/GRALOG.sh "AFRARECI" "Formato de nombre de archivo incompleto" "WAR"
 			return $FALSE
 		
 		else
@@ -91,7 +91,7 @@ checkFormatoNombreArchivo(){
 		fi
 	else
 		#No tiene la cantidad de separadores correctos
-		"$BINDIR"/GRALOG.sh "AFRARECI" "Formato de nombre de archivo invalido" "INFO"		
+		"$BINDIR"/GRALOG.sh "AFRARECI" "Formato de nombre de archivo invalido" "WAR"		
 		return $FALSE
 	fi
 }
@@ -114,17 +114,21 @@ checkCentral(){
 #*********************************************************************
 # Validar extension de archivo
 #*********************************************************************
-checkExtension(){
-	archivo=$1
-	local arch=`echo $1 | grep -i '\.'`
-	if [ -n "$arch" ] ; 
+checkFechaNoSuperaHoy(){
+
+	fecha=`echo $1 | cut -d"_" -f2`
+	diaActual="$(date +"%d")"
+	mesActual="$(date +"%m")"
+	anioActual="$(date +"%Y")"
+	fechaActual=$anioActual$mesActual$diaActual	
+	echo "fecha a procesar : $fecha  y fecha actual: $fechaActual"
+	if [ $fecha -le $fechaActual ]; 
 	then
-		"$BINDIR"/GRALOG.sh "AFRARECI" "Extension $arch invalida" "INFO"
-		return $FALSE
-		
+		"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha no supera la de hoy" "INFO"
+		return $TRUE		
 	else
-		"$BINDIR"/GRALOG.sh "AFRARECI" "Extension valida" "INFO"
-		return $TRUE
+		"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha supera hoy" "ERR"
+		return $FALSE	
 	fi
 }
 
@@ -149,9 +153,11 @@ checkAnioBisiesto(){
 # Valida si los dias se corresponden con el mes 
 #*********************************************************************
 checkDiasMes(){
-	dia=`echo $1 | cut -d"-" -f1`
-	mes=`echo $1 | cut -d"-" -f2`
-	anio=`echo $1 | cut -d"-" -f3`
+
+	fecha=$1
+	anio=`echo ${fecha:0:4}`
+	mes=`echo ${fecha:4:2}`
+	dia=`echo ${fecha:6:2}`
 	
 	checkAnioBisiesto $anio
 	esBisiesto=$?
@@ -200,28 +206,48 @@ checkDiasMes(){
 # Valida fecha del archivo 
 #*********************************************************************
 checkFecha(){
-	dia=`echo $1 | cut -d"-" -f1`
-	mes=`echo $1 | cut -d"-" -f2`
-	anio=`echo $1 | cut -d"-" -f3`
-	testDia=`echo $dia | grep "^[0][1-9]\|^[1-2][0-9]\|^[3][0-1]"`
-	testMes=`echo $mes | grep "^[0][1-9]\|[1][0-2]"`
-	testAnio=`echo $anio | grep "^[0-9][0-9][0-9][0-9]"`
-
-	if [ -z "$testDia" -o -z "$testMes" -o -z "$testAnio" ]
+	fecha=$1
+	cant=`echo ${#fecha}`
+	if [ "$cant" != 8 ];
 	then
-		"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha de formato invalida " "INFO"
+		"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha incompleta o de formato invalido " "WAR"
 		return $FALSE
 	else
-		checkDiasMes $1
-		esFechaValida=$?
-		
-		if [ "$esFechaValida" = "$TRUE" ]
-		then 	
-			"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha de valida" "INFO"
-			return $TRUE	
-		else
-			"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha de invalida " "INFO"
+		anio=`echo ${fecha:0:4}`
+		mes=`echo ${fecha:4:2}`
+		dia=`echo ${fecha:6:2}`
+		testDia=`echo $dia | grep "^[0][1-9]\|^[1-2][0-9]\|^[3][0-1]"`
+		testMes=`echo $mes | grep "^[0][1-9]\|[1][0-2]"`
+		testAnio=`echo $anio | grep "^[0-9][0-9][0-9][0-9]"`
+
+		if [ -z "$testDia" -o -z "$testMes" -o -z "$testAnio" ];
+		then
+			"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha de formato invalido " "WAR"
 			return $FALSE
+		else
+			checkDiasMes $fecha
+			esFechaValida=$?
+		
+			if [ "$esFechaValida" == "$TRUE" ];
+			then 	
+				"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha valida" "INFO"
+				
+				checkFechaNoSuperaHoy $fecha
+				RESULFECHANOSUPERAHOY=$?
+				echo "El resultado de la fecha es $RESULFECHANOSUPERAHOY"
+
+				if [ "$RESULFECHANOSUPERAHOY" == "$TRUE" ]
+				then
+					"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha correcta para procesar hoy" "INFO"
+					return $TRUE
+				else
+					"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha incorrecta para procesar hoy" "ERR"
+					return $FALSE
+				fi	
+			else
+				"$BINDIR"/GRALOG.sh "AFRARECI" "Fecha con dias y meses invalidos " "INFO"
+				return $FALSE
+			fi
 		fi
 	fi
 }
@@ -229,22 +255,22 @@ checkFecha(){
 #*********************************************************************
 # Valida el nombre completo del archivo 
 #*********************************************************************
-#$1= nombre completo del archivo
+#$1= nombre completo del archivo central_fecha
 checkNombreCompletoArchivo(){	
 	central=`echo $1 | cut -d"_" -f1`
 	checkCentral $central
 	RESULCENTRAL=$?
 			
-#	fecha=`echo $1 | cut -d"_" -f5 | cut -d"." -f1`
-#	checkFecha $fecha
-#	RESULFECHA=$?
-#	if [ $RESULCENTRAL == 1 -a $RESULFECHA == 1 ];
-	if [ $RESULCENTRAL == 1 ];
-		then
+	fecha=`echo $1 | cut -d"_" -f2 | cut -d"." -f1`
+	checkFecha $fecha
+	RESULFECHA=$?
+
+	if [ $RESULCENTRAL == 1 -a $RESULFECHA == 1 ];
+	then
 		"$BINDIR"/GRALOG.sh "AFRARECI" "Nombre de archivo valido" "INFO"
 		return $TRUE
 	else
-		"$BINDIR"/GRALOG.sh "AFRARECI" "Nombre de archivo invalido" "INFO"
+		"$BINDIR"/GRALOG.sh "AFRARECI" "Nombre de archivo invalido" "ERR"
 		return $FALSE
 	fi
 }
@@ -265,10 +291,7 @@ checkArchivos(){
 		checkNombreCompletoArchivo "$ARCHIVO"
 		RESULNOMBREARCHIVO=$?
 		
-		checkExtension "$ARCHIVO"
-		RESULEXTENSIONARCHIVO=$?
-
-		if [ $RESULFORMATONOMBREARCH == 1 -a $RESULNOMBREARCHIVO == 1 -a $RESULEXTENSIONARCHIVO == 1 ];
+		if [ $RESULFORMATONOMBREARCH == 1 -a $RESULNOMBREARCHIVO == 1 ];
 		then
 										
 			"$BINDIR"/MOVERA.sh "$NOVEDIR/$ARCHIVO" "$ACEPDIR" "AFRARECI"
