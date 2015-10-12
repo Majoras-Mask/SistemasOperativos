@@ -95,7 +95,6 @@ fi
 local numeroACompleto="$codigoAreaA$numeroLineaA"
 if [ ${#numeroACompleto} -ne 10 ]
 then
-	eval "numeroAreaAValido='$NUMERO_LINEA_ORIGEN_INCORRECTO'"
 	eval "numeroLineaAValido='$NUMERO_LINEA_ORIGEN_INCORRECTO'"
 	return 0
 fi

@@ -34,7 +34,7 @@ do
 		let sinUmbral=0
 		let registrosRechazados=0
 		let cantidadLLamadas=0
-		while read linea
+		while read linea || [ -n "$linea" ]
 		do
 			cantidadLLamadas=`expr $cantidadLLamadas + 1`
 			#echo "$linea"
@@ -54,9 +54,10 @@ do
 					sinUmbral=`expr $sinUmbral + 1`
 				else
 					conUmbral=`expr $conUmbral + 1` 
-					if [ "$res" eq 2 ]
+					if [ "$res" -eq 2 ]
 						then
-						sospechosas=`expr $sospechosas +1`
+						echo "tiene que haber pasado" 
+						sospechosas=`expr $sospechosas + 1`
 					fi
 				fi
 				echo "despues de verificarUmbrales"
@@ -65,7 +66,7 @@ do
 				echo "llamada invalida $cont1 regis = $registroErrores"
 				grabarLLamadaRechazada "$linea" "$registroErrores" "$idCentral"
 				registrosRechazados=`expr $registrosRechazados + 1`
-
+				echo " Rechazadas = $registrosRechazados"
 				#
 			;;
 			"$CANTIDAD_CAMPOS_INCORRECTOS")
@@ -100,12 +101,13 @@ grabarLLamadaRechazada() {
 	local numeroLineaB
 	local tiempoConversacion
 	parsearLLamada "$linea" idAgente fechaYHora numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
-	motivosDeRechazo=$( echo "$registroErrores" | sed -e 's/valido;//' -e 's/;valido;//' -e 's/;valido$//')
-	motivosDeRechazo=$(echo $motivosDeRechazo | sed 's/;/,/')
+	motivosDeRechazo=$( echo "$registroErrores" | sed  's/valido//g')
+	motivosDeRechazo=$(echo "$motivosDeRechazo" | sed 's/llamada invalida//')
+	motivosDeRechazo=$(echo "$motivosDeRechazo" | sed 's/;//g')
 	registroRechazo="$nombreArchivo;$motivosDeRechazo;$idAgente;$fechaYHora;\
 	$tiempoConversacion;$numeroAreaA;$numeroLineaA;$numeroPais;$numeroAreaB\
 	;$numeroLineaB"
-	
+	echo "$registroRechazo" >> "$RECHDIR/llamadas/$idCentral.rech"
 }
 
 
