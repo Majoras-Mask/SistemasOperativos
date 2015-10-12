@@ -23,14 +23,15 @@ validarCampos()
 
 	local linea="$1"
 	registroErrores="$2"
-
+	registroLLamada="$3"
 	cantidadCampos=$(echo "$linea" | awk -F ';' '{print NF}')
 	if [ "$cantidadCampos" -ne 8 ] 
 	then
 		eval "registroErrores='$CANTIDAD_CAMPOS_INCORRECTOS'"
+		"$BINDIR"/GRALOG.sh "AFRAUMBR" "Se rechaza el archivo porque su estructura no se corresponde con el formato esperado" "INFO"
 		return 0
 	fi	
-	validarLLamada "$linea" registroErrores
+	validarLLamada "$linea" registroErrores 
 	return 1
 }
 
