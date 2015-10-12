@@ -300,6 +300,28 @@ checkNombreCompletoArchivo(){
 }
 
 #*********************************************************************
+# Valida que el archivo se de texto y no este vacio
+#*********************************************************************
+#$1= nombre completo del archivo central_fecha
+checkArchivoTextoNoVacio(){	
+	
+	archivo=$NOVEDIR/$1
+	result=`file "$archivo" `
+	text=`echo "$result" | sed 's/^\(.*\):\(.*\)/\2/g'`	
+	
+	if [ "$text" != " ASCII text" -o "$text" == "empty" ]
+	then 
+		"$BINDIR"/GRALOG.sh "AFRARECI" "El archivo no es de texto o esta vacio" "ERR"
+		return $FALSE		
+
+	else
+		"$BINDIR"/GRALOG.sh "AFRARECI" "El archivo es de texto y no esta vacio" "INFO"
+		return $TRUE
+	fi	
+
+}
+
+#*********************************************************************
 # Valida el tipo, formato de nombre y nombre del archivo 
 #*********************************************************************
 checkArchivos(){
@@ -315,7 +337,10 @@ checkArchivos(){
 		checkNombreCompletoArchivo "$ARCHIVO"
 		RESULNOMBREARCHIVO=$?
 		
-		if [ $RESULFORMATONOMBREARCH == 1 -a $RESULNOMBREARCHIVO == 1 ];
+		checkArchivoTextoNoVacio "$ARCHIVO"
+		RESULARCHIVOTEXTONOVACIO=$?
+
+		if [ $RESULFORMATONOMBREARCH == 1 -a $RESULNOMBREARCHIVO == 1 -a $RESULARCHIVOTEXTONOVACIO == 1 ];
 		then
 										
 			"$BINDIR"/MOVERA.sh "$NOVEDIR/$ARCHIVO" "$ACEPDIR" "AFRARECI"
