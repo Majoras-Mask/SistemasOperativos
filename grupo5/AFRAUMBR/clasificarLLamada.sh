@@ -18,7 +18,6 @@ while read linea || [ -n "$linea" ]
 	     		return 1
 	     fi
 	done < "$MAEDIR$DIRCDP"
-	echo "aja"
 return 0
 }
 

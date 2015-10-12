@@ -10,8 +10,7 @@ verificarUmbralYgrabarLLamadaSospechosa()
 	local tipoLLamada="$2"
 	local idCentral="$3"
 	anioMesDia="$4"
-	echo "aniodmesdia = $anioMesDia"
-	#echo "tipoLLamada = $tipoLLamada"
+
 	local idAgente
 	local fechaYHora
 	local numeroAreaA
@@ -21,6 +20,7 @@ verificarUmbralYgrabarLLamadaSospechosa()
 	local numeroLineaB
 	local tiempoConversacion
 	parsearLLamada "$registroLLamada" idAgente fechaYHora numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
+	
 	local linea
 	local cont=0
 	while read linea || [ -n "$linea" ]
@@ -41,19 +41,6 @@ verificarUmbralYgrabarLLamadaSospechosa()
 					if [ "$res" -eq 2 ]
 						then
 						idUmbral=$(echo $linea | awk -F';' '{ print $1 }')
-						echo " logueando "
-						echo " $idUmbral "
-						echo " $idCentral"
-						echo "  $idAgente"
-						echo " $tipoLLamada"
-						echo " $fechaYHora"
-						echo " $tiempoConversacion"
-						echo " $numeroAreaA"
-						echo " $numeroLineaA"
-						echo " $numeroPaisB"
-						echo " $numeroAreaB"
-						echo " $numeroLineaB"
-						echo " $aniodMesDia"
 						grabarLLamadaSospechosa "$registroLLamada" "$idUmbral" "$anioMesDia"
 					fi
 					return "$res"
@@ -110,12 +97,9 @@ verificarUmbralConMasDeUno() {
 	local umbralActivo=$( echo "$linea" | awk -F';' '{print $8 }')
 	case "$umbralActivo" in
 	"$ACTIVO")
-		#echo $linea
 		conUmbral=`expr $conUmbral + 1`
 		local umbral1=$( echo $linea | awk -F';' '{ print $6 }')
 		local umbral2=$( echo $linea | awk -F';' '{ print $7 }')
-		echo "umbral1 = $umbral1"
-		echo "tiempoConversacion = $tiempoConversacion"
 		umbral1=`expr $umbral1`
 		umbral2=`expr $umbral2`
 		maximoUmbral "$umbral1" "$umbral2" 
@@ -129,7 +113,6 @@ verificarUmbralConMasDeUno() {
 	;;
 	"$INACTIVO")
 		sinUmbral=`expr $sinUmbral + 1`
-		echo "sin umbral"
 		return 0
 		;;
 	esac
@@ -140,11 +123,8 @@ verificarUmbral() {
 	local umbralActivo=$( echo "$linea" | awk -F';' '{print $7 }')
 	case "$umbralActivo" in
 	"$ACTIVO")
-		#echo $linea
 		conUmbral=`expr $conUmbral + 1`
 		local umbral1=$( echo $linea | awk -F';' '{ print $6 }')
-		echo "umbral1 = $umbral1"
-		echo "tiempoConversacion = $tiempoConversacion"
 		umbral1=`expr $umbral1`	
 		tiempoConversacion=`expr $tiempoConversacion`
 		if [ "$tiempoConversacion" -gt "$umbral1" ]
@@ -154,7 +134,6 @@ verificarUmbral() {
 		return 1
 		;;
 	"$INACTIVO")
-		echo "sin umbral"
 	return 0
 	;;
 	esac
@@ -174,25 +153,9 @@ grabarLLamadaSospechosa() {
 	local numeroLineaB
 	local tiempoConversacion
 	parsearLLamada "$registroLLamada" idAgente fechaYHora numeroAreaA numeroLineaA numeroPaisB numeroAreaB numeroLineaB tiempoConversacion
-	echo "grabando sospechosa"
-	echo " $idUmbral "
-	echo " $idCentral"
-	echo "  $idAgente"
-	echo " $tipoLLamada"
-	echo " $fechaYHora"
-	echo " $tiempoConversacion"
-	echo " $numeroAreaA"
-	echo " $numeroLineaA"
-	echo " $numeroPaisB"
-	echo " $numeroAreaB"
-	echo " $numeroLineaB"
-	echo " $anioMesDia"
-	echo " $anioMes"
 	local registroLLamadaSospechosa="$idCentral;$idAgente;$idUmbral;$tipoLLamada;$fechaYHora;$tiempoConversacion;\
 	$numeroAreaA;$numeroLineaA;$numeroPaisB;$numeroAreaB;\
 	$numeroLineaB;$anioMesDia"
-	echo "aniomes $anioMes"
-	echo "anioMesDia $anioMesDia"
 	ruta="$idCentral""_""$anioMes"".csv"
 	echo "$registroLLamadaSospechosa" >> "$PROCDIR/$ruta"
 }

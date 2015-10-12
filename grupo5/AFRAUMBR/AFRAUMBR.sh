@@ -6,13 +6,9 @@ source "$BINDIR/"verificarUmbrales.sh
 export LLAMADA_VALIDA="llamada valida"
 export LLAMADA_INVALIDA="llamada invalida"
 main () {
-echo "inicia afraumbr"
 ls  "$ACEPDIR" > archivosllamadas.txt
-echo "acepdir = $ACEPDIR"
-echo "despues del ls"
 while read nombreArchivo || [ -n "$nombreArchivo" ]
 do	
-	echo "en el while"
 	validarArchivoLlamada "$nombreArchivo"
 	esArchivoValido=$?
 	local RUTA="$ACEPDIR/"$nombreArchivo
@@ -23,10 +19,7 @@ do
 	else 
 		"$BINDIR"/GRALOG.sh "AFRAUMBR" "Archivo a procesar: $nombreArchivo" "INFO"
 		local idCentral=$(echo $nombreArchivo | awk -F'_' '{ print $1 }')
-		echo "$idCentral"
 		aniomesdia=$(echo $nombreArchivo | awk -F'_' '{ print $2 }')
-		echo "$aniomesdia"
-		
 		local linea
 		let sospechosas=0
 		let noSospechosas=0
@@ -37,16 +30,11 @@ do
 		while read linea || [ -n "$linea" ]
 		do
 			cantidadLLamadas=`expr $cantidadLLamadas + 1`
-			#echo "$linea"
-			
 			validarCampos "$linea" registroErrores 
 			llamadaEsValida=$(echo "$registroErrores" | awk -F ';' '{ print $1 }')
 			case "$llamadaEsValida" in
 			"llamada valida")
-				echo "$llamadaEsValida"
-				echo "llamadaEsValida"
 				clasificarLLamada "$linea" tipoLLamada
-				echo "tipollamada = $tipoLLamada"
 				verificarUmbralYgrabarLLamadaSospechosa "$linea" "$tipoLLamada" "$idCentral" "$aniomesdia"
 				local res="$?"
 				if [ "$res" -eq 0 ]
@@ -56,21 +44,15 @@ do
 					conUmbral=`expr $conUmbral + 1` 
 					if [ "$res" -eq 2 ]
 						then
-						echo "tiene que haber pasado" 
 						sospechosas=`expr $sospechosas + 1`
 					fi
 				fi
-				echo "despues de verificarUmbrales"
 			;;
 			"llamada invalida")
-				echo "llamada invalida $cont1 regis = $registroErrores"
 				grabarLLamadaRechazada "$linea" "$registroErrores" "$idCentral"
 				registrosRechazados=`expr $registrosRechazados + 1`
-				echo " Rechazadas = $registrosRechazados"
-				#
 			;;
 			"$CANTIDAD_CAMPOS_INCORRECTOS")
-				
 				registrosRechazados=`expr $registrosRechazados + 1`
 				grabarLLamadaRechazada "$linea" "$registroErrores" "$idCentral"
 			;;
