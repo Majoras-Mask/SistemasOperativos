@@ -1,4 +1,8 @@
 #!/bin/bash
+if [ ! -f "$BINDIR"/GRALOG.sh ];then
+	echo "No se encuentra GRALOG.sh. Exiting."
+	exit 1
+fi
 origin=$1
 destiny=$2
 command=$3
@@ -7,14 +11,22 @@ if [ $lastchar != "/" ];then
 	destiny="$destiny/"
 fi
 filename=$(basename "$origin")
-if [ -f "$origin" ] && [ -d "$destiny" ];then
+filedir=$(dirname "$origin")
+filedir="$filedir/"
+if [ "$filedir" == "$destiny" ];then
+	if [ -z "$command" ]; then
+		echo "Carpeta origen igual a carpeta destino."
+	else
+		"$BINDIR"/GRALOG.sh "$command" "Carpeta origen igual a carpeta destino." "WAR"
+	fi
+elif [ -f "$origin" ] && [ -d "$destiny" ];then
 	duplicate=$destiny$filename
 	if [ -f "$duplicate" ];then
 		if [ ! -d "${destiny}duplicates" ];then
 			mkdir "${destiny}duplicates"
 		fi
 		duplicate=${destiny}duplicates/${filename}
-		if [ ! -f "${duplicate}.001" ];then
+		if [ ! -f ${duplicate}.001 ];then
 			mv "$origin" "${duplicate}.001"
 		else
 			extension=(${duplicate}.*)

@@ -1,5 +1,5 @@
 #!/bin/bash
-pid=$(ps aux | grep "$1" | grep -v 'DETENER' | grep -v 'grep' | head -n 1 | awk '{print $2}')
+pid=$(ps aux | grep "$1" | grep -v 'DETENER' | grep -v 'grep' | grep '/bin/bash' | head -n 1 | awk '{print $2}')
 if [ ! -z $pid ]; then
 	kill $pid
 	echo "Se detuvo el proceso $1 con PID: $pid"

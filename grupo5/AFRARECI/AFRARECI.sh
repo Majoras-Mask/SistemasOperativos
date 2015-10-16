@@ -10,7 +10,7 @@
 #BINDIR
 
 #VARIBLES CONFIGURABLES
-export TESPERA=2
+export TESPERA=5
 export CANLOOP="TRUE"
 export TRUE=1
 export FALSE=0
@@ -329,7 +329,7 @@ checkArchivos(){
 	SAVEIFS=$IFS
 	IFS=$(echo -en "\n\b")
 
-	for ARCHIVO in $( ls "$NOVEDIR" -F | grep -v / )
+	for ARCHIVO in $( ls "$NOVEDIR" -p | grep -v / )
 	do
 		checkFormatoNombreArchivo "$ARCHIVO"
 		RESULFORMATONOMBREARCH=$?
@@ -357,11 +357,12 @@ checkArchivos(){
 # Bucle eje del demonio
 #**********************************************************************
 ejecutar(){
-	i=0
+	i=1
 	"$BINDIR"/GRALOG.sh "AFRARECI" "Comienzo de Ejecucion" "INFO"
 	 
 	while [ "$CANLOOP" = "TRUE" ]
 	do
+		"$BINDIR"/GRALOG.sh "AFRARECI" "AFRARECI ciclo Nro:$i" "INFO"
 		checkNuevosArchivosNovedades "$NOVEDIR"
 		EXISTENOVEDAD=$?
 		if [ $EXISTENOVEDAD -eq $TRUE ]
@@ -374,27 +375,30 @@ ejecutar(){
 			if [ $EXISTEACEPT -eq $TRUE ]
 			then
 				#verifico que el proceso AFRAUMBR no este en ejecucion
-				local salida=$("$BINDIR"/ARRANCAR.sh "AFRAUMBR.sh")
-				if [ $? -eq 0 ]; then
+				pid=$(ps aux | grep "AFRAUMBR.sh" | grep -v 'ARRANCAR' | grep -v 'grep' | grep '/bin/bash' | head -n 1 | awk '{print $2}')
+				if [ -z $pid ]; then
+					"$BINDIR/AFRAUMBR.sh" &
+					pid=$!
 					"$BINDIR"/GRALOG.sh "AFRARECI" "Inicio ejecucion del proceso AFRAUMBR" "INFO"
-					"$BINDIR"/GRALOG.sh "AFRARECI" "AFRAUMBR corriendo bajo el no.: $salida"
+					"$BINDIR"/GRALOG.sh "AFRARECI" "AFRAUMBR corriendo bajo el no.: $pid"
 				else
 					"$BINDIR"/GRALOG.sh "AFRARECI" "Invocación de AFRAUMBR pospuesta para el siguiente ciclo."
-				fi
-				
-				#PROCESO=`ps | grep -c "AFRAUMBR" | grep -v "ARRANCAR"`
-				#if [ "$PROCESO" = "0" ]
-				#then
-			    #  		"$BINDIR"/GRALOG.sh "AFRARECI" "Archivos a protocolizar encontrados en aceptados" "INFO"
-			    #  		"$BINDIR"/GRALOG.sh "AFRARECI" "Inicio ejecucion del proceso AFRAUMBR" "INFO"
-			    #  		#"$BINDIR"/ARRANCAR.sh "AFRAUMBR.sh"
-			    #  		#"$BINDIR"/ARRANCAR.sh "dormir.sh"
-				#fi	
+				fi	
+			
+				#verifico que el proceso AFRAUMBR no este en ejecucion
+				#local salida
+				#salida=$("$BINDIR"/ARRANCAR.sh "AFRAUMBR.sh")
+				#if [ $? -eq 0 ]; then
+				#	"$BINDIR"/GRALOG.sh "AFRARECI" "Inicio ejecucion del proceso AFRAUMBR" "INFO"
+				#	"$BINDIR"/GRALOG.sh "AFRARECI" "AFRAUMBR corriendo bajo el no.: $salida"
+				#else
+				#	"$BINDIR"/GRALOG.sh "AFRARECI" "Invocación de AFRAUMBR pospuesta para el siguiente ciclo."
+				#fi
 					
 			fi
 		fi
+		"$BINDIR"/GRALOG.sh "AFRARECI" "Fin ciclo Nro:$i" "INFO"
 		i=`expr $i + 1`
-		"$BINDIR"/GRALOG.sh "AFRARECI" "Fin ciclo Nro:"$i "INFO"
 		sleep $TESPERA
 	done
 	"$BINDIR"/GRALOG.sh "AFRARECI" "Fin de Ejecucion AFRARECI" "INFO"

@@ -1,0 +1,152 @@
+*******************************************************************************
+FIUBA - Sistemas operativos - Trabajo Practico: Sistema AFRA-I
+Grupo:
+Addin Kevin
+Galvez Ignacio
+Rocha Sebastian
+Tejedor Manuel Cruz
+Venesio B.F. Mariano Andres
+Zayas Norma
+*******************************************************************************
+
+*******************************************************************************
+Instalación del sistema AFRA-I
+*******************************************************************************
+1- Se debe disponer de un USB booteable, cargando con un sistema operativo 
+UNIX. El grupo usará Ubuntu 12.04.
+Se debe insertar el usb estando la PC apagada. Una vez insertado, se debe 
+prender la maquina y luego ingresar al setup de la misma, para indicarle que 
+realize el boot desde el USB insertado.
+2- Una vez que se realizó el boot desde el USB, se debe elegir la opción para 
+probar el sistema operativo pero sin instalar. Una vez hecho esto, ya se podrá 
+utilizar el sistema.
+3- Se debe insertar el usb donde se encuentra almacenado el trabajo practico
+comprimido "grupo5.tar.gz". Luego copiarlo hacia la carpeta de trabajo, por 
+ejemplo, Documentos.
+4- Una vez con el archivo "grupo5.tar.gz" copiado, se debe hacer click derecho 
+sobre el y clickear "Extraer aquí". Otra forma es accediendo a la terminal del 
+sistema, colocando tar -xzvf grupo5.tar.gz. Luego de hacer esto, se obtendra 
+la carpeta grupo5, cuyo contenido es:
+Directorio AFRAINIC:
+AFRAINIC.sh
+
+Directorio AFRALIST:
+AFRALIST.pl
+
+Directorio AFRARECI:
+AFRARECI.sh
+
+Directorio AFRAUMBR:
+AFRAUMBR.sh
+
+Directorio ARCHIVOS:
+agentes.mae  CdA.mae  CdC.mae  CdP.mae  contador.sh  tllama.tab  umbrales.tab
+
+Directorio Datos:
+agentes.csv   CdA.csv        COS_20150703  SIS_20150803
+BEL_20150703  CdP.csv        COS_20150803  umbrales.csv
+BEL_20150803  centrales.csv  SIS_20150703
+
+Directorio FUNCIONES:
+ARRANCAR.sh  DETENER.sh  GRALOG.sh  MOVERA.sh
+
+Directorio MasDatos:
+CDN_20150630  CEN_20150630  COS_20150629  COS_20150810  SIS_20150727
+CDN_20150830  CEN_20150830  COS_20150727  SIS_20150629  SIS_20150810
+
+- Directorio AFRAINIC: 
+AFRAINIC.sh
+
+- Directorio AFRARECI: 
+AFRARECI.sh
+
+- Directorio AFRAUMBR:
+AFRAUMBR.sh
+
+- Directorio AFRALIST: 
+AFRALIST.sh
+
+- Directorio FUNCIONES: 
+GRALOG.sh MOVERA.sh ARRANCAR.sh DETENER.sh
+
+- Directorio ARCHIVOS: 
+agentes.mae CdA.mae CdC.mae CdP.mae tllama.tab umbrales.tab
+
+- Directorio Datos: 
+agentes.csv CdA.csv COS_20150703 SIS_20150803 
+BEL_20150703 CdP.csv COS_20150803 umbrales.csv
+BEL_20150803  centrales.csv  SIS_20150703
+
+- Directorio conf
+
+- Script de instalacion AFRAINST.sh
+
+- Archivo README
+
+5- Para poder instalar el sistema AFRA-I se necesita tener instalado Perl,
+con una versión superior o igual a la 5. Y un interprete Bash. Ambos ya vienen
+instalados en el sistema operativo live.
+6- Instalación del sistema
+a) Se deberá ingresar por consola el siguiente comando, situado sobre grupo5/
+$ ./AFRAINST.sh
+Puede que sea necesario otorgarle permisos de ejecución. Para ello,
+situados sobre grupo5/
+$ chmod +x AFRAINST.sh
+
+b) El programa solicitara las rutas para crear las carpetas necesarias por el
+sistema como asi tambien extension para los archivos de log, espacio minimo
+libre para arribos(MB) y tamaño máximo para los archivos de log(KB).
+Una vez especificado todos los datos, se mostrarán al usuario para confirmarlos
+y se le dara la opcion de volver atras para modificarlos si asi lo desea.
+Si se confirma, se preguntara nuevamente si esta seguro, para luego realizar
+la instalacion del sistema.
+
+c) La instalación nos deja
+- Directorio de ejecutables
+- Directorio de maestros y tablas
+- Directorio de recepcion de archivos de llamadas
+- Directorio de Archivos de llamadas aceptadas
+- Directorio de archivos de llamadas sospechosas: Dentro del mismo un
+un directorio "proc"
+- Directorio de Archivos de log
+- Directorio de Archivos rechazados: Dentro del mismo un directorio "llamadas"
+
+7- Primeros pasos
+a) Inicializar el ambiente. Para ello debemos ejecutar, situados sobre grupo5/
+$ . bin/AFRAINIC.sh
+Esto nos dejará el ambiente inicializado, y nos preguntará si deseamos iniciar
+AFRARECI.sh. Si respondemos que no, se puede iniciar luego usando ARRANCAR.sh
+b) Una vez que se tenga el ambiente inicializado y AFRARECI corriendo, se 
+procede a ingresar archivos en el directorio de Novedades. AFRARECI se 
+encargara de invocar a AFRAUMBR para su ejecucion.
+c) Los resultados de AFRAUMBR se encuentran en PROCDIR, PROCDIR/proc,
+RECHDIR/llamadas, RECHDIR.
+
+8- Arrancar y detener AFRARECI.
+Para arrancar AFRARECI, situados sobre grupo5/, se debe:
+$ bin/ARRANCAR.sh AFRARECI.sh
+Luego de esto, se ejecutara AFRARECI en background, siempre que no se encuentre
+ya ejecutandose o no se tenga el ambiente inicializado.
+
+Para detener AFRARECI, situados sobre grupo5/, se debe:
+$ bin/DETENER.sh AFRARECI.sh
+
+9- Obtencion de informes y estadisticas
+Para la obtencion de informes y estadisticas se debe hacer uso de AFRALIST.
+Las opciones de dicho comando son:
+-h Para obtener ayuda
+-w Para grabar
+-r Para consulta
+-s Para estadistica
+
+Para ejecutar el comando en modo consulta se debe, situados sobre grupo5/
+$ bin/AFRALIST.pl -r
+Luego seguir las indicaciones que brinda el programa.
+En caso que se quiera guardar los resultados, se debe
+$ bin/AFRALIST.pl -r -w
+
+Para ejecutar el comando en modo estadistica se debe, situados sobre grupo5/
+$ bin/AFRALIST.pl -s
+Luego seguir las indicaciones que brinda el programa.
+En caso que se quiera guardar los resultados, se debe
+$ bin/AFRALIST.pl -s -w

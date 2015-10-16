@@ -115,7 +115,9 @@ LeerSiONo(){
     while true; do
         Loguear "$mensaje"
         LeerInput
-        
+        if [ "$input" == "" ];then
+			continue
+        fi
         if [ $input = "Si" -o $input == "SI" -o $input == "si" -o $input == "Y"\
             -o $input == "y" -o $input == "Yes" ]; 
         then
@@ -385,7 +387,7 @@ DefinirRECHDIR(){
 VerificarEspacioEnDisco(){
     local espacio
     while true; do
-        espacio=$(df -BM --output="avail" "$GRUPO" | sed -n 's/\([0-9]\+\)M$/\1/p')
+        espacio=$(df -BM "$GRUPO" | tail -n 1 | awk '{print $4}' | sed -n 's/\([0-9]\+\)M$/\1/p')
         if [ $espacio -gt $DATASIZE ];then
             return 0
         fi
@@ -510,6 +512,7 @@ MoverEjecutables(){
     CopiarArchivos "$GRUPO/AFRARECI" "$BINDIR"
     CopiarArchivos "$GRUPO/AFRAUMBR" "$BINDIR"
     CopiarArchivos "$GRUPO/FUNCIONES" "$BINDIR"
+    CopiarArchivos "$GRUPO/AFRALIST" "$BINDIR"
     return 0
 }
 
@@ -645,6 +648,19 @@ MostrarEstadoDirectorios(){
     if ! [ $? -eq 0 ]; then
         Loguear "No se encuentra el directorio $RECHDIR" "ERR"
         CrearDirectorio "$RECHDIR"
+    fi
+    
+    # Validacion para PROCDIR/proc y RECHDIR/llamadas
+    files=$(ls "$RECHDIR/llamadas" 2>&1)
+    if ! [ $? -eq 0 ]; then
+        Loguear "No se encuentra el directorio $RECHDIR/llamadas" "ERR"
+        CrearDirectorio "$RECHDIR/llamadas"
+    fi
+    
+    files=$(ls "$PROCDIR/proc" 2>&1)
+    if ! [ $? -eq 0 ]; then
+        Loguear "No se encuentra el directorio $PROCDIR/proc" "ERR"
+        CrearDirectorio "$PROCDIR/proc"
     fi
     
     return 0

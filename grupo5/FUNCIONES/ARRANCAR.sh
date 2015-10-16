@@ -3,7 +3,7 @@ if [ -z "$CONFDIR" ] || [ -z "$BINDIR" ] || [ -z "$MAEDIR" ] || [ -z "$NOVEDIR" 
 	echo "Variables de entorno no inicializadas."
 	exit 1
 else
-	pid=$(ps aux | grep "$1" | grep -v 'ARRANCAR' | grep -v 'grep' | head -n 1 | awk '{print $2}')
+	pid=$(ps aux | grep "$1" | grep -v 'ARRANCAR' | grep -v 'grep' | grep '/bin/bash' | head -n 1 | awk '{print $2}')
 	if [ -z $pid ]; then
 		"$BINDIR/$1" &
 		echo $!

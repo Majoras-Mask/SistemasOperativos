@@ -2,6 +2,16 @@
 #LOGDIR="logdir"
 #LOGEXT="txt"
 #LOGSIZE=5000
+
+if [ "$LOGDIR" == "" ] || [ "$LOGSIZE" == "" ] || [ "$LOGEXT" == "" ];then
+	echo "Variables de entorno no inicializadas. Exiting"
+	exit 1
+fi
+
+if [ ! -d "$LOGDIR" ];then
+	mkdir -p "$LOGDIR"
+fi
+
 command=$1
 message=$2
 type=$3
@@ -24,6 +34,7 @@ if [ -f "$file" ];then
 			filesize="$word"
 		fi
 	done
+	filesize=$(du -k "$file" | cut -f1)
 	if [ "$filesize" -gt "$LOGSIZE" ];then
 		tail --lines=50 "$file" > "/tmp/temporal.txt"
 		cat "/tmp/temporal.txt" > "$file"

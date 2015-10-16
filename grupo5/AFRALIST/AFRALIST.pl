@@ -1,4 +1,4 @@
-#!/bin/perl
+#!/usr/bin/perl
 ($file1,$file2) = @ARGV;
 
 #VARIABLES GLOBALES----------------------------------------------------------
@@ -8,7 +8,7 @@ $todosUmbrales = 0;
 $todosTiempollamada = 0;
 $todosTipollamada = 0;
 $todosCdA = 0;
-$guadar = 0;
+$guardar = 0;
 $pathEst = 0;
 $accion = " ";
 
@@ -23,6 +23,18 @@ $accion = " ";
 %filtros;
 %filtroArchivos;
 %statistics;
+#----------------------------------------------------------------------------
+#----------------------------------------------------------------------------
+
+system("pgrep -c AFRALIST.pl > /tmp/path.txt");
+open(ENTRADA,"</tmp/path.txt");
+$REPODIR=<ENTRADA>;
+close(ENTRADA);
+if($REPODIR > 1){
+	die"Ya esta corriendo\n";
+}
+
+
 #----------------------------------------------------------------------------
 #VERIFICACION DE VARIABLES DE ENTORNO----------------------------------------
 system('echo $REPODIR > /tmp/path.txt');
@@ -42,7 +54,7 @@ open(ENTRADA,"< /tmp/path.txt");
 $PROCDIR =<ENTRADA>;
 chomp($PROCDIR);
 close(ENTRADA);	
-if(("$REPODIR" eq "\n")||("$PROCDIR" eq "\n")||("$MAEDIR" eq "\n")){
+if(("$REPODIR" eq "")||("$PROCDIR" eq "")||("$MAEDIR" eq "")){
 	die"Algunas de las variables de entorno no se iniciaron correctamente\n";
 }
 #----------------------------------------------------------------------------
@@ -91,10 +103,16 @@ if("$accion" eq "consulta"){
 			while($miConsulta == 0){
 				menufiltroArchivosinputLlamadas();
 				filtroRegistros();
+				$miConsulta = 1;
 			}
 		}elsif($tipoArchivo == 2){
 			while($miConsulta == 0){
-				if(menufiltroArchivosPrevios()){filtroRegistros();}
+				if(menufiltroArchivosPrevios() == 1){
+					filtroRegistros();
+					$miConsulta = 1;
+				}else{
+					last;
+				}
 			}	
 		}else{
 			print"Opcion invalida\n";
@@ -118,7 +136,6 @@ elsif ("$accion" eq "estadistica"){
 		reinicializarVariablesGlobales();
 	}
 }
-
 #----------------------------------------------------------------------------
 #----------------------------ESTADISTICA-------------------------------------
 #----------------------------------------------------------------------------
@@ -162,9 +179,9 @@ sub menuFiltroAnioMes{
 	my $count = 0;
 	for my $archivo (keys %filtroArchivos){
 	    $count++;
-	    open(my $fh, '<:encoding(UTF-8)', $archivo) or next;
+	    open(my $fh, $archivo) or next;
+    	$archivo = substr($archivo,-10,3);
 	    while (my $linea = <$fh>) {
-	    	$archivo = substr($archivo,8,3);
 	    	$linea = "${linea};${archivo} \n";
 	        chop ($linea);
 	        push(@inputLlamadas,$linea);
@@ -219,6 +236,8 @@ sub filtrarArchivosRangoFecha{
 	my $anioD = substr($desde,0,4);
 	my $mesD = substr($desde,4,2);
 	my $count =0;
+	my$patron = "*_${desde}";
+	filtrarArchivos($patron);
 	while("$desde" ne "$hasta"){
 		if($mesD != 12){
 			$mesD++;
@@ -239,7 +258,7 @@ sub filtrarArchivosRangoFecha{
 #VERIFICA QUE HAYA ARCHIVOS QUE CORRESPONDAN CON ESE PATRON------------------
 sub filtrarArchivos{
 	my $patron = shift;
-	my @filenames = glob("$PROCDIR/${patron}.csv");
+	my @filenames = glob("$PROCDIR/${patron}");
 	foreach $doc (@filenames){
 		if($filtroArchivos{"$doc"} != 1){
 			$filtroArchivos{"$doc"} = 1;
@@ -255,6 +274,7 @@ sub estadisticas{
 		chop($opcion);
 		my $opInva = 0;
 		my $looper = 0;
+		my $guardarSMS = 0;
 		while($looper == 0){
 			#centrales-------------------------------------------------------
 			if($opcion == 1){
@@ -287,7 +307,8 @@ sub estadisticas{
 				}
 				@master =();
 				@master = levantarMaestros(1);
-				mostrarDatos(0);
+				my $guardarSMS = "***********************************************\n*******LLAMADAS SOSPECHOSAS DE CENTRALES*******\n***********************************************\n";
+				mostrarDatos(0,$guardarSMS);
 			}
 			#agentes---------------------------------------------------------
 			elsif($opcion == 2){
@@ -320,8 +341,8 @@ sub estadisticas{
 				}
 				@master =();
 				@master = levantarMaestros(2);
-
-				mostrarDatos(2);
+				my $guardarSMS = "***********************************************\n********LLAMADAS SOSPECHOSAS DE AGENTES********\n***********************************************\n";
+				mostrarDatos(2,$guardarSMS);
 			}
 			#oficinas--------------------------------------------------------
 			elsif($opcion == 3){
@@ -352,7 +373,8 @@ sub estadisticas{
 						}	
 					}else{print"Opcion invalida\n";}
 				}
-				mostrarDatos2();
+				my $guardarSMS = "***********************************************\n*******LLAMADAS SOSPECHOSAS DE OFICINAS*******\n***********************************************\n";
+				mostrarDatos2($guardarSMS);
 			}
 			#destinos--------------------------------------------------------
 			elsif($opcion == 4){
@@ -367,11 +389,11 @@ sub estadisticas{
 				}	
 				@master = ();
 				@master = levantarMaestros(5);
-				mostrarDatos(1);
+				my $guardarSMS = "***********************************************\n*******LLAMADAS SOSPECHOSAS EN DESTINOS*******\n***********************************************\n";
+				mostrarDatos(1,$guardarSMS);
 			}
 			#umbrales--------------------------------------------------------
 			elsif($opcion == 5){
-				print "1\n";
 				$looper = 1;
 				foreach $linea (@inputLlamadas){
 					@llamada = split(/;/,$linea);
@@ -381,7 +403,8 @@ sub estadisticas{
 						$statistics{$llamada[2]} = 1;
 					}
 				}
-				mostrarDatos3();	   
+				my $guardarSMS = "***********************************************\n*******LLAMADAS SOSPECHOSAS DE UMBRALES*******\n***********************************************\n";
+				mostrarDatos3($guardarSMS);	   
 			}
 			else{
 				 print"Opcion invalida \n";
@@ -390,26 +413,32 @@ sub estadisticas{
 		%statistics = undef();
 		my $sms = "Desea realizar otra consulta sobre el set de datos?";
 		$bigLoop = opcional($sms);
+		#ACA VA LIMPIEZA DE HASH
+		undef %statistics;
 	}
 }
 #----------------------------------------------------------------------------
 #Muestro datos---------------------------------------------------------------
 sub mostrarDatos{
 	my $num = shift;
+	my $smsGuar = shift;
 	my $loop = 0;
 	my @ordenado = ();
-	if($guardar == 1) {open(FILE,">> $pathEst");}
-
+	if($guardar != 0) {
+		open(FILE,">> $pathEst");
+		print FILE "$smsGuar";
+	}
 #------------ ordeno los datos que quiere el usuario-------------------------
 	foreach my $key  (sort { $statistics{$b} <=> $statistics{$a} } keys %statistics)  { 
 		#print "$key=$statistics{$key}\n";
 		push(@ordenado,$key);
 	}
 #----------------------------------------------------------------------------
-	print"1-Para mostrar ranking\n";
-	print"2-Para mostrar el mayor\n";
-	my $op = <STDIN>;chop($op);
+
 	while($loop == 0){	
+		print"1-Para mostrar ranking\n";
+		print"2-Para mostrar el mayor\n";
+		my $op = <STDIN>;chop($op);
 #--------------------------------------
 		if($op == 1){
 			$loop = 1;
@@ -418,9 +447,10 @@ sub mostrarDatos{
 					@auxSplit = split(/;/,$aux);
 					if("$auxSplit[$num]" eq "$algo"){
 						if($guardar == 0){
-							print"$statistics{$algo} ; $aux \n";	
+							print"$statistics{$algo}: $aux \n";	
 						}else{
-							print FILE "$statistics{$algo} ; $aux \n";
+							print"$statistics{$algo}: $aux \n";
+							print FILE "$statistics{$algo}: $aux \n";
 						}
 					}
 				}
@@ -433,9 +463,10 @@ sub mostrarDatos{
 				@auxSplit = split(/;/,$aux);
 				if("$auxSplit[$num]" eq "$ordenado[0]"){
 					if($guardar == 0){
-						print"$statistics{$ordenado[0]};$aux\n";	
+						print"$statistics{$ordenado[0]}: $aux\n";	
 					}else{
-						print FILE "$statistics{$ordenado[0]};$aux\n";
+						print"$statistics{$ordenado[0]}: $aux\n";
+						print FILE "$statistics{$ordenado[0]}: $aux\n";
 					}
 				}
 			}
@@ -447,32 +478,39 @@ sub mostrarDatos{
 }
 
 sub mostrarDatos2{
-	if($guardar == 1) {open(FILE,">> $pathEst");}
+	my $smsGuardar = shift;
+	if($guardar != 0) {
+		open(FILE,">> $pathEst");
+		print FILE "$smsGuardar";
+	}
+
 	my @ordenado = (); 
 	foreach my $key  (sort { $statistics{$b} <=> $statistics{$a} } keys %statistics)  {  
 		push(@ordenado,$key);
 	}
-	print"1-Para mostrar ranking\n";
-	print"2-Para mostrar el mayor\n";
-	my $op = <STDIN>;chop($op);
 	my $loop = 0;
-	while($loop == 0){	
+	while($loop == 0){
+		print"1-Para mostrar ranking\n";
+		print"2-Para mostrar el mayor\n";
+		my $op = <STDIN>;chop($op);	
 		if($op == 1){
 			$loop = 1;
 			foreach $algo (@ordenado){
 				if($guardar == 0){
-					print"$algo;$statistics{$algo} \n";	
+					print"$statistics{$algo}: $algo\n";	
 				}else{
-					print FILE "$algo;$statistics{$algo}\n";
+					print"$statistics{$algo}: $algo \n";	
+					print FILE "$statistics{$algo}: $algo\n";
 				}
 			}
 		}
 		elsif($op == 2){
 			$loop = 1;
 				if($guardar == 0){
-					print"$ordenado[0];$statistics{$ordenado[0]} \n";	
+					print"$statistics{$ordenado[0]}: $ordenado[0]\n";	
 				}else{
-					print FILE "$ordenado[0];$statistics{$ordenado[0]}\n";
+					print"$statistics{$ordenado[0]}: $ordenado[0]\n";
+					print FILE "$statistics{$ordenado[0]}: $ordenado[0]\n";
 				}
 		}
 		else{
@@ -483,7 +521,11 @@ sub mostrarDatos2{
 	close(FILE);
 }
 sub mostrarDatos3{
-	if($guardar == 1) {open(FILE,">> $pathEst");}
+	my $smsGuardar = shift;
+	if($guardar == 1) {
+		open(FILE,">> $pathEst");
+		print FILE "$smsGuardar";
+	}
 	my @ordenado = ();
 	foreach my $key  (sort { $statistics{$b} <=> $statistics{$a} } keys %statistics)  {
 		if($statistics{$key} >1){
@@ -494,15 +536,17 @@ sub mostrarDatos3{
 	if($size != 0){
 		foreach $algo (@ordenado){
 			if($guardar == 0){
-				print"$algo;$statistics{$algo} \n";	
+				print"$statistics{$algo}: $algo\n";	
 			}else{
-				print FILE "$algo;$statistics{$algo}\n";
+				print"$statistics{$algo}: $algo\n";	
+				print FILE "$statistics{$algo}: $algo\n";
 			}
 		}
 	}else{
 		if($guardar == 0){
 			print"No hay umbrales con mas de una llamada sospechosa\n";	
 		}else{
+			print"No hay umbrales con mas de una llamada sospechosa\n";	
 			print FILE "No hay umbrales con mas de una llamada sospechosa\n";
 		}
 		
@@ -521,7 +565,7 @@ sub menuNombreArchivo{
 		print"Indique el nombre del archivo donde se guardar los datos\n";
 		$nombre = <STDIN>;
 		chop($nombre);
-		$nombre = "$PROCDIR/${nombre}.csv";
+		$nombre = "$REPODIR/${nombre}";
 		if(-e $nombre){
 			print"Ya existe un un archivo con ese nombre, por favor elija otro\n";
 		}else{
@@ -558,7 +602,7 @@ sub menufiltroArchivosinputLlamadas{
 	my $count = 0;
 	for my $archivo (keys %filtroArchivos){
 	    $count++;
-	    open(my $fh, '<:encoding(UTF-8)', $archivo) or next;
+	    open(my $fh, $archivo) or next;
 	    while (my $linea = <$fh>) {
 	        chop ($linea);
 	        push(@inputLlamadas,$linea);
@@ -569,15 +613,15 @@ sub menufiltroArchivosinputLlamadas{
 
 sub menufiltroArchivosPrevios{
     my $opVal = 0;
-	opendir(my $dh, $PROCDIR) or die "Not a directory";
-    if(scalar(grep { $_ ne "." && $_ ne ".." } readdir($dh)) == 0){
+	opendir(my $dh, $REPODIR) or die "Not a directory";
+    if(scalar(grep { $_ ne "." && $_ ne ".." } readdir($dh)) != 0){
     	while($opVal == 0){
 	        print "Indique el numero de archivo de llamadas sospechosas que desea consultar(numero de 3 digitos)\n";
 	        my $num = <STDIN>;
 	        chop ($num);
 	        if(length($num)== 3){
 	            $num = "$REPODIR/subllamadas.$num";
-	            open(my $fh, '<:encoding(UTF-8)', $num) or next;
+	            open(my $fh, $num) or next;
 	            while (my $linea = <$fh>) {
 	                chop ($linea);
 	                push(@inputLlamadas,$linea);
@@ -838,7 +882,7 @@ sub filtroRegistros(){
 	}
 }
 sub filtrarRegistros{
-	
+	my $flag = 0;
 	my $filtrado = 0;
 	my $size = 0;
 	my @line = ();
@@ -907,15 +951,31 @@ sub filtrarRegistros{
 			}
 		}
 		if($guardar == 0){
-			if($filtrado == 0){print" $algo \n"};
+			if($filtrado == 0){
+				$flag = 1;
+				print" $algo \n---------------------------------------------\n";
+			}
 		}else{
-			push(@listaParaGuardar,$algo);
+			if($filtrado == 0){
+				$flag = 1;
+				print" $algo \n---------------------------------------------\n";
+				push(@listaParaGuardar,$algo);
+				}
 		}
-		print"--------------------------\n";
 	}
+	if($flag == 0 ){print"No hubo coincidencias ";}
 	my $sizeGuardar = @listaParaGuardar;
 	if($sizeGuardar != 0){
-		guardarEnArchivo(@listaParaGuardar);
+		my $path = guardarEnArchivo();
+
+		# Abre el archivo (o lo crea si no existe)
+		open (FILE, "> $REPODIR/$path")|| die "ERROR: No se pudo abrir el fichero $salida\n";
+		#Scrive
+		foreach my $linea (@listaParaGuardar){
+			print FILE "$linea\n";
+		}
+		# Cierra el archivo
+		close FILE; 
 	}
 }
 sub filtrarlinea{
@@ -938,33 +998,30 @@ sub filtrarlineaPorTiempo{
 #----------------------------------------------------------------------
 #MANEJO DE ARCHIVOS
 sub guardarEnArchivo{
-	my @lineas = shift;
+
+	my $numero = 0;
 	my $nombre = "subllamadas";
-	my @filenames = glob("$PROCDIR/subllamadas.*");
+	my @filenames = glob("$REPODIR/subllamadas.*");
 	my $cantidadArchivos = @filenames;
-	my $cosa = length($cantidadArchivos);
-	print"\n $cosa \n\n";
-	if(length($cantidadArchivos) == 1){
-		$nombre = "${nombre}.00${cantidadArchivos}";
-	}elsif(length($cantidadArchivos) == 2){
-		$nombre = "${nombre}.0${cantidadArchivos}";
+	foreach $subLlamada (@filenames){
+		my $aux = substr($subLlamada,-3,3);
+		if ($numero < $aux){$numero = $aux;} 
+	}
+	$numero = $numero + 1;
+	if(length($numero) == 1){
+		$nombre = "${nombre}.00${numero}";
+	}elsif(length($numero) == 2){
+		$nombre = "${nombre}.0${numero}";
 	}else{
-		$nombre = "${nombre}.${cantidadArchivos}";
+		$nombre = "${nombre}.${numero}";
 	}
-	# Abre el archivo (o lo crea si no existe)
-	open (FILE, "> $PROCDIR/$nombre")|| die "ERROR: No puedo abrir el fichero $salida\n";
-	#Scrive
-	foreach my $linea (@lineas){
-		print FILE "$linea\n";
-	}
-	# Cierra el archivo
-	close FILE; 
+	return $nombre;
 }
 sub leerArchivo{
 
 	my $filename = shift @_;
 	my $campo = shift @_;	
-	open(my $fh, '<:encoding(UTF-8)', $filename)
+	open(my $fh, $filename)
 		or die "Could not open file '$filename' $!";
 	my %hash;
 	while (my $linea = <$fh>) {
@@ -997,7 +1054,7 @@ sub levantarMaestros{
 	}elsif($num == 6){
 		$path = "$MAEDIR/CdB.mae";		
 	}
-    open(my $fh, '<:encoding(UTF-8)', $path) or next;
+    open(my $fh, $path) or next;
     while (my $linea = <$fh>) {
         chop ($linea);
         push(@maestro,$linea);
@@ -1008,7 +1065,8 @@ sub levantarMaestros{
 #verifica que haya archivos que correspondan con dicho patron
 sub filtrarArchivos{
 	my $patron = shift;
-	my @filenames = glob("$PROCDIR/${patron}.csv");
+	#print "Patron para filtrar\n$PROCDIR/${patron} \n";
+	my @filenames = glob("$PROCDIR/${patron}");
 	foreach $doc (@filenames){
 		if($filtroArchivos{"$doc"} != 1){
 			$count++;
@@ -1032,9 +1090,9 @@ sub reinicializarVariablesGlobales{
 	@filCdA = ();
 	@filCdB = ();
 	@inputLlamadas = ();
-	%filtros = undef();
-	%filtroArchivos = undef();
-	%statistics =undef();
+	undef %filtros;
+	undef %filtroArchivos; 
+	undef %statistics;
 }
 sub opcional{
 	my $sms = shift;

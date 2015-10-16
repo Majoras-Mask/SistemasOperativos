@@ -1,0 +1,105 @@
+$ bin/AFRALIST.pl -h
+Bienvenido al sistema de informes de SisPro.
+Para realizar una consulta ingrese AFRALIST.pl -r
+- La consulta se realizara sobre los archivos de llamadas sospechosas o sobre archivos generados anteriormente por este comando.
+- Si asi lo desea podra guardar la salida de la consulta en un archivo agregando -w como parametro del comando
+- Los cuales, mediante el menu, podra filtrar por oficina o por aniomes de llamada o podra seleccionar todos.
+ - En el menu siguiente podra filtrar los archivos segun sus registros (centrales, agentes, etc).
+
+Para realizar una estadistica ingrese AFRALIST.pl -s
+- La estadistica se realizara sobre los archivos de llamadas sospechosas.
+- Al igual que en consulta, si agrega el parametro -w se guardan los datos en un archivo, pero se le pedira el nombre que desea para el mismo.
+- Podra filtrar los archivos por fecha, por rango de fechas o podra seleccionar todos.
+- Luego podra ver rankings de llamadas sospechosas segun diferentes parametros(segun centrales, segun oficinas, etc).
+
+
+$ bin/AFRALIST.pl -r -w
+Sobre que tipo de archivos desea realizar consultas? 
+1-Llamas sospechosas
+2-Consultas previas
+1
+Ingrese el filtro de archivos(OFICINA_AAAAMM)
+* significa todos(ej: *_AAAAMM- Todos las oficinas de cierto anio mes)
+GIF_*
+Desea agregar mas archivos? 
+1 - SI 
+2 - NO 
+2
+Se han usado los datos de 1 archivos
+filtroRegistros
+Indique informacion que desea
+1- Sobre centrales
+2- Sobre agente
+3- Sobre umbral
+4- Tipo de llamada
+5- Tiempo de llamada
+6- Numero de area (area + numeo de linea)
+0- terminar de agregar filtros
+1
+Ingrese el central(si quiere todas ingrese *)
+*
+Todas las centrales
+Indique informacion que desea
+1- Sobre centrales
+2- Sobre agente
+3- Sobre umbral
+4- Tipo de llamada
+5- Tiempo de llamada
+6- Numero de area (area + numeo de linea)
+0- terminar de agregar filtros
+0
+ BEL;BESADAGUILLERMO;87;LOC;03/07/2015 01:33:11p.m.;81;11;31540143;;11;48118766;BEL_20150703 
+---------------------------------------------
+ COS;ESTERSONIGNACIO;92;LOC;03/07/2015 11:38:24a.m.;401;11;32040156;;11;47743721;COS_20150703 
+---------------------------------------------
+ COS;BESADAGUILLERMO;87;LOC;03/07/2015 12:51:41p.m.;111;11;31540143;;11;47974326;COS_20150703 
+---------------------------------------------
+Desea realizar otra consulta ? 
+1 - SI 
+2 - NO 
+no
+Desea realizar otra consulta ? 
+1 - SI 
+2 - NO 
+2
+
+$ bin/AFRALIST.pl -s -w
+Indique el nombre del archivo donde se guardar los datos
+estadisticas
+Nombre valido 
+1- Filtrar por una fecha
+2- Filtrar por un rango de fechas
+3- Utilizar todos los archivos disponibles
+1
+Ingrese la fecha (AAAAMM)
+201507
+Quiere agregar mas archivos 
+1 - SI 
+2 - NO 
+2
+Se trabajara con 2 archivos
+1- Central con mas llamadas sospechosas
+2- agente con mas llamadas sospechosas
+3- oficina con mas llamadas sospechosas
+4- Destino con mas llamadas sospechosas
+5- Ranking de umbrales
+1
+1-Rankear por tiempo de conversacion
+2-Rankear por cantidad de llamadas
+1
+ 
+1-Para mostrar ranking
+2-Para mostrar el mayor
+1
+512 ; COS;Costanera 
+347 ; BEL;Belgrano 
+Desea realizar otra consulta sobre el set de datos? 
+1 - SI 
+2 - NO 
+2
+Desea realizar otra consulta ? 
+1 - SI 
+2 - NO 
+2
+
+
