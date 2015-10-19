@@ -38,7 +38,7 @@ obtenerCantidadDeArchivos(){
 
 verificarSiArchivoDuplicado(){
 	local archivo="$1"
-	if [ -f "$PROCDIR/proc/$(basename $archivo)" ]; then
+	if [ -f "$PROCDIR/proc/$(basename "$archivo")" ]; then
 		return "$TRUE"
 	else
 		return "$FALSE"
@@ -310,7 +310,7 @@ grabarLlamadaSospechosa(){
 	local tipoDeLlamada="$RETORNO"
 	
 	local sospechosa
-	sospechosa="$COD_CENTRAL;$idAgente;$umbral;$tipoDeLlamada;$inicioDeLlamada;$tiempoDeConversacion;$codigoAreaA;$numeroA;$codigoPaisB;$codigoAreaB;$numeroB;$NOMBRE_ARCHIVO"
+	sospechosa="$COD_CENTRAL;$idAgente;$umbral;$tipoDeLlamada;$inicioDeLlamada;$tiempoDeConversacion;$codigoAreaA;$numeroA;$codigoPaisB;$codigoAreaB;$numeroB;$ANIOMESDIA"
 
 	local oficina=$(grep ".*;.*;$idAgente;.*;.*" "$MAEDIR"/agentes.mae | head -n 1 | awk -F';' '{print $4}')
 	
