@@ -30,7 +30,7 @@ LeerSiONo(){
             RETORNO="Si"
             return 0
         elif [ "$input" == "No" -o "$input" == "NO" -o "$input" == "no" \
-            -o $"input" == "n" ];
+            -o "$input" == "n" ];
         then
             RETORNO="No"
             return 0
