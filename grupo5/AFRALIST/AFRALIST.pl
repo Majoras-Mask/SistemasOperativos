@@ -107,12 +107,20 @@ if("$accion" eq "consulta"){
 			}
 		}elsif($tipoArchivo == 2){
 			while($miConsulta == 0){
-				if(menufiltroArchivosPrevios() == 1){
-					filtroRegistros();
-					$miConsulta = 1;
+				my @archivos = glob("${REPODIR}/subllamadas*");
+				my $hayArchivos = @archivos;
+				if($hayArchivos>0){
+					if(menufiltroArchivosPrevios() == 1){
+						filtroRegistros();
+						$miConsulta = 1;
+					}else{
+						print "No existen consultas previas\n";
+						last;
+					}
 				}else{
+					print "No existen consultas previas\n";
 					last;
-				}
+					}
 			}	
 		}else{
 			print"Opcion invalida\n";
