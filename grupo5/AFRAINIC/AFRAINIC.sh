@@ -24,13 +24,13 @@ LeerSiONo(){
 	Loguear "$mensaje" "INFO"
         read input
         
-        if [ $input = "Si" -o $input == "SI" -o $input == "si" -o $input == "Y"\
-            -o $input == "y" -o $input == "Yes" ]; 
+        if [ "$input" = "Si" -o "$input" == "SI" -o "$input" == "si" -o "$input" == "Y"\
+            -o "$input" == "y" -o "$input" == "Yes" ]; 
         then
             RETORNO="Si"
             return 0
-        elif [ $input == "No" -o $input == "NO" -o $input == "no" \
-            -o $input == "n" ];
+        elif [ "$input" == "No" -o "$input" == "NO" -o "$input" == "no" \
+            -o $"input" == "n" ];
         then
             RETORNO="No"
             return 0

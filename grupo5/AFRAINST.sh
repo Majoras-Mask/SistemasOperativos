@@ -118,13 +118,13 @@ LeerSiONo(){
         if [ "$input" == "" ];then
 			continue
         fi
-        if [ $input = "Si" -o $input == "SI" -o $input == "si" -o $input == "Y"\
-            -o $input == "y" -o $input == "Yes" ]; 
+        if [ "$input" = "Si" -o "$input" == "SI" -o "$input" == "si" -o "$input" == "Y"\
+            -o "$input" == "y" -o "$input" == "Yes" ]; 
         then
             RETORNO="Si"
             return 0
-        elif [ $input == "No" -o $input == "NO" -o $input == "no" \
-            -o $input == "n" ];
+        elif [ "$input" == "No" -o "$input" == "NO" -o "$input" == "no" \
+            -o "$input" == "n" ];
         then
             RETORNO="No"
             return 0
@@ -151,10 +151,10 @@ LeerDirectorio(){
     while true; do
         Loguear "$mensaje"; LeerInput
 
-        #if [ -z "$input" ]; then
-        #   Loguear "Introducir un directorio valido."
-        #    continue
-        #fi
+        if [ -z "$input" ]; then
+			RETORNO=""
+			return 0
+        fi
         
         local c=$(echo "$input" | grep -c "^[/0-9a-zA-Z_-]\+$")
         if [ "$c" -eq 0 ];then 
@@ -197,10 +197,18 @@ LeerDirectorio(){
 LeerNumero(){
     local mensaje=$1
     Loguear "$mensaje";LeerInput
+    if [ ${#input} -eq 0 ];then
+		RETORNO=""
+		return 0
+    fi
     local numero=$(echo $input | grep "^[0-9]\+$")
     while [ -z "$numero" ] || [ ${#numero} -gt 15 ]; do
         Loguear "Debe ingresarse un numero valido"
         Loguear "$mensaje"; LeerInput
+        if [ ${#input} -eq 0 ];then
+			RETORNO=""
+			return 0
+		fi
         numero=$(echo $input | grep "^[0-9]\+$")
     done
     RETORNO=$numero
@@ -214,8 +222,8 @@ LeerExtension(){
     local mensaje=$1
     Loguear "$mensaje"
     LeerInput
-    while [ ${#input} -gt 5 ] || [ ${#input} -eq 0 ]; do
-        Loguear "La extensión debe no ser vacia y tener como máximo 5 caracteres"
+    while [ ${#input} -gt 5 ]; do
+        Loguear "La extensión debe tener como máximo 5 caracteres"
         Loguear "$mensaje"
         LeerInput
     done
@@ -296,21 +304,27 @@ InicializacionDefaultVariables(){
 DefinirBINDIR(){
     local mensaje="Defina el directorio de instalación de los ejecutables ($BINDIR): "
     LeerDirectorio "$mensaje"
-    BINDIR=$GRUPO/${RETORNO:="bin"}
+    if [ ! -z "$RETORNO" ]; then
+		BINDIR="$GRUPO/$RETORNO"
+	fi
     return 0
 }
 
 DefinirMAEDIR(){
     local mensaje="Defina directorio para maestros y tablas ($MAEDIR): "
     LeerDirectorio "$mensaje"
-    MAEDIR=$GRUPO/${RETORNO:="mae"}
+    if [ ! -z "$RETORNO" ]; then
+		MAEDIR="$GRUPO/$RETORNO"
+    fi
     return 0
 }
 
 DefinirNOVEDIR(){
     local mensaje="Defina el Directorio de recepción de archivos de llamadas ($NOVEDIR): "
     LeerDirectorio "$mensaje"
-    NOVEDIR=$GRUPO/${RETORNO:="novedades"}
+    if [ ! -z "$RETORNO" ]; then
+		NOVEDIR="$GRUPO/$RETORNO"
+	fi
     return 0
 }
 
@@ -319,8 +333,11 @@ DefinirDATASIZE(){
     while true; do
         mensaje="Defina espacio mínimo libre para la recepción de archivos de llamadas en Mbytes ( $DATASIZE ): "
         LeerNumero "$mensaje"
-        if [ $RETORNO -gt 0 ]; then
-            DATASIZE=${RETORNO:="100"}
+        if [ -z "$RETORNO" ]; then
+			return 0
+        fi
+        if [ "$RETORNO" -gt 0 ]; then
+			DATASIZE=$RETORNO
             return 0
         else
             Loguear "Debe ingresar un numero mayor a cero!" "WAR"
@@ -331,35 +348,45 @@ DefinirDATASIZE(){
 DefinirACEPDIR(){
     local mensaje="Defina el directorio de grabación de los archivos de llamadas aceptadas ($ACEPDIR): "
     LeerDirectorio "$mensaje"
-    ACEPDIR=$GRUPO/${RETORNO:="aceptadas"}
+    if [ ! -z "$RETORNO" ];then
+		ACEPDIR="$GRUPO/$RETORNO"
+	fi
     return 0
 }
 
 DefinirPROCDIR(){
     local mensaje="Defina el directorio de grabación de los registros de llamadas sospechosas ($PROCDIR): "
     LeerDirectorio "$mensaje"
-    PROCDIR=$GRUPO/${RETORNO:="sospechosas"}
+    if [ ! -z "$RETORNO" ]; then
+		PROCDIR="$GRUPO/$RETORNO"
+	fi
     return 0
 }
 
 DefinirREPODIR(){
     local mensaje="Defina el directorio de grabación de los reportes ($REPODIR): "
     LeerDirectorio "$mensaje"
-    REPODIR=$GRUPO/${RETORNO:="reportes"}
+    if [ ! -z "$RETORNO" ];then
+		REPODIR="$GRUPO/$RETORNO"
+	fi
     return 0
 }
 
 DefinirLOGDIR(){
     local mensaje="Defina el directorio para los archivos de log ($LOGDIR): "
     LeerDirectorio "$mensaje"
-    LOGDIR=$GRUPO/${RETORNO:="log"}
+    if [ ! -z "$RETORNO" ];then
+		LOGDIR="$GRUPO/$RETORNO"
+	fi
     return 0
 }
 
 DefinirLOGEXT(){
     local mensaje="Defina el nombre para la extensión de lso archivos de log ( $LOGEXT ): "
     LeerExtension "$mensaje"
-    LOGEXT=${RETORNO:="log"}
+    if [ ! -z "$RETORNO" ];then
+		LOGEXT="$RETORNO"
+	fi
     return 0
 }
 
@@ -368,8 +395,11 @@ DefinirLOGSIZE(){
     while true; do
         mensaje="Defina el tamaño maximo para cada archivo de log en Kbytes ( $LOGSIZE ): "
         LeerNumero "$mensaje"
+        if [ -z "$RETORNO" ]; then
+			return 0
+        fi
         if [ "$RETORNO" -gt 0 ]; then
-            LOGSIZE=${RETORNO:="400"}
+			LOGSIZE=$RETORNO
             return 0
         else
             Loguear "Debe ingresar un numero mayor a cero!" "WAR"
@@ -380,7 +410,9 @@ DefinirLOGSIZE(){
 DefinirRECHDIR(){
     local mensaje="Defina el directorio de grabación de Archivos rechazados ($RECHDIR): "
     LeerDirectorio "$mensaje"
-    RECHDIR=$GRUPO/${RETORNO:="rechazadas"}
+    if [ ! -z "$RETORNO" ]; then
+		RECHDIR="$GRUPO/$RETORNO"
+    fi
     return 0
 }
 
