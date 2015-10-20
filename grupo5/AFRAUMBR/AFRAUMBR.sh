@@ -66,14 +66,14 @@ verificarSiArchivoOK(){
 	local archivo="$1"
 	verificarSiArchivoDuplicado "$archivo"
 	if [ $? -eq "$TRUE" ];then
-		Loguear "Se rechaza el archivo por estar DUPLICADO."
+		Loguear "Se rechaza el archivo por estar DUPLICADO $archivo."
 		"$BINDIR"/MOVERA.sh "$archivo" "$RECHDIR" "AFRAUMBR"
 		return "$FALSE"
 	fi
 	
 	verificarSiArchivoTieneFormatoEstablecido "$archivo"
 	if [ $? -eq "$FALSE" ];then
-		Loguear "Se rechaza el archivo porque su estructura no se corresponde con el formato esperado."
+		Loguear "Se rechaza el archivo porque su estructura no se corresponde con el formato esperado. $archivo"
 		"$BINDIR"/MOVERA.sh "$archivo" "$RECHDIR" "AFRAUMBR"
 		return "$FALSE"
 	fi	
